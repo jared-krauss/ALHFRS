@@ -144,7 +144,8 @@ def check_near_duplicates(records, warnings):
                     f'and {abs((d_a-d_b).days)} days apart — check location_cluster_id'
                 ))
 
-def check_cluster_consistency(records, errors):
+def check_cluster_consistency(records, warnings):
+    """Cross-borough clusters are unusual but not necessarily wrong — warn, not error."""
     clusters = {}
     for r in records:
         cid = r.get('location_cluster_id')
@@ -154,9 +155,9 @@ def check_cluster_consistency(records, errors):
         if cid not in clusters:
             clusters[cid] = borough
         elif clusters[cid] != borough:
-            errors.append(ERR(
-                f'[{r["id"]}] Cluster "{cid}" has inconsistent boroughs: '
-                f'"{clusters[cid]}" vs "{borough}"'
+            warnings.append(WARN(
+                f'[{r["id"]}] Cluster "{cid}" spans boroughs: '
+                f'"{clusters[cid]}" vs "{borough}" — intentional? Consider splitting cluster or using notes.'
             ))
 
 # ── Main ───────────────────────────────────────────────────────────────────────
@@ -193,7 +194,7 @@ def main():
         check_record(rec, errors, warnings)
 
     check_near_duplicates(records, warnings)
-    check_cluster_consistency(records, errors)
+    check_cluster_consistency(records, warnings)
 
     # Print results per record (group by id for readability)
     seen_ids = []

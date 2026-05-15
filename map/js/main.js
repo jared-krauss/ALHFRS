@@ -12,8 +12,8 @@ async function init() {
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.tileLayer(TILE_URL, TILE_OPTIONS).addTo(map);
 
-  // Fetch borough GeoJSON and deployment data in parallel
-  let boroughsGeoJSON, metData;
+  // Fetch all data sources in parallel; non-critical sources degrade gracefully
+  let boroughsGeoJSON, metData, btpData, privateData;
   try {
     [boroughsGeoJSON, metData] = await Promise.all([
       fetch(DATA_PATHS.boroughs).then(r => {
@@ -21,7 +21,7 @@ async function init() {
         return r.json();
       }),
       fetch(DATA_PATHS.metDeployments).then(r => {
-        if (!r.ok) throw new Error(`Deployment data fetch failed: ${r.status}`);
+        if (!r.ok) throw new Error(`Met deployment data fetch failed: ${r.status}`);
         return r.json();
       }),
     ]);
@@ -33,13 +33,29 @@ async function init() {
     return;
   }
 
+  // Optional layers — fail silently if files missing
+  [btpData, privateData] = await Promise.all([
+    fetch(DATA_PATHS.btpDeployments).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetch(DATA_PATHS.privateDeployments).then(r => r.ok ? r.json() : null).catch(() => null),
+  ]);
+
   // Layers
-  const boroughLayer = createBoroughLayer(map, boroughsGeoJSON);
-  const deploymentLayer = createDeploymentLayer(metData.deployments);
-  deploymentLayer.addTo(map);
+  const boroughLayer   = createBoroughLayer(map, boroughsGeoJSON);
+  const metLayer       = createDeploymentLayer(metData.deployments);
+  const btpLayer       = btpData     ? createDeploymentLayer(btpData.deployments)     : null;
+  const privateLayer   = privateData ? createDeploymentLayer(privateData.deployments) : null;
+
+  metLayer.addTo(map);
+  if (btpLayer)     btpLayer.addTo(map);
+  if (privateLayer) privateLayer.addTo(map);
 
   // Controls and legend
-  initControls(map, { boroughs: boroughLayer, deployments: deploymentLayer });
+  initControls(map, {
+    boroughs:  boroughLayer,
+    met:       metLayer,
+    btp:       btpLayer,
+    private:   privateLayer,
+  });
   createLegend(map);
 }
 

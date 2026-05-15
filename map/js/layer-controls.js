@@ -1,14 +1,20 @@
 /**
- * Wires the layer toggle buttons in #layer-panel to their respective Leaflet layers.
- * Each button toggles its layer and its own .active CSS class.
+ * Wires layer toggle buttons to their Leaflet layers.
+ * Each button toggles its layer on/off and flips its own .active CSS class.
  *
- * layers: { boroughs: L.layer, deployments: L.layerGroup }
+ * layers: { boroughs, met, btp, private } — null values are safely skipped
  * map: L.map instance
  */
 export function initControls(map, layers) {
   function wire(btnId, layer) {
     const btn = document.getElementById(btnId);
-    if (!btn || !layer) return;
+    if (!btn) return;
+    // If layer failed to load, mark button as unavailable
+    if (!layer) {
+      btn.disabled = true;
+      btn.title = 'Data not loaded';
+      return;
+    }
 
     let visible = true;
     btn.addEventListener('click', () => {
@@ -23,6 +29,8 @@ export function initControls(map, layers) {
   }
 
   wire('btn-boroughs', layers.boroughs);
-  wire('btn-deployments', layers.deployments);
+  wire('btn-met',      layers.met);
+  wire('btn-btp',      layers.btp);
+  wire('btn-private',  layers.private);
   // btn-news and btn-community are disabled in HTML — no handlers needed
 }

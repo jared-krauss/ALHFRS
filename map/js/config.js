@@ -20,6 +20,7 @@ export const QUALITY_LABELS = {
 export const DATA_PATHS = {
   boroughs: './data/london-boroughs.geojson',
   metDeployments: '../data/deployments/met-police-lfr.json',
+  btpDeployments: '../data/deployments/btp-lfr.json',
   privateDeployments: '../data/deployments/private-operators.json',
 };
 

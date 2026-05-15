@@ -62,6 +62,15 @@
       cursor: not-allowed;
     }
 
+    .panel-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3a4a68;
+      padding: 4px 2px 1px;
+    }
+
     /* ── Popups ──────────────────────────────────────────── */
     .leaflet-popup-content-wrapper {
       background: #131b2e;
@@ -218,10 +227,15 @@
   <div id="map"></div>
 
   <div id="layer-panel">
+    <div class="panel-section-label">Police</div>
     <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
-    <button class="layer-btn active" id="btn-deployments">LFR deployments (Met)</button>
+    <button class="layer-btn active" id="btn-met">Met Police LFR</button>
+    <button class="layer-btn active" id="btn-btp">BTP (stations)</button>
+    <div class="panel-section-label">Private</div>
+    <button class="layer-btn active" id="btn-private">Retail FRS (Facewatch)</button>
+    <div class="panel-section-label">Coming soon</div>
     <button class="layer-btn" id="btn-news" disabled>News &amp; events</button>
-    <button class="layer-btn" id="btn-community" disabled>Community submissions</button>
+    <button class="layer-btn" id="btn-community" disabled>Community</button>
   </div>
 
   <div id="load-error"></div>

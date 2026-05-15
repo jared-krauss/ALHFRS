@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.1",
+  "source": "BBC News; Emergency Services Times; British Transport Police press statements",
+  "last_updated": "2026-05-15",
+  "notes": "British Transport Police (BTP) Live Facial Recognition deployments at London rail stations. BTP is a separate force from the Metropolitan Police — maintains its own LFR programme. Trial launched Feb 2026 at major London termini.",
+  "deployments": [
+    {
+      "id": "btp-001",
+      "operator": "British Transport Police",
+      "operator_type": "law_enforcement",
+      "deployment_type": "static",
+      "location_name": "London Bridge station",
+      "borough": "Southwark",
+      "ward": "London Bridge and West Bermondsey",
+      "lat": 51.5054,
+      "lon": -0.0865,
+      "location_cluster_id": null,
+      "date_start": "2026-02-11",
+      "date_end": null,
+      "stated_purpose": "Detection of wanted persons — six-month trial",
+      "outcome_arrests": null,
+      "outcome_alerts": null,
+      "data_quality": "confirmed",
+      "source_url": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
+      "source_type": "news_report",
+      "notes": "BTP six-month LFR trial launched at London Bridge on 11 Feb 2026, subsequently expanded to Waterloo (14 Feb 2026). One of first major transit hub LFR deployments in London. Subject of news-007 in data/news/gmail-research-threads.json."
+    },
+    {
+      "id": "btp-002",
+      "operator": "British Transport Police",
+      "operator_type": "law_enforcement",
+      "deployment_type": "static",
+      "location_name": "London Waterloo station",
+      "borough": "Lambeth",
+      "ward": "Bishop's",
+      "lat": 51.5031,
+      "lon": -0.1132,
+      "location_cluster_id": null,
+      "date_start": "2026-02-14",
+      "date_end": null,
+      "stated_purpose": "Detection of wanted persons — six-month trial",
+      "outcome_arrests": null,
+      "outcome_alerts": null,
+      "data_quality": "confirmed",
+      "source_url": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
+      "source_type": "news_report",
+      "notes": "Expansion of BTP six-month trial from London Bridge (btp-001). London Waterloo is the UK's busiest rail terminus. Trial announced Feb 2026."
+    }
+  ]
+}
