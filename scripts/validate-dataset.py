@@ -46,6 +46,10 @@ LONDON_LON = (-0.51, 0.34)
 REQUIRED_FIELDS = ['id', 'operator', 'lat', 'lon', 'date_start',
                    'data_quality', 'source_url', 'source_type']
 
+# Looser schema for retrospective-FR incidents (different coordinate + operator model)
+REQUIRED_FIELDS_INCIDENT = ['id', 'police_force', 'outcome', 'data_quality',
+                             'source_url', 'source_type']
+
 VALID_QUALITY = {'confirmed', 'approximate', 'unverified'}
 VALID_SOURCE_TYPE = {'FOI_disclosure', 'news_report', 'court_record',
                      'police_statement', 'operator_statement', 'ngo_report'}
@@ -77,11 +81,12 @@ def parse_date(s):
         return None
 
 # ── Validators ─────────────────────────────────────────────────────────────────
-def check_record(rec, errors, warnings):
+def check_record(rec, errors, warnings, is_incident=False):
     rid = rec.get('id', '<no-id>')
 
-    # Required fields
-    for field in REQUIRED_FIELDS:
+    # Required fields — different sets for deployments vs incidents
+    required = REQUIRED_FIELDS_INCIDENT if is_incident else REQUIRED_FIELDS
+    for field in required:
         if rec.get(field) is None:
             errors.append(ERR(f'[{rid}] Missing required field: {field}'))
 
@@ -95,8 +100,14 @@ def check_record(rec, errors, warnings):
     if st and st not in VALID_SOURCE_TYPE:
         warnings.append(WARN(f'[{rid}] Unknown source_type "{st}"'))
 
-    # Coordinate sanity
-    lat, lon = rec.get('lat'), rec.get('lon')
+    # Coordinate sanity — incidents use footage_lat/lon (or arrest_lat/lon as fallback)
+    if is_incident:
+        lat = rec.get('footage_lat') or rec.get('arrest_lat')
+        lon = rec.get('footage_lon') or rec.get('arrest_lon')
+        if lat is None and lon is None:
+            warnings.append(WARN(f'[{rid}] No mappable coordinates (footage_lat/lon and arrest_lat/lon both null)'))
+    else:
+        lat, lon = rec.get('lat'), rec.get('lon')
     if lat is not None and lon is not None:
         if not (LONDON_LAT[0] <= lat <= LONDON_LAT[1]):
             warnings.append(WARN(f'[{rid}] lat={lat} is outside Greater London bounds ({LONDON_LAT}) — intentional?'))
@@ -112,17 +123,18 @@ def check_record(rec, errors, warnings):
     if dq == 'unverified':
         warnings.append(WARN(f'[{rid}] data_quality=unverified — needs follow-up'))
 
-    # Date validity
-    d_start = parse_date(rec.get('date_start'))
-    d_end   = parse_date(rec.get('date_end'))
-    if rec.get('date_start') and not d_start:
-        errors.append(ERR(f'[{rid}] date_start "{rec.get("date_start")}" is not valid ISO 8601'))
-    if rec.get('date_end') and not d_end:
-        errors.append(ERR(f'[{rid}] date_end "{rec.get("date_end")}" is not valid ISO 8601'))
-    if d_start and d_end and d_end < d_start:
-        errors.append(ERR(f'[{rid}] date_end {d_end} is before date_start {d_start}'))
-    if d_start and d_start < date(2011, 1, 1):
-        warnings.append(WARN(f'[{rid}] date_start {d_start} predates UK facial recognition deployments — verify'))
+    # Date validity — incidents may use arrest_date_approx (partial) instead of date_start
+    if not is_incident:
+        d_start = parse_date(rec.get('date_start'))
+        d_end   = parse_date(rec.get('date_end'))
+        if rec.get('date_start') and not d_start:
+            errors.append(ERR(f'[{rid}] date_start "{rec.get("date_start")}" is not valid ISO 8601'))
+        if rec.get('date_end') and not d_end:
+            errors.append(ERR(f'[{rid}] date_end "{rec.get("date_end")}" is not valid ISO 8601'))
+        if d_start and d_end and d_end < d_start:
+            errors.append(ERR(f'[{rid}] date_end {d_end} is before date_start {d_start}'))
+        if d_start and d_start < date(2011, 1, 1):
+            warnings.append(WARN(f'[{rid}] date_start {d_start} predates UK facial recognition deployments — verify'))
 
     # Cluster consistency (deferred to cross-record check)
 
