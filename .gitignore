@@ -7,3 +7,6 @@ __pycache__/
 *.log
 .cache/
 *.tmp
+_archive/
+.claude/launch.json
+.claude/worktrees/
