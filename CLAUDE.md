@@ -169,12 +169,16 @@ Do not create files in these directories without a plan for the accompanying sch
 
 ## Known issues (from May 2026 audit)
 
-1. **`map/london-boroughs.js` is dead code.** A hardcoded GeoJSON export of 23 boroughs — not imported anywhere. The map loads `map/data/london-boroughs.geojson` (full-resolution). Safe to leave; do not import `london-boroughs.js` into new code.
+1. **`map/data/london-wards.geojson` (1.05 MB) is available but has no layer toggle yet.** Ward-level boundaries are present; the toggle is planned — see `map/README.md`.
 
-2. **`map/data/london-wards.geojson` (1.05 MB) is loaded in `config.js` but has no layer toggle.** Ward-level boundaries are available but the UI doesn't yet expose them as a separate layer.
+2. **Some news archive URLs are share.google redirects.** `data/news/gmail-research-threads.json` contains entries where `url` is a Gmail share redirect rather than a canonical article URL. `url_canonical` fields are partially filled; remainder need resolving.
 
-3. **Some news archive URLs are share.google redirects.** `data/news/gmail-research-threads.json` contains entries where `url` is a Gmail share redirect rather than a canonical article URL. `url_canonical` fields are partially filled; remainder need resolving.
+3. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs to be populated.
 
-4. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs to be populated.
+4. **Outcome data sparse.** Only `lfr-008` (Croydon static) has a populated `outcome_arrests` field (173). All other deployment records have null outcomes — intentional where data isn't public.
 
-5. **Outcome data sparse.** Only `lfr-008` (Croydon static) has a populated `outcome_arrests` field (173). All other deployment records have null outcomes — intentional where data isn't public.
+## Archive
+
+`_archive/` is gitignored and holds dead code preserved for reference:
+
+- `map-london-boroughs.js` — hardcoded 23-borough GeoJSON that was once in `map/`. Superseded by the full-resolution `map/data/london-boroughs.geojson`. Do not import or restore.

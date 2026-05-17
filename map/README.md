@@ -93,11 +93,41 @@ Circle marker color is keyed to `data_quality` via `QUALITY_COLORS` from `config
 
 ---
 
-## Known issues
+## Ward layer (planned)
 
-**`london-boroughs.js` is dead code.** It exports a hardcoded GeoJSON FeatureCollection of 23 London boroughs but is not imported anywhere. The map uses `./data/london-boroughs.geojson` (full-resolution, 244 KB) instead. Do not import `london-boroughs.js` into new code.
+`data/london-wards.geojson` (1.05 MB) is present. The ward layer toggle is planned — see the implementation plan below. When wired up, add a `wards` path to `DATA_PATHS` in `config.js` and render it using `createBoroughLayer()` with a finer line style.
 
-**`london-wards.geojson` (1.05 MB) is present but not surfaced.** `config.js` doesn't reference it yet. Ward boundaries are planned as a future layer toggle — when wired up, add a path to `DATA_PATHS` and create a layer using `createBoroughLayer()` or a similar GeoJSON handler.
+**Implementation plan — ward layer toggle**
+
+Files to change:
+
+1. **`js/config.js`** — add `wards: './data/london-wards.geojson'` to `DATA_PATHS`; add a `WARD_STYLE` constant (thinner, more subtle than `BOROUGH_STYLE`):
+   ```js
+   export const WARD_STYLE = { color: '#2a4a7e', weight: 0.5, fillColor: 'transparent', fillOpacity: 0, opacity: 0.6 };
+   ```
+
+2. **`js/borough-layer.js`** — make `createBoroughLayer` accept an optional `style` parameter so wards can reuse it:
+   ```js
+   export function createBoroughLayer(map, geoJSON, style = BOROUGH_STYLE) { ... }
+   ```
+
+3. **`js/main.js`** — fetch ward GeoJSON (optional pattern, fail silently) and create the layer:
+   ```js
+   const wardsGeoJSON = await fetch(DATA_PATHS.wards).then(r => r.ok ? r.json() : null).catch(() => null);
+   const wardLayer = wardsGeoJSON ? createBoroughLayer(map, wardsGeoJSON, WARD_STYLE) : null;
+   ```
+   Pass `wards: wardLayer` into `initControls`.
+
+4. **`index.html`** — add a toggle button in the layer panel (alongside borough boundaries):
+   ```html
+   <button class="layer-btn active" data-layer="wards">Ward boundaries</button>
+   ```
+
+`layer-controls.js` requires no changes — it already handles null layers by disabling their buttons.
+
+## Archive note
+
+`london-boroughs.js` (hardcoded 23-borough GeoJSON) has been moved to `_archive/` and removed from git. The map uses `./data/london-boroughs.geojson` (full-resolution). Do not restore or import the archived file.
 
 ---
 
