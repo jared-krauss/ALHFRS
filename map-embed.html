@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A London History of Facial Recognition Systems — Deployment Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #0d1117;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 36px;
+    }
+
+    /* ── Title bar ───────────────────────────────────────── */
+    #title-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 36px;
+      background: rgba(10, 13, 22, 0.96);
+      border-top: 1px solid #1e2d4a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 1000;
+      backdrop-filter: blur(6px);
+    }
+
+    .title-bar-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #c8d3e8;
+      text-transform: uppercase;
+    }
+
+    .title-bar-meta {
+      font-size: 10px;
+      color: #3a4a68;
+      letter-spacing: 0.03em;
+    }
+
+    .title-bar-meta a {
+      color: #4a6a98;
+      text-decoration: none;
+    }
+
+    .title-bar-meta a:hover {
+      color: #6fa8d0;
+      text-decoration: underline;
+    }
+
+    /* ── Layer panel ─────────────────────────────────────── */
+    #layer-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .layer-btn {
+      background: rgba(13, 17, 35, 0.88);
+      color: #9ba8c0;
+      border: 1px solid #2a3a5e;
+      padding: 7px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: left;
+      min-width: 170px;
+      letter-spacing: 0.02em;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      backdrop-filter: blur(4px);
+    }
+
+    .layer-btn:hover:not(:disabled) {
+      background: rgba(42, 58, 94, 0.95);
+      color: #d0d8ec;
+    }
+
+    .layer-btn.active {
+      background: rgba(233, 69, 96, 0.15);
+      color: #e94560;
+      border-color: #e94560;
+    }
+
+    .layer-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .panel-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3a4a68;
+      padding: 4px 2px 1px;
+    }
+
+    /* ── Popups ──────────────────────────────────────────── */
+    .leaflet-popup-content-wrapper {
+      background: #131b2e;
+      border: 1px solid #2a3a5e;
+      border-radius: 6px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      color: #c8d3e8;
+    }
+
+    .leaflet-popup-tip {
+      background: #131b2e;
+    }
+
+    .lfr-popup {
+      font-size: 12px;
+      line-height: 1.5;
+      min-width: 220px;
+      max-width: 300px;
+    }
+
+    .popup-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f8;
+      margin-bottom: 3px;
+    }
+
+    .popup-meta {
+      font-size: 11px;
+      color: #6b7fa8;
+      margin-bottom: 6px;
+      text-transform: capitalize;
+    }
+
+    .popup-purpose {
+      color: #9ba8c0;
+      margin-bottom: 5px;
+    }
+
+    .popup-stat {
+      color: #9ba8c0;
+      margin-bottom: 3px;
+    }
+
+    .popup-notes {
+      font-size: 11px;
+      color: #6b7fa8;
+      margin-top: 6px;
+      border-top: 1px solid #1e2d4a;
+      padding-top: 6px;
+      line-height: 1.45;
+    }
+
+    .popup-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #1e2d4a;
+    }
+
+    .popup-quality {
+      font-size: 11px;
+    }
+
+    .popup-source {
+      font-size: 11px;
+      color: #4a7fa8;
+      text-decoration: none;
+    }
+
+    .popup-source:hover {
+      color: #6fa8d0;
+      text-decoration: underline;
+    }
+
+    /* ── Legend ──────────────────────────────────────────── */
+    .map-legend {
+      background: rgba(13, 17, 35, 0.88);
+      border: 1px solid #2a3a5e;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #9ba8c0;
+      backdrop-filter: blur(4px);
+      min-width: 130px;
+      margin-bottom: 42px;
+    }
+
+    .legend-title {
+      color: #c8d3e8;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+
+    .legend-section {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #1e2d4a;
+      font-size: 10px;
+      color: #6b7fa8;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .legend-shape-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .legend-circle {
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      background: #4a5a78;
+      flex-shrink: 0;
+    }
+
+    .legend-note {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #1e2d4a;
+      font-size: 10px;
+      color: #3a4a68;
+    }
+
+    /* ── Borough tooltip ─────────────────────────────────── */
+    .borough-tooltip {
+      background: rgba(13, 17, 35, 0.85);
+      border: 1px solid #2a3a5e;
+      color: #9ba8c0;
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 3px;
+      box-shadow: none;
+    }
+
+    /* ── Error banner ────────────────────────────────────── */
+    #load-error {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      background: #2a0a0a;
+      border: 1px solid #e94560;
+      color: #e94560;
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      max-width: 400px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div id="layer-panel">
+    <div class="panel-section-label">Police</div>
+    <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
+    <button class="layer-btn active" id="btn-met">Met Police LFR</button>
+    <button class="layer-btn active" id="btn-btp">BTP (stations)</button>
+    <div class="panel-section-label">Private</div>
+    <button class="layer-btn active" id="btn-private">Retail FRS (Facewatch)</button>
+    <div class="panel-section-label">Coming soon</div>
+    <button class="layer-btn" id="btn-news" disabled>News &amp; events</button>
+    <button class="layer-btn" id="btn-community" disabled>Community</button>
+  </div>
+
+  <div id="load-error"></div>
+
+  <div id="title-bar">
+    <span class="title-bar-name">A London History of Facial Recognition Systems</span>
+    <span class="title-bar-meta">
+      15 deployments documented · data to May 2026 ·
+      <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
+    </span>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // ── Inlined deployment data ───────────────────────────────────────────
+    const MET_DATA = [
+      {
+        "id": "lfr-001",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Romford Market, South Street",
+        "borough": "Havering",
+        "ward": "Romford Town",
+        "lat": 51.5754,
+        "lon": 0.1835,
+        "date_start": "2020-02-11",
+        "date_end": "2020-02-11",
+        "stated_purpose": "Crime prevention, wanted persons",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
+        "notes": "One of the earliest documented Met LFR mobile deployments. Romford Market is a major street market — high footfall."
+      },
+      {
+        "id": "lfr-002",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Oxford Street (Bond Street area)",
+        "borough": "Westminster",
+        "ward": "West End",
+        "lat": 51.5145,
+        "lon": -0.1494,
+        "date_start": "2020-02-27",
+        "date_end": "2020-02-27",
+        "stated_purpose": "Public safety, shoplifting suspects",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://bigbrotherwatch.org.uk/campaigns/stop-facial-recognition/",
+        "notes": null
+      },
+      {
+        "id": "lfr-003",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Stratford / Westfield Stratford City complex",
+        "borough": "Newham",
+        "ward": "Stratford and New Town",
+        "lat": 51.5416,
+        "lon": -0.0012,
+        "date_start": "2020-06-15",
+        "date_end": "2020-06-15",
+        "stated_purpose": "Wanted persons",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
+        "notes": "Deployed during BLM protest period (June 2020). Westfield Stratford City and Stratford Shopping Centre are part of the same complex — see also lfr-005 (2023 deployment at same location)."
+      },
+      {
+        "id": "lfr-004",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Croydon Town Centre",
+        "borough": "Croydon",
+        "ward": "Addiscombe West",
+        "lat": 51.3762,
+        "lon": -0.0982,
+        "date_start": "2022-05-24",
+        "date_end": "2022-05-24",
+        "stated_purpose": "Wanted persons, violence reduction",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
+        "notes": "Croydon High Street area. See also lfr-008 — same zone, Oct 2025 static camera escalation."
+      },
+      {
+        "id": "lfr-005",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Westfield Stratford City",
+        "borough": "Newham",
+        "ward": "Stratford and New Town",
+        "lat": 51.5429,
+        "lon": -0.0012,
+        "date_start": "2023-09-07",
+        "date_end": "2023-09-07",
+        "stated_purpose": "Serious violence reduction",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
+        "notes": "Same physical complex as lfr-003 (2020). 167m separation in coordinates reflects different entrance points of the same mall."
+      },
+      {
+        "id": "lfr-006",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Liverpool Street Station area",
+        "borough": "City of London",
+        "ward": null,
+        "lat": 51.5178,
+        "lon": -0.0823,
+        "date_start": "2024-02-07",
+        "date_end": "2024-02-07",
+        "stated_purpose": "Wanted persons",
+        "outcome_arrests": null,
+        "data_quality": "approximate",
+        "source_url": "https://bigbrotherwatch.org.uk/campaigns/stop-facial-recognition/",
+        "notes": "Shaun Thompson misidentification case. Thompson was stopped and detained after LFR matched him with his brother (on bail for a violent offence). Thompson and Silkie Carlo (Big Brother Watch) became claimants in Liberty v Metropolitan Police (High Court, 21 Apr 2026 — challenge dismissed; appeal indicated). Date and exact location approximate."
+      },
+      {
+        "id": "lfr-007",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "mobile",
+        "location_name": "Wembley Stadium (NFL game deployment)",
+        "borough": "Brent",
+        "ward": "Wembley Central",
+        "lat": 51.5560,
+        "lon": -0.2796,
+        "date_start": "2024-11-20",
+        "date_end": "2024-11-20",
+        "stated_purpose": "Crowd safety, wanted persons — major sporting event",
+        "outcome_arrests": null,
+        "data_quality": "approximate",
+        "source_url": "https://www.met.police.uk/advice/advice-and-information/facial-recognition/live-facial-recognition/",
+        "notes": "Specific date approximate. Met confirms LFR is routinely deployed at major events including sports fixtures. NFL games at Wembley draw 80,000+ attendees."
+      },
+      {
+        "id": "lfr-008",
+        "operator": "Metropolitan Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "static",
+        "location_name": "Croydon High Street (static cameras, north and south ends)",
+        "borough": "Croydon",
+        "ward": "Addiscombe West",
+        "lat": 51.3741,
+        "lon": -0.1003,
+        "date_start": "2025-10-01",
+        "date_end": null,
+        "stated_purpose": "Crime prevention — permanent static installation",
+        "outcome_arrests": 173,
+        "data_quality": "confirmed",
+        "source_url": "https://news.met.police.uk/news/met-makes-one-arrest-every-35-minutes-during-live-facial-recognition-pilot-509256",
+        "notes": "Oct 2025–Mar 2026 pilot: 173 arrests (approx 1 per 35 min); 470,000+ faces scanned; 1 false alert; crime down 10.5%; violence against women down 21%. Made permanent Mar 2026. First Met permanent static LFR installation. Croydon is also one of London's most deprived boroughs — demographic implications documented by Zoë Garbett GLA Feb 2026."
+      }
+    ];
+
+    const BTP_DATA = [
+      {
+        "id": "btp-001",
+        "operator": "British Transport Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "static",
+        "location_name": "London Bridge station",
+        "borough": "Southwark",
+        "ward": "London Bridge and West Bermondsey",
+        "lat": 51.5054,
+        "lon": -0.0865,
+        "date_start": "2026-02-11",
+        "date_end": null,
+        "stated_purpose": "Detection of wanted persons — six-month trial",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
+        "notes": "BTP six-month LFR trial launched at London Bridge on 11 Feb 2026, subsequently expanded to Waterloo (14 Feb 2026). One of first major transit hub LFR deployments in London."
+      },
+      {
+        "id": "btp-002",
+        "operator": "British Transport Police",
+        "operator_type": "law_enforcement",
+        "deployment_type": "static",
+        "location_name": "London Waterloo station",
+        "borough": "Lambeth",
+        "ward": "Bishop's",
+        "lat": 51.5031,
+        "lon": -0.1132,
+        "date_start": "2026-02-14",
+        "date_end": null,
+        "stated_purpose": "Detection of wanted persons — six-month trial",
+        "outcome_arrests": null,
+        "data_quality": "confirmed",
+        "source_url": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
+        "notes": "Expansion of BTP six-month trial from London Bridge (btp-001). London Waterloo is the UK's busiest rail terminus. Trial announced Feb 2026."
+      }
+    ];
+
+    const PRIVATE_DATA = [
+      {
+        "id": "priv-001",
+        "operator": "Facewatch / Sainsbury's",
+        "operator_type": "retail",
+        "deployment_type": "static",
+        "location_name": "Sainsbury's Dalston",
+        "borough": "Hackney",
+        "ward": "Dalston",
+        "lat": 51.5455,
+        "lon": -0.0753,
+        "date_start": "2022-01-01",
+        "date_end": null,
+        "stated_purpose": "Theft and antisocial behaviour prevention",
+        "outcome_arrests": null,
+        "claimed_reduction": "Theft, harm, aggression and antisocial behaviour down 46% in early trials (Facewatch claim)",
+        "data_quality": "approximate",
+        "source_url": "https://www.facewatch.co.uk/",
+        "notes": "Date approximate — press coverage of Sainsbury's Facewatch rollout to 5 London stores published 2022. Facewatch describes itself as UK retail's 'biggest and only legally-compliant Live Facial Recognition system'."
+      },
+      {
+        "id": "priv-002",
+        "operator": "Facewatch / Sainsbury's",
+        "operator_type": "retail",
+        "deployment_type": "static",
+        "location_name": "Sainsbury's Elephant & Castle",
+        "borough": "Southwark",
+        "ward": "Faraday",
+        "lat": 51.4949,
+        "lon": -0.1003,
+        "date_start": "2022-01-01",
+        "date_end": null,
+        "stated_purpose": "Theft and antisocial behaviour prevention",
+        "outcome_arrests": null,
+        "claimed_reduction": "See priv-001",
+        "data_quality": "approximate",
+        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
+        "notes": "Feb 2026 incident: Warren Rajah misidentified and ejected by staff acting on Facewatch alert. Sainsbury's apologised, attributed error to 'human staff error not system failure', offered £75 voucher. (Guardian, 5 Feb 2026)"
+      },
+      {
+        "id": "priv-003",
+        "operator": "Facewatch / Sainsbury's",
+        "operator_type": "retail",
+        "deployment_type": "static",
+        "location_name": "Sainsbury's Ladbroke Grove",
+        "borough": "Kensington and Chelsea",
+        "ward": "Golborne",
+        "lat": 51.5163,
+        "lon": -0.2092,
+        "date_start": "2022-01-01",
+        "date_end": null,
+        "stated_purpose": "Theft and antisocial behaviour prevention",
+        "outcome_arrests": null,
+        "claimed_reduction": "See priv-001",
+        "data_quality": "approximate",
+        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
+        "notes": null
+      },
+      {
+        "id": "priv-004",
+        "operator": "Facewatch / Sainsbury's",
+        "operator_type": "retail",
+        "deployment_type": "static",
+        "location_name": "Sainsbury's Camden",
+        "borough": "Camden",
+        "ward": "Camden Town with Primrose Hill",
+        "lat": 51.5390,
+        "lon": -0.1426,
+        "date_start": "2022-01-01",
+        "date_end": null,
+        "stated_purpose": "Theft and antisocial behaviour prevention",
+        "outcome_arrests": null,
+        "claimed_reduction": "See priv-001",
+        "data_quality": "approximate",
+        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
+        "notes": null
+      },
+      {
+        "id": "priv-005",
+        "operator": "Facewatch / Sainsbury's",
+        "operator_type": "retail",
+        "deployment_type": "static",
+        "location_name": "Sainsbury's Whitechapel",
+        "borough": "Tower Hamlets",
+        "ward": "Whitechapel",
+        "lat": 51.5188,
+        "lon": -0.0680,
+        "date_start": "2022-01-01",
+        "date_end": null,
+        "stated_purpose": "Theft and antisocial behaviour prevention",
+        "outcome_arrests": null,
+        "claimed_reduction": "See priv-001",
+        "data_quality": "approximate",
+        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
+        "notes": "Whitechapel has one of London's highest proportions of South Asian and Bangladeshi residents — demographic implications for FRS watchlist composition not disclosed."
+      }
+    ];
+
+    // ── Config ────────────────────────────────────────────────────────────
+    const QUALITY_COLORS = {
+      confirmed:   '#e94560',
+      approximate: '#f6a623',
+      unverified:  '#8899aa',
+    };
+
+    const QUALITY_LABELS = {
+      confirmed:   'Confirmed (primary source)',
+      approximate: 'Approximate (derived from evidence)',
+      unverified:  'Unverified (single secondary source)',
+    };
+
+    const BOROUGH_STYLE = {
+      color: '#2a3a5e',
+      weight: 1,
+      fillColor: 'transparent',
+      fillOpacity: 0,
+    };
+
+    // ── Popup builder ─────────────────────────────────────────────────────
+    function buildPopupHTML(d) {
+      const dateStr = d.date_end && d.date_end !== d.date_start
+        ? `${d.date_start} – ${d.date_end}`
+        : d.date_start;
+
+      const arrestsLine = d.outcome_arrests !== null
+        ? `<div class="popup-stat">Arrests recorded: <strong>${d.outcome_arrests}</strong></div>`
+        : '';
+
+      const claimedLine = d.claimed_reduction
+        ? `<div class="popup-stat">Claimed reduction: ${d.claimed_reduction}</div>`
+        : '';
+
+      const sourceLine = d.source_url
+        ? `<a class="popup-source" href="${d.source_url}" target="_blank" rel="noopener">Source ↗</a>`
+        : '';
+
+      const qualityColor = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
+      const deployType = d.deployment_type ? ` · ${d.deployment_type}` : '';
+
+      return `
+        <div class="lfr-popup">
+          <div class="popup-title">${d.location_name}</div>
+          <div class="popup-meta">${d.borough} · ${dateStr}${deployType}</div>
+          <div class="popup-purpose">${d.stated_purpose}</div>
+          ${arrestsLine}${claimedLine}
+          ${d.notes ? `<div class="popup-notes">${d.notes}</div>` : ''}
+          <div class="popup-footer">
+            <span class="popup-quality" style="color:${qualityColor}">● ${d.data_quality}</span>
+            ${sourceLine}
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Deployment layer ──────────────────────────────────────────────────
+    function createDeploymentLayer(deployments, radius) {
+      const group = L.layerGroup();
+
+      for (const d of deployments) {
+        if (!d.lat || !d.lon) continue;
+        const color = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
+
+        L.circleMarker([d.lat, d.lon], {
+          radius: radius ?? 8,
+          fillColor: color,
+          color: '#fff',
+          weight: 1.5,
+          fillOpacity: 0.85,
+        })
+          .bindPopup(buildPopupHTML(d), { maxWidth: 340 })
+          .addTo(group);
+      }
+
+      return group;
+    }
+
+    // ── Borough layer ─────────────────────────────────────────────────────
+    function createBoroughLayer(geojsonData) {
+      return L.geoJSON(geojsonData, {
+        style: BOROUGH_STYLE,
+        onEachFeature(feature, featureLayer) {
+          featureLayer.bindTooltip(feature.properties.name, {
+            sticky: true,
+            className: 'borough-tooltip',
+          });
+        },
+      });
+    }
+
+    // ── Legend ────────────────────────────────────────────────────────────
+    function createLegend(map) {
+      const legend = L.control({ position: 'bottomleft' });
+
+      legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-legend');
+        div.innerHTML = `
+          <div class="legend-title">Data confidence</div>
+          ${Object.entries(QUALITY_COLORS).map(([key, color]) => `
+            <div class="legend-item">
+              <span class="legend-dot" style="background:${color}"></span>
+              <span>${key}</span>
+            </div>
+          `).join('')}
+          <div class="legend-section">Operator</div>
+          <div class="legend-shape-item">
+            <span class="legend-circle" style="width:18px;height:18px;"></span>
+            <span>Met Police</span>
+          </div>
+          <div class="legend-shape-item">
+            <span class="legend-circle" style="width:16px;height:16px;"></span>
+            <span>BTP (rail)</span>
+          </div>
+          <div class="legend-shape-item">
+            <span class="legend-circle" style="width:14px;height:14px;"></span>
+            <span>Retail FRS</span>
+          </div>
+          <div class="legend-note">ALHFRS · 15 deployments · May 2026</div>
+        `;
+        return div;
+      };
+
+      legend.addTo(map);
+      return legend;
+    }
+
+    // ── Layer controls ────────────────────────────────────────────────────
+    function initControls(map, layers) {
+      function wire(btnId, layer) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        if (!layer) {
+          btn.disabled = true;
+          btn.title = 'Data not loaded';
+          return;
+        }
+        let visible = true;
+        btn.addEventListener('click', () => {
+          visible = !visible;
+          btn.classList.toggle('active', visible);
+          if (visible) {
+            layer.addTo(map);
+          } else {
+            map.removeLayer(layer);
+          }
+        });
+      }
+
+      wire('btn-boroughs', layers.boroughs);
+      wire('btn-met',      layers.met);
+      wire('btn-btp',      layers.btp);
+      wire('btn-private',  layers.private);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────
+    async function init() {
+      const map = L.map('map', {
+        center: [51.509, -0.118],
+        zoom: 11,
+        zoomControl: true,
+      });
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }).addTo(map);
+
+      // Deployment layers — fully inlined, always work
+      const metLayer     = createDeploymentLayer(MET_DATA, 9);
+      const btpLayer     = createDeploymentLayer(BTP_DATA, 8);
+      const privateLayer = createDeploymentLayer(PRIVATE_DATA, 7);
+
+      metLayer.addTo(map);
+      btpLayer.addTo(map);
+      privateLayer.addTo(map);
+
+      // Borough GeoJSON — graceful fetch (works over HTTP, degrades on file://)
+      let boroughLayer = null;
+      try {
+        const res = await fetch('./map/data/london-boroughs.geojson');
+        if (res.ok) {
+          const geojson = await res.json();
+          boroughLayer = createBoroughLayer(geojson);
+          boroughLayer.addTo(map);
+        }
+      } catch (_) {
+        // Silently skip — button auto-disabled by initControls
+      }
+
+      createLegend(map);
+      initControls(map, {
+        boroughs: boroughLayer,
+        met:      metLayer,
+        btp:      btpLayer,
+        private:  privateLayer,
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -26,11 +26,8 @@ ALHFRS/
 ├── splats/                 Per-location Gaussian splat directories (TBD)
 ├── scripts/
 │   └── validate-dataset.py Data quality validator
-├── agents/
-│   └── README.md           Agent persona documentation
-├── site/                   Website scaffold (TBD)
-└── .claude/commands/
-    └── data-review.md      /data-review slash command
+├── map-embed.html          Self-contained embeddable map (single file)
+└── site/                   Website scaffold (TBD)
 ```
 
 ---
@@ -107,25 +104,10 @@ All deployment files share a unified schema (v1.1):
 
 ## Running the validator
 
-```powershell
-# From D:\Dev\ALHFRS\
+```bash
 python scripts/validate-dataset.py data/deployments/met-police-lfr.json
 python scripts/validate-dataset.py data/deployments/private-operators.json
 ```
-
-Or use the `/data-review` slash command in Claude Code for a combined automated + LLM review.
-
----
-
-## Agent personas
-
-See `agents/README.md` for full documentation. Summary:
-
-| Persona | Role |
-|---------|------|
-| **Project Development Lead** | Build coordination, specs, backlog, schema evolution |
-| **Data Cleanup & Verification** | Source validation, data_quality auditing, cross-referencing |
-| **Marketing & Public Rollout** | Artist statements, press releases, community outreach copy |
 
 ---
 
@@ -172,14 +154,13 @@ When a splat is approved, a pipeline script (`scripts/splat-publish.py`, TBD) wi
 
 Serve locally from the project root (required — `fetch()` calls block on `file://`):
 
-```powershell
-# From D:\Dev\ALHFRS\
+```bash
 python -m http.server 8000
 ```
 
 Then open: `http://localhost:8000/map/index.html`
 
-**Note:** Windows Defender Controlled Folder Access is enabled on `D:\Dev\`. Claude Code has been granted access. Other apps writing here may be blocked.
+Or open `map-embed.html` directly — deployment markers work without a server; borough outlines require HTTP.
 
 ---
 
