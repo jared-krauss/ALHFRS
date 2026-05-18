@@ -12,6 +12,23 @@
       height: 100%;
       background: #0d1117;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Shell ───────────────────────────────────────────── */
+    #shell {
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* ── Map pane ────────────────────────────────────────── */
+    #map-pane {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+      transition: flex-basis 0.35s ease;
     }
 
     #map {
@@ -63,6 +80,66 @@
       text-decoration: underline;
     }
 
+    /* ── Splat pane ──────────────────────────────────────── */
+    #splat-pane {
+      flex: 0 0 0;
+      overflow: hidden;
+      transition: flex-basis 0.35s ease;
+      background: #080c14;
+      border-left: 1px solid #1e2d4a;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #splat-pane.open {
+      flex: 0 0 400px;
+    }
+
+    #splat-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: #0d1117;
+      border-bottom: 1px solid #1e2d4a;
+      flex-shrink: 0;
+    }
+
+    .splat-header-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #9ba8c0;
+      text-transform: uppercase;
+    }
+
+    .splat-header-sub {
+      font-size: 10px;
+      color: #3a4a68;
+      margin-left: 8px;
+    }
+
+    #btn-close-splat {
+      background: none;
+      border: none;
+      color: #3a4a68;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color 0.15s;
+    }
+
+    #btn-close-splat:hover { color: #9ba8c0; }
+
+    #splat-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
     /* ── Layer panel ─────────────────────────────────────── */
     #layer-panel {
       position: absolute;
@@ -99,6 +176,12 @@
       background: rgba(233, 69, 96, 0.15);
       color: #e94560;
       border-color: #e94560;
+    }
+
+    .layer-btn.splat-active {
+      background: rgba(100, 160, 220, 0.12);
+      color: #6fa8d0;
+      border-color: #4a7fa8;
     }
 
     .layer-btn:disabled {
@@ -177,9 +260,7 @@
       border-top: 1px solid #1e2d4a;
     }
 
-    .popup-quality {
-      font-size: 11px;
-    }
+    .popup-quality { font-size: 11px; }
 
     .popup-source {
       font-size: 11px;
@@ -292,31 +373,61 @@
       max-width: 400px;
       text-align: center;
     }
+
+    /* ── Narrow screen: stack vertically ─────────────────── */
+    @media (max-width: 600px) {
+      #shell { flex-direction: column; }
+      #splat-pane.open { flex: 0 0 320px; }
+    }
   </style>
 </head>
 <body>
-  <div id="map"></div>
+  <div id="shell">
 
-  <div id="layer-panel">
-    <div class="panel-section-label">Police</div>
-    <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
-    <button class="layer-btn active" id="btn-met">Met Police LFR</button>
-    <button class="layer-btn active" id="btn-btp">BTP (stations)</button>
-    <div class="panel-section-label">Private</div>
-    <button class="layer-btn active" id="btn-private">Retail FRS (Facewatch)</button>
-    <div class="panel-section-label">Coming soon</div>
-    <button class="layer-btn" id="btn-news" disabled>News &amp; events</button>
-    <button class="layer-btn" id="btn-community" disabled>Community</button>
-  </div>
+    <div id="map-pane">
+      <div id="map"></div>
 
-  <div id="load-error"></div>
+      <div id="layer-panel">
+        <div class="panel-section-label">Police</div>
+        <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
+        <button class="layer-btn active" id="btn-met">Met Police LFR</button>
+        <button class="layer-btn active" id="btn-btp">BTP (stations)</button>
+        <div class="panel-section-label">Private</div>
+        <button class="layer-btn active" id="btn-private">Retail FRS (Facewatch)</button>
+        <div class="panel-section-label">3D documentation</div>
+        <button class="layer-btn" id="btn-splat">Walworth 2024 — 3D view</button>
+        <div class="panel-section-label">Coming soon</div>
+        <button class="layer-btn" id="btn-news" disabled>News &amp; events</button>
+        <button class="layer-btn" id="btn-community" disabled>Community</button>
+      </div>
 
-  <div id="title-bar">
-    <span class="title-bar-name">A London History of Facial Recognition Systems</span>
-    <span class="title-bar-meta">
-      15 deployments documented · data to May 2026 ·
-      <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
-    </span>
+      <div id="load-error"></div>
+
+      <div id="title-bar">
+        <span class="title-bar-name">A London History of Facial Recognition Systems</span>
+        <span class="title-bar-meta">
+          15 deployments documented · data to May 2026 ·
+          <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
+        </span>
+      </div>
+    </div>
+
+    <div id="splat-pane">
+      <div id="splat-header">
+        <div>
+          <span class="splat-header-label">Walworth</span>
+          <span class="splat-header-sub">Southwark · 2024 · Gaussian splat</span>
+        </div>
+        <button id="btn-close-splat" title="Close 3D view">×</button>
+      </div>
+      <iframe
+        id="splat-iframe"
+        data-src="https://superspl.at/s?id=2094ae04"
+        allow="fullscreen; xr-spatial-tracking"
+        title="Walworth 2024 — 3D documentation"
+      ></iframe>
+    </div>
+
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -613,12 +724,6 @@
       unverified:  '#8899aa',
     };
 
-    const QUALITY_LABELS = {
-      confirmed:   'Confirmed (primary source)',
-      approximate: 'Approximate (derived from evidence)',
-      unverified:  'Unverified (single secondary source)',
-    };
-
     const BOROUGH_STYLE = {
       color: '#2a3a5e',
       weight: 1,
@@ -665,11 +770,9 @@
     // ── Deployment layer ──────────────────────────────────────────────────
     function createDeploymentLayer(deployments, radius) {
       const group = L.layerGroup();
-
       for (const d of deployments) {
         if (!d.lat || !d.lon) continue;
         const color = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
-
         L.circleMarker([d.lat, d.lon], {
           radius: radius ?? 8,
           fillColor: color,
@@ -680,7 +783,6 @@
           .bindPopup(buildPopupHTML(d), { maxWidth: 340 })
           .addTo(group);
       }
-
       return group;
     }
 
@@ -700,7 +802,6 @@
     // ── Legend ────────────────────────────────────────────────────────────
     function createLegend(map) {
       const legend = L.control({ position: 'bottomleft' });
-
       legend.onAdd = () => {
         const div = L.DomUtil.create('div', 'map-legend');
         div.innerHTML = `
@@ -728,7 +829,6 @@
         `;
         return div;
       };
-
       legend.addTo(map);
       return legend;
     }
@@ -747,18 +847,43 @@
         btn.addEventListener('click', () => {
           visible = !visible;
           btn.classList.toggle('active', visible);
-          if (visible) {
-            layer.addTo(map);
-          } else {
-            map.removeLayer(layer);
-          }
+          visible ? layer.addTo(map) : map.removeLayer(layer);
         });
       }
-
       wire('btn-boroughs', layers.boroughs);
       wire('btn-met',      layers.met);
       wire('btn-btp',      layers.btp);
       wire('btn-private',  layers.private);
+    }
+
+    // ── Splat panel toggle ────────────────────────────────────────────────
+    function initSplatPanel(map) {
+      const splatPane  = document.getElementById('splat-pane');
+      const btnSplat   = document.getElementById('btn-splat');
+      const btnClose   = document.getElementById('btn-close-splat');
+      const iframe     = document.getElementById('splat-iframe');
+      let loaded = false;
+
+      function open() {
+        splatPane.classList.add('open');
+        btnSplat.classList.add('splat-active');
+        if (!loaded) {
+          iframe.src = iframe.dataset.src;
+          loaded = true;
+        }
+        setTimeout(() => map.invalidateSize(), 360);
+      }
+
+      function close() {
+        splatPane.classList.remove('open');
+        btnSplat.classList.remove('splat-active');
+        setTimeout(() => map.invalidateSize(), 360);
+      }
+
+      btnSplat.addEventListener('click', () => {
+        splatPane.classList.contains('open') ? close() : open();
+      });
+      btnClose.addEventListener('click', close);
     }
 
     // ── Init ──────────────────────────────────────────────────────────────
@@ -775,7 +900,6 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       }).addTo(map);
 
-      // Deployment layers — fully inlined, always work
       const metLayer     = createDeploymentLayer(MET_DATA, 9);
       const btpLayer     = createDeploymentLayer(BTP_DATA, 8);
       const privateLayer = createDeploymentLayer(PRIVATE_DATA, 7);
@@ -784,18 +908,14 @@
       btpLayer.addTo(map);
       privateLayer.addTo(map);
 
-      // Borough GeoJSON — graceful fetch (works over HTTP, degrades on file://)
       let boroughLayer = null;
       try {
         const res = await fetch('./map/data/london-boroughs.geojson');
         if (res.ok) {
-          const geojson = await res.json();
-          boroughLayer = createBoroughLayer(geojson);
+          boroughLayer = createBoroughLayer(await res.json());
           boroughLayer.addTo(map);
         }
-      } catch (_) {
-        // Silently skip — button auto-disabled by initControls
-      }
+      } catch (_) { /* silent — button auto-disabled */ }
 
       createLegend(map);
       initControls(map, {
@@ -804,6 +924,7 @@
         btp:      btpLayer,
         private:  privateLayer,
       });
+      initSplatPanel(map);
     }
 
     document.addEventListener('DOMContentLoaded', init);
