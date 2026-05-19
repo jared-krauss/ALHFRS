@@ -10,3 +10,12 @@ __pycache__/
 _archive/
 .claude/launch.json
 .claude/worktrees/
+
+# Gaussian splat binary files — never read/process, CLI move/copy only
+*.ply
+*.splat
+*.glb
+splats/*.bin
+# Large source material archives
+*.zip
+NEC & Met Files*/

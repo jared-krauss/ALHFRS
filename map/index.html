@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ALHFRS — Live Facial Recognition Deployments, London</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,8 +17,30 @@
     }
 
     #map {
-      height: 100%;
+      height: calc(100% - 64px);
       width: 100%;
+    }
+
+    /* ── Cluster icons ───────────────────────────────────── */
+    .alhfrs-cluster {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .alhfrs-cluster-inner {
+      background: #1a1a1a;
+      border: 2px solid #e8e0d4;
+      border-radius: 50%;
+      color: #e8e0d4;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
 
     /* ── Layer panel ─────────────────────────────────────── */
@@ -113,6 +137,16 @@
     .popup-stat {
       color: #9ba8c0;
       margin-bottom: 3px;
+    }
+
+    .popup-label {
+      display: inline-block;
+      color: #4a5a78;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 5px;
+      min-width: 80px;
     }
 
     .popup-notes {
@@ -221,6 +255,82 @@
       max-width: 400px;
       text-align: center;
     }
+
+    /* ── Timeline strip ──────────────────────────────────── */
+    #timeline-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: #111;
+      border-top: 1px solid #2a3a5e;
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      padding: 6px 20px 10px;
+      gap: 4px;
+    }
+
+    .tl-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #3a4a68;
+      align-self: center;
+      margin-right: 8px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .tl-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      flex: 1;
+      max-width: 60px;
+      min-width: 28px;
+      transition: opacity 0.15s;
+    }
+
+    .tl-col:hover .tl-bar {
+      opacity: 0.75;
+    }
+
+    .tl-count {
+      font-size: 9px;
+      color: #6b7fa8;
+      height: 11px;
+      line-height: 11px;
+      user-select: none;
+    }
+
+    .tl-bar {
+      background: #c8392b;
+      width: 100%;
+      border-radius: 2px 2px 0 0;
+      transition: background 0.2s, box-shadow 0.2s, opacity 0.15s;
+      min-height: 2px;
+    }
+
+    .tl-year {
+      font-size: 10px;
+      color: #6b7fa8;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .tl-col.tl-active .tl-bar {
+      background: #e94560;
+      box-shadow: 0 0 8px rgba(233, 69, 96, 0.5);
+    }
+
+    .tl-col.tl-active .tl-year,
+    .tl-col.tl-active .tl-count {
+      color: #e94560;
+    }
   </style>
 </head>
 <body>
@@ -238,9 +348,11 @@
     <button class="layer-btn" id="btn-community" disabled>Community</button>
   </div>
 
+  <div id="timeline-strip"></div>
   <div id="load-error"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script type="module" src="./js/main.js"></script>
 </body>
 </html>
