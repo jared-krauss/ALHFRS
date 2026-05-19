@@ -1,0 +1,14 @@
+
+=== PDF Extraction: lfr-deployment-grid-2020-2022.pdf ===
+  PDF has 2 pages, processing 2
+  Extracted 2 non-empty pages
+  Processing 1 chunks (4 pages each)
+  Chunk 1/1...
+    \u2192 9 records in 71.5s
+
+  Total before dedup: 9
+  Total after dedup:  9
+
+\u2713 Written 9 records to D:\Dev\ALHFRS\data\staging\extract-2020-2022.json
+  Next available ID: lfr-367
+DONE-2020-2022
