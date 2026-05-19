@@ -1,0 +1,5 @@
+{
+  "_schema": "alhfrs-splats-v1",
+  "_description": "Index of Gaussian splat captures associated with ALHFRS deployment sites. Binary files (.ply, .splat) are never stored in this repo — this file is the manifest only. Splats are hosted externally (SuperSplat, R2, or local path) and embedded via iframe.",
+  "splats": []
+}
