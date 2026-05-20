@@ -11,11 +11,13 @@
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (May 2026):**
-- Deployment data: 15 active records across 4 JSON files (Met Police, BTP, private operators, retrospective FR)
+- Deployment data: **366 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
+- The 2024 cohort is the largest gap — Garbett Excel is the right source but not yet migrated
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
-- Map: Live Leaflet prototype with 4 layers (Met, BTP, private, borough boundaries)
-- Website, splats, community workflow: architecture planned, not yet built
+- Map: Live Leaflet map with marker clustering (`leaflet.markercluster`), year-filter timeline strip, 4 layers
+- Splats: `splats/index.json` manifest in place; no splat files captured yet
+- Website, community workflow: architecture planned, not yet built
 
 ---
 
@@ -48,9 +50,16 @@ ALHFRS/
 │       ├── london-boroughs.geojson  borough boundaries (used by map)
 │       └── london-wards.geojson     ward boundaries (loaded in config, not yet surfaced)
 ├── scripts/
-│   └── validate-dataset.py      schema + data quality validator (stdlib only)
+│   ├── validate-dataset.py          schema + data quality validator (stdlib only)
+│   └── pdf-extract-deployments.py   pdfplumber + Hermes3:8b PDF → staging JSON extractor
+├── data/
+│   └── staging/
+│       ├── extract-2020-2022.json   9 records (merged into main ✓)
+│       └── extract-2023-2024.json   30 records (POOR QUALITY — hallucinated, do not merge)
 ├── site/                        placeholder — website scaffold (TBD)
-├── splats/                      placeholder — Gaussian splat directories (TBD)
+├── splats/
+│   ├── README.md                index-only approach, hosting options, map integration plan
+│   └── index.json               manifest (empty — no splats captured yet)
 └── .claude/
     └── commands/
         └── data-review.md       /data-review slash command definition
@@ -70,9 +79,31 @@ python -m http.server 8000
 
 ---
 
+## Local LLM extraction pipeline
+
+PDF extraction uses `scripts/pdf-extract-deployments.py` (requires `D:\Dev\tools\.venv`):
+
+```powershell
+# From D:\Dev\ALHFRS\
+& "D:\Dev\tools\.venv\Scripts\python.exe" scripts\pdf-extract-deployments.py `
+    --pdf "path\to\file.pdf" `
+    --out "data\staging\extract-YYYY.json" `
+    --start-id 400 `
+    --source-label "source-label-here" `
+    --skip-last 1   # skip blank last page if needed
+```
+
+**Known issue:** Complex PDFs with watchlist-criteria sections confuse Hermes3 — it hallucinates regular-interval records. Skip criteria pages by checking first 200 chars of each page for "watchlist"/"criteria"/"threshold". The 2023-24 extract is unusable; needs Gemini or prompt refinement.
+
+**Corroboration:** Cross-reference across sources — discrepancies (same date, different location name) are analytically valuable. `met-police-lfr.json` has a `corroboration_notes` array for flagged discrepancies.
+
+General LLM task harness: `D:\Dev\tools\llm-task.py` — supports extract-json, summarize, update-md, tag, classify. Models: `hermes3:8b` (structured), `qwen3:8b` (writing), `qwen3:8b-lean` (fast).
+
+---
+
 ## Data schema overview
 
-All deployment files use **schema v1.1**. Required fields per record:
+All deployment files use **schema v1.2**. Required fields per record:
 
 | Field | Type | Notes |
 |---|---|---|
@@ -136,7 +167,7 @@ Three subagent personas are defined in `agents/README.md`. Route work accordingl
 | **Data Cleanup & Verification** | Adding or reviewing records, sourcing, data_quality auditing, validator output triage |
 | **Marketing & Public Rollout** | Artist statements, exhibition copy, press releases, community outreach, social media |
 
-**Current orchestration stack:** Claude Code plan mode (manual invocation). LiteLLM + Qwen3 8B / Hermes-3 8B intended for automated dispatch — not yet wired up.
+**Current orchestration stack:** Claude Code + local LLM harness (`D:\Dev\tools\llm-task.py`). Ollama at `localhost:11434` with hermes3:8b and qwen3:8b available. LiteLLM proxy at port 4000 (registered in Task Scheduler, may not be running — check before use).
 
 ---
 
@@ -159,7 +190,7 @@ These are explicitly unbuilt — their directories are `.gitkeep` placeholders:
 | Directory | What goes here | Current state |
 |---|---|---|
 | `site/` | Published website (static or SSG) | Schema planned, no code |
-| `splats/` | Per-location Gaussian splat directories (`scene.splat`, `annotations.json`) | Architecture in README, no splats |
+| `splats/` | Gaussian splat captures indexed in `splats/index.json`; binary files excluded by `.gitignore` | `index.json` manifest live, no splats captured yet |
 | `data/interactions/` | MOPAC stop-and-search demographic data by borough/ward | Schema not yet designed |
 | `data/community/` | Community-submitted photos/videos of active deployments | Moderation workflow TBD |
 
@@ -167,15 +198,21 @@ Do not create files in these directories without a plan for the accompanying sch
 
 ---
 
-## Known issues (from May 2026 audit)
+## Known issues / open work (May 2026)
 
-1. **`map/data/london-wards.geojson` (1.05 MB) is available but has no layer toggle yet.** Ward-level boundaries are present; the toggle is planned — see `map/README.md`.
+1. **2024 cohort missing** — records jump from 2023 (lfr-031) to 2025 (lfr-032). The Garbett Excel covers 2020–2025 with 254 records and contains 2024 data. Needs migration.
 
-2. **Some news archive URLs are share.google redirects.** `data/news/gmail-research-threads.json` contains entries where `url` is a Gmail share redirect rather than a canonical article URL. `url_canonical` fields are partially filled; remainder need resolving.
+2. **2023-24 PDF extraction poor quality** — `data/staging/extract-2023-2024.json` has 30 hallucinated records with regular 2-week intervals. Do not merge. Needs Gemini API or revised prompt that skips watchlist-criteria sections.
 
-3. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs to be populated.
+3. **Corroboration discrepancies logged** — `corroboration_notes` in `met-police-lfr.json`: same-date records with different location names from different sources (2020-02-11, 2020-02-27). Analytically interesting — don't resolve blindly.
 
-4. **Outcome data sparse.** Only `lfr-008` (Croydon static) has a populated `outcome_arrests` field (173). All other deployment records have null outcomes — intentional where data isn't public.
+4. **`map/data/london-wards.geojson` (1.05 MB) has no layer toggle yet.** Ward-level boundaries loaded in config; toggle planned.
+
+5. **Some news archive URLs are share.google redirects.** `data/news/gmail-research-threads.json` — `url_canonical` partially filled; remainder need resolving.
+
+6. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs populating.
+
+7. **Outcome data sparse.** Most records have null outcomes — intentional where data isn't public. Only a few records have `outcome_arrests` populated.
 
 ## Archive
 
