@@ -12,20 +12,26 @@ A multi-year documentary art and data visualisation project documenting the depl
 ALHFRS/
 ├── data/
 │   ├── deployments/        FRS deployment records
-│   │   ├── met-police-lfr.json         Met Police LFR deployments
+│   │   ├── met-police-lfr.json         366 Met Police LFR records (2020–2026, schema v1.2)
 │   │   └── private-operators.json      Facewatch, retail FRS
+│   ├── staging/            Extracted records pending review/merge
+│   │   ├── extract-2020-2022.json      (merged ✓)
+│   │   └── extract-2023-2024.json      (poor quality — do not merge)
 │   ├── interactions/       Met Police stop-and-search / interaction data (TBD)
 │   ├── news/               Geolocated news articles (TBD)
 │   ├── legal/
 │   │   └── enforcement-actions.json    Court cases, ICO notices
 │   └── community/          Community submissions, pending moderation
-├── map/                    Leaflet map prototype
+├── map/                    Leaflet map — marker clustering + year-filter timeline strip
 │   ├── index.html          Map shell
 │   ├── js/                 Modular JS (config, layers, controls, legend, main)
 │   └── data/               Borough and ward GeoJSON
-├── splats/                 Per-location Gaussian splat directories (TBD)
+├── splats/
+│   ├── README.md           Hosting approach, field schema, map integration plan
+│   └── index.json          Splat manifest (empty — no captures yet)
 ├── scripts/
-│   └── validate-dataset.py Data quality validator
+│   ├── validate-dataset.py         Data quality validator (stdlib only)
+│   └── pdf-extract-deployments.py  PDF → staging JSON via pdfplumber + Hermes3:8b
 ├── map-embed.html          Self-contained embeddable map (single file)
 └── site/                   Website scaffold (TBD)
 ```
@@ -53,7 +59,7 @@ ALHFRS/
 | # | Layer | Data file | Status |
 |---|-------|-----------|--------|
 | 1 | Borough boundaries | `map/data/london-boroughs.geojson` | Live |
-| 2 | Met Police LFR deployments | `data/deployments/met-police-lfr.json` | Live (8 records) |
+| 2 | Met Police LFR deployments | `data/deployments/met-police-lfr.json` | Live (366 records, 2020–2026) |
 | 3 | Private operator deployments | `data/deployments/private-operators.json` | Wired, not toggled separately yet |
 | 4 | News & events overlay | `data/news/` | Placeholder |
 | 5 | Community submissions | `data/community/` | Placeholder |
@@ -64,7 +70,7 @@ ALHFRS/
 
 ## Data schema
 
-All deployment files share a unified schema (v1.1):
+All deployment files share a unified schema (v1.2):
 
 ```json
 {
