@@ -38,7 +38,7 @@
       "location_cluster_id": null,
       "date_start": "2020-02-11",
       "date_end": "2020-02-11",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": null,
       "outcome_alerts": null,
       "data_quality": "confirmed",
@@ -59,7 +59,7 @@
       "location_cluster_id": null,
       "date_start": "2020-02-21",
       "date_end": "2020-02-21",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": null,
       "outcome_alerts": null,
       "data_quality": "confirmed",
@@ -101,7 +101,7 @@
       "location_cluster_id": null,
       "date_start": "2020-02-27",
       "date_end": "2020-02-27",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": 1,
       "outcome_alerts": 7,
       "data_quality": "confirmed",
@@ -143,7 +143,7 @@
       "location_cluster_id": null,
       "date_start": "2022-01-28",
       "date_end": "2022-01-28",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": 10,
       "outcome_alerts": 1,
       "data_quality": "confirmed",
@@ -164,7 +164,7 @@
       "location_cluster_id": null,
       "date_start": "2022-03-10",
       "date_end": "2022-03-10",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": null,
       "outcome_alerts": null,
       "data_quality": "confirmed",
@@ -206,7 +206,7 @@
       "location_cluster_id": null,
       "date_start": "2022-07-07",
       "date_end": "2022-07-07",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": 4,
       "outcome_alerts": 0,
       "data_quality": "confirmed",
@@ -227,7 +227,7 @@
       "location_cluster_id": null,
       "date_start": "2022-07-14",
       "date_end": "2022-07-14",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": 2,
       "outcome_alerts": 1,
       "data_quality": "confirmed",
@@ -248,7 +248,7 @@
       "location_cluster_id": null,
       "date_start": "2022-07-16",
       "date_end": "2022-07-16",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": 0,
       "outcome_alerts": 1,
       "data_quality": "confirmed",
@@ -269,7 +269,7 @@
       "location_cluster_id": null,
       "date_start": "2022-07-28",
       "date_end": "2022-07-28",
-      "stated_purpose": "Event type: routine",
+      "stated_purpose": null,
       "outcome_arrests": 1,
       "outcome_alerts": 0,
       "data_quality": "confirmed",
@@ -3371,7 +3371,7 @@
       "operator_type": "law_enforcement",
       "vendor": "NEC",
       "deployment_type": "mobile",
-      "location_name": "Poplar – Vesey Path",
+      "location_name": "Poplar â€“ Vesey Path",
       "borough": "Tower Hamlets",
       "ward": "Lansbury",
       "lat": 51.5107,
@@ -3488,7 +3488,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2025.pdf",
       "source_type": "police_statement",
-      "notes": "Zero alerts — no matches Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "Zero alerts â€” no matches Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-135",
@@ -4338,7 +4338,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2025.pdf",
       "source_type": "police_statement",
-      "notes": "Notting Hill Carnival Day 1 — 1 false alert confirmed Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Event PSO."
+      "notes": "Notting Hill Carnival Day 1 â€” 1 false alert confirmed Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Event PSO."
     },
     {
       "id": "lfr-169",
@@ -4388,7 +4388,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2025.pdf",
       "source_type": "police_statement",
-      "notes": "Notting Hill Carnival Day 2 — largest single-day face count in record Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Event PSO."
+      "notes": "Notting Hill Carnival Day 2 â€” largest single-day face count in record Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Event PSO."
     },
     {
       "id": "lfr-171",
@@ -4738,7 +4738,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2025.pdf",
       "source_type": "police_statement",
-      "notes": "1 false alert confirmed — high-volume deployment Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "1 false alert confirmed â€” high-volume deployment Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-185",
@@ -6109,7 +6109,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2025.pdf",
       "source_type": "police_statement",
-      "notes": "Critical National Infrastructure — first Heathrow deployment in record Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: CNI PSO."
+      "notes": "Critical National Infrastructure â€” first Heathrow deployment in record Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: CNI PSO."
     },
     {
       "id": "lfr-239",
@@ -6309,7 +6309,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2025.pdf",
       "source_type": "police_statement",
-      "notes": "1 true alert unconfirmed — highest face count in record Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "1 true alert unconfirmed â€” highest face count in record Source: lfr-deployment-record-2025. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-247",
@@ -7684,7 +7684,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2026.pdf",
       "source_type": "police_statement",
-      "notes": "Tottenham Hotspur match — Spurs stadium on High Rd Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Event PSO."
+      "notes": "Tottenham Hotspur match â€” Spurs stadium on High Rd Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Event PSO."
     },
     {
       "id": "lfr-302",
@@ -7834,7 +7834,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2026.pdf",
       "source_type": "police_statement",
-      "notes": "1 true alert unconfirmed — high volume Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "1 true alert unconfirmed â€” high volume Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-308",
@@ -7884,7 +7884,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2026.pdf",
       "source_type": "police_statement",
-      "notes": "2 true alerts unconfirmed — high volume Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "2 true alerts unconfirmed â€” high volume Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-310",
@@ -8709,7 +8709,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2026.pdf",
       "source_type": "police_statement",
-      "notes": "1 true alert unconfirmed — watchlist 18,800 (anomaly: spike from ~17,800) Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "1 true alert unconfirmed â€” watchlist 18,800 (anomaly: spike from ~17,800) Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-343",
@@ -8784,7 +8784,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/met/advice/facial-recognition/live-facial-recognition-deployment-record-2026.pdf",
       "source_type": "police_statement",
-      "notes": "Highest FA rate in 2026 doc — 1 false alert confirmed Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
+      "notes": "Highest FA rate in 2026 doc â€” 1 false alert confirmed Source: lfr-deployment-record-2026. Threshold 0.64 throughout. Use case: Crime Hotspot."
     },
     {
       "id": "lfr-346",

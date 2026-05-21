@@ -79,6 +79,7 @@ export function createDeploymentLayer(deployments) {
       weight: 1.5,
       fillOpacity: 0.9,
       year,
+      borough: d.borough || null,
       deploymentId: d.id,
     }).bindPopup(buildPopupHTML(d), { maxWidth: 320 });
 

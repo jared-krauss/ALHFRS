@@ -69,19 +69,36 @@ async function init() {
   // All cluster layers that support year-filtering
   const clusterLayers = [metLayer, btpLayer, privateLayer].filter(Boolean);
 
-  let activeYear = null;
+  let activeYear    = null;
+  let activeBorough = null;
 
-  function applyYearFilter(year) {
+  function countVisible() {
+    let n = 0;
+    for (const cluster of clusterLayers) {
+      const allMarkers = cluster._alhfrsMarkers;
+      if (!allMarkers) continue;
+      for (const marker of allMarkers) {
+        const yearOk    = !activeYear    || marker.options.year    === activeYear;
+        const boroughOk = !activeBorough || marker.options.borough === activeBorough;
+        if (yearOk && boroughOk) n++;
+      }
+    }
+    return n;
+  }
+
+  function applyFilters() {
     for (const cluster of clusterLayers) {
       const allMarkers = cluster._alhfrsMarkers;
       if (!allMarkers) continue;
       cluster.clearLayers();
       for (const marker of allMarkers) {
-        if (!year || marker.options.year === year) {
-          cluster.addLayer(marker);
-        }
+        const yearOk    = !activeYear    || marker.options.year    === activeYear;
+        const boroughOk = !activeBorough || marker.options.borough === activeBorough;
+        if (yearOk && boroughOk) cluster.addLayer(marker);
       }
     }
+    const countEl = document.getElementById('tl-total-count');
+    if (countEl) countEl.textContent = `${countVisible().toLocaleString()} deployments`;
   }
 
   function buildTimeline() {
@@ -90,7 +107,7 @@ async function init() {
 
     const years = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
 
-    // Count deployments per year
+    // Count deployments per year (total, ignoring borough filter for bar heights)
     const counts = {};
     for (const d of allDeployments) {
       const y = d.date_start?.slice(0, 4);
@@ -98,11 +115,48 @@ async function init() {
     }
     const maxCount = Math.max(...Object.values(counts), 1);
 
-    strip.innerHTML = '<div class="tl-label">YEAR</div>';
+    // Borough list (sorted by frequency)
+    const boroughCounts = {};
+    for (const d of allDeployments) {
+      if (d.borough) boroughCounts[d.borough] = (boroughCounts[d.borough] || 0) + 1;
+    }
+    const boroughs = Object.entries(boroughCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([b]) => b);
+
+    strip.innerHTML = '';
+
+    // Left: total count
+    const totalCount = document.createElement('div');
+    totalCount.id = 'tl-total-count';
+    totalCount.className = 'tl-label';
+    totalCount.style.cssText = 'min-width:110px; color:#6b7fa8; font-size:10px; font-weight:600; letter-spacing:0.04em; align-self:center;';
+    totalCount.textContent = `${allDeployments.length.toLocaleString()} deployments`;
+    strip.appendChild(totalCount);
+
+    // Borough select
+    const boroughWrap = document.createElement('div');
+    boroughWrap.style.cssText = 'align-self:center; margin-right:16px; flex-shrink:0;';
+    const boroughSel = document.createElement('select');
+    boroughSel.id = 'borough-select';
+    boroughSel.innerHTML = `<option value="">All boroughs</option>` +
+      boroughs.map(b => `<option value="${b}">${b} (${boroughCounts[b]})</option>`).join('');
+    boroughSel.addEventListener('change', () => {
+      activeBorough = boroughSel.value || null;
+      applyFilters();
+    });
+    boroughWrap.appendChild(boroughSel);
+    strip.appendChild(boroughWrap);
+
+    // Divider
+    const div = document.createElement('div');
+    div.className = 'tl-label';
+    div.style.cssText = 'margin-right:8px;';
+    div.textContent = 'YEAR';
+    strip.appendChild(div);
 
     for (const year of years) {
       const count = counts[year] || 0;
-      // Scale bar height: non-zero years get at least 20% of max height
       const pct   = count > 0 ? Math.max(0.2, count / maxCount) : 0;
       const barH  = count > 0 ? Math.round(pct * 36) : 2;
 
@@ -121,8 +175,7 @@ async function init() {
       col.addEventListener('click', () => {
         if (count === 0) return;
         activeYear = activeYear === year ? null : year;
-        applyYearFilter(activeYear);
-        // Update active state styling
+        applyFilters();
         strip.querySelectorAll('.tl-col').forEach(el => {
           el.classList.toggle('tl-active', el.dataset.year === activeYear);
         });
