@@ -406,7 +406,7 @@
       <div id="title-bar">
         <span class="title-bar-name">A London History of Facial Recognition Systems</span>
         <span class="title-bar-meta">
-          15 deployments documented · data to May 2026 ·
+          <span id="deploy-count">…</span> deployments documented · data to May 2026 ·
           <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
         </span>
       </div>
@@ -432,290 +432,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // ── Inlined deployment data ───────────────────────────────────────────
-    const MET_DATA = [
-      {
-        "id": "lfr-001",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Romford Market, South Street",
-        "borough": "Havering",
-        "ward": "Romford Town",
-        "lat": 51.5754,
-        "lon": 0.1835,
-        "date_start": "2020-02-11",
-        "date_end": "2020-02-11",
-        "stated_purpose": "Crime prevention, wanted persons",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
-        "notes": "One of the earliest documented Met LFR mobile deployments. Romford Market is a major street market — high footfall."
-      },
-      {
-        "id": "lfr-002",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Oxford Street (Bond Street area)",
-        "borough": "Westminster",
-        "ward": "West End",
-        "lat": 51.5145,
-        "lon": -0.1494,
-        "date_start": "2020-02-27",
-        "date_end": "2020-02-27",
-        "stated_purpose": "Public safety, shoplifting suspects",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://bigbrotherwatch.org.uk/campaigns/stop-facial-recognition/",
-        "notes": null
-      },
-      {
-        "id": "lfr-003",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Stratford / Westfield Stratford City complex",
-        "borough": "Newham",
-        "ward": "Stratford and New Town",
-        "lat": 51.5416,
-        "lon": -0.0012,
-        "date_start": "2020-06-15",
-        "date_end": "2020-06-15",
-        "stated_purpose": "Wanted persons",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
-        "notes": "Deployed during BLM protest period (June 2020). Westfield Stratford City and Stratford Shopping Centre are part of the same complex — see also lfr-005 (2023 deployment at same location)."
-      },
-      {
-        "id": "lfr-004",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Croydon Town Centre",
-        "borough": "Croydon",
-        "ward": "Addiscombe West",
-        "lat": 51.3762,
-        "lon": -0.0982,
-        "date_start": "2022-05-24",
-        "date_end": "2022-05-24",
-        "stated_purpose": "Wanted persons, violence reduction",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
-        "notes": "Croydon High Street area. See also lfr-008 — same zone, Oct 2025 static camera escalation."
-      },
-      {
-        "id": "lfr-005",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Westfield Stratford City",
-        "borough": "Newham",
-        "ward": "Stratford and New Town",
-        "lat": 51.5429,
-        "lon": -0.0012,
-        "date_start": "2023-09-07",
-        "date_end": "2023-09-07",
-        "stated_purpose": "Serious violence reduction",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
-        "notes": "Same physical complex as lfr-003 (2020). 167m separation in coordinates reflects different entrance points of the same mall."
-      },
-      {
-        "id": "lfr-006",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Liverpool Street Station area",
-        "borough": "City of London",
-        "ward": null,
-        "lat": 51.5178,
-        "lon": -0.0823,
-        "date_start": "2024-02-07",
-        "date_end": "2024-02-07",
-        "stated_purpose": "Wanted persons",
-        "outcome_arrests": null,
-        "data_quality": "approximate",
-        "source_url": "https://bigbrotherwatch.org.uk/campaigns/stop-facial-recognition/",
-        "notes": "Shaun Thompson misidentification case. Thompson was stopped and detained after LFR matched him with his brother (on bail for a violent offence). Thompson and Silkie Carlo (Big Brother Watch) became claimants in Liberty v Metropolitan Police (High Court, 21 Apr 2026 — challenge dismissed; appeal indicated). Date and exact location approximate."
-      },
-      {
-        "id": "lfr-007",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "mobile",
-        "location_name": "Wembley Stadium (NFL game deployment)",
-        "borough": "Brent",
-        "ward": "Wembley Central",
-        "lat": 51.5560,
-        "lon": -0.2796,
-        "date_start": "2024-11-20",
-        "date_end": "2024-11-20",
-        "stated_purpose": "Crowd safety, wanted persons — major sporting event",
-        "outcome_arrests": null,
-        "data_quality": "approximate",
-        "source_url": "https://www.met.police.uk/advice/advice-and-information/facial-recognition/live-facial-recognition/",
-        "notes": "Specific date approximate. Met confirms LFR is routinely deployed at major events including sports fixtures. NFL games at Wembley draw 80,000+ attendees."
-      },
-      {
-        "id": "lfr-008",
-        "operator": "Metropolitan Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "static",
-        "location_name": "Croydon High Street (static cameras, north and south ends)",
-        "borough": "Croydon",
-        "ward": "Addiscombe West",
-        "lat": 51.3741,
-        "lon": -0.1003,
-        "date_start": "2025-10-01",
-        "date_end": null,
-        "stated_purpose": "Crime prevention — permanent static installation",
-        "outcome_arrests": 173,
-        "data_quality": "confirmed",
-        "source_url": "https://news.met.police.uk/news/met-makes-one-arrest-every-35-minutes-during-live-facial-recognition-pilot-509256",
-        "notes": "Oct 2025–Mar 2026 pilot: 173 arrests (approx 1 per 35 min); 470,000+ faces scanned; 1 false alert; crime down 10.5%; violence against women down 21%. Made permanent Mar 2026. First Met permanent static LFR installation. Croydon is also one of London's most deprived boroughs — demographic implications documented by Zoë Garbett GLA Feb 2026."
-      }
-    ];
-
-    const BTP_DATA = [
-      {
-        "id": "btp-001",
-        "operator": "British Transport Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "static",
-        "location_name": "London Bridge station",
-        "borough": "Southwark",
-        "ward": "London Bridge and West Bermondsey",
-        "lat": 51.5054,
-        "lon": -0.0865,
-        "date_start": "2026-02-11",
-        "date_end": null,
-        "stated_purpose": "Detection of wanted persons — six-month trial",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
-        "notes": "BTP six-month LFR trial launched at London Bridge on 11 Feb 2026, subsequently expanded to Waterloo (14 Feb 2026). One of first major transit hub LFR deployments in London."
-      },
-      {
-        "id": "btp-002",
-        "operator": "British Transport Police",
-        "operator_type": "law_enforcement",
-        "deployment_type": "static",
-        "location_name": "London Waterloo station",
-        "borough": "Lambeth",
-        "ward": "Bishop's",
-        "lat": 51.5031,
-        "lon": -0.1132,
-        "date_start": "2026-02-14",
-        "date_end": null,
-        "stated_purpose": "Detection of wanted persons — six-month trial",
-        "outcome_arrests": null,
-        "data_quality": "confirmed",
-        "source_url": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
-        "notes": "Expansion of BTP six-month trial from London Bridge (btp-001). London Waterloo is the UK's busiest rail terminus. Trial announced Feb 2026."
-      }
-    ];
-
-    const PRIVATE_DATA = [
-      {
-        "id": "priv-001",
-        "operator": "Facewatch / Sainsbury's",
-        "operator_type": "retail",
-        "deployment_type": "static",
-        "location_name": "Sainsbury's Dalston",
-        "borough": "Hackney",
-        "ward": "Dalston",
-        "lat": 51.5455,
-        "lon": -0.0753,
-        "date_start": "2022-01-01",
-        "date_end": null,
-        "stated_purpose": "Theft and antisocial behaviour prevention",
-        "outcome_arrests": null,
-        "claimed_reduction": "Theft, harm, aggression and antisocial behaviour down 46% in early trials (Facewatch claim)",
-        "data_quality": "approximate",
-        "source_url": "https://www.facewatch.co.uk/",
-        "notes": "Date approximate — press coverage of Sainsbury's Facewatch rollout to 5 London stores published 2022. Facewatch describes itself as UK retail's 'biggest and only legally-compliant Live Facial Recognition system'."
-      },
-      {
-        "id": "priv-002",
-        "operator": "Facewatch / Sainsbury's",
-        "operator_type": "retail",
-        "deployment_type": "static",
-        "location_name": "Sainsbury's Elephant & Castle",
-        "borough": "Southwark",
-        "ward": "Faraday",
-        "lat": 51.4949,
-        "lon": -0.1003,
-        "date_start": "2022-01-01",
-        "date_end": null,
-        "stated_purpose": "Theft and antisocial behaviour prevention",
-        "outcome_arrests": null,
-        "claimed_reduction": "See priv-001",
-        "data_quality": "approximate",
-        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
-        "notes": "Feb 2026 incident: Warren Rajah misidentified and ejected by staff acting on Facewatch alert. Sainsbury's apologised, attributed error to 'human staff error not system failure', offered £75 voucher. (Guardian, 5 Feb 2026)"
-      },
-      {
-        "id": "priv-003",
-        "operator": "Facewatch / Sainsbury's",
-        "operator_type": "retail",
-        "deployment_type": "static",
-        "location_name": "Sainsbury's Ladbroke Grove",
-        "borough": "Kensington and Chelsea",
-        "ward": "Golborne",
-        "lat": 51.5163,
-        "lon": -0.2092,
-        "date_start": "2022-01-01",
-        "date_end": null,
-        "stated_purpose": "Theft and antisocial behaviour prevention",
-        "outcome_arrests": null,
-        "claimed_reduction": "See priv-001",
-        "data_quality": "approximate",
-        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
-        "notes": null
-      },
-      {
-        "id": "priv-004",
-        "operator": "Facewatch / Sainsbury's",
-        "operator_type": "retail",
-        "deployment_type": "static",
-        "location_name": "Sainsbury's Camden",
-        "borough": "Camden",
-        "ward": "Camden Town with Primrose Hill",
-        "lat": 51.5390,
-        "lon": -0.1426,
-        "date_start": "2022-01-01",
-        "date_end": null,
-        "stated_purpose": "Theft and antisocial behaviour prevention",
-        "outcome_arrests": null,
-        "claimed_reduction": "See priv-001",
-        "data_quality": "approximate",
-        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
-        "notes": null
-      },
-      {
-        "id": "priv-005",
-        "operator": "Facewatch / Sainsbury's",
-        "operator_type": "retail",
-        "deployment_type": "static",
-        "location_name": "Sainsbury's Whitechapel",
-        "borough": "Tower Hamlets",
-        "ward": "Whitechapel",
-        "lat": 51.5188,
-        "lon": -0.0680,
-        "date_start": "2022-01-01",
-        "date_end": null,
-        "stated_purpose": "Theft and antisocial behaviour prevention",
-        "outcome_arrests": null,
-        "claimed_reduction": "See priv-001",
-        "data_quality": "approximate",
-        "source_url": "https://bigbrotherwatch.org.uk/press-releases/response-to-sainsburys-trial-of-live-facial-recognition-in-stores/",
-        "notes": "Whitechapel has one of London's highest proportions of South Asian and Bangladeshi residents — demographic implications for FRS watchlist composition not disclosed."
-      }
-    ];
+    // ── Deployment data loaded dynamically in init() ──────────────────────
 
     // ── Config ────────────────────────────────────────────────────────────
     const QUALITY_COLORS = {
@@ -825,7 +542,7 @@
             <span class="legend-circle" style="width:14px;height:14px;"></span>
             <span>Retail FRS</span>
           </div>
-          <div class="legend-note">ALHFRS · 15 deployments · May 2026</div>
+          <div class="legend-note">ALHFRS · <span id="legend-count">…</span> deployments · May 2026</div>
         `;
         return div;
       };
@@ -900,9 +617,33 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       }).addTo(map);
 
-      const metLayer     = createDeploymentLayer(MET_DATA, 9);
-      const btpLayer     = createDeploymentLayer(BTP_DATA, 8);
-      const privateLayer = createDeploymentLayer(PRIVATE_DATA, 7);
+      // ── Load deployment data from canonical JSON sources ──────────────
+      let metData = [], btpData = [], privateData = [], rfrData = [];
+      try {
+        const [metRes, btpRes, privRes, rfrRes] = await Promise.all([
+          fetch('./data/deployments/met-police-lfr.json'),
+          fetch('./data/deployments/btp-lfr.json'),
+          fetch('./data/deployments/private-operators.json'),
+          fetch('./data/deployments/retrospective-fr.json'),
+        ]);
+        if (metRes.ok)  metData     = (await metRes.json()).deployments  ?? [];
+        if (btpRes.ok)  btpData     = (await btpRes.json()).deployments  ?? [];
+        if (privRes.ok) privateData = (await privRes.json()).deployments ?? [];
+        if (rfrRes.ok)  rfrData     = (await rfrRes.json()).incidents    ?? [];
+      } catch (err) {
+        const el = document.getElementById('load-error');
+        el.textContent = 'Failed to load deployment data. Serve via HTTP (not file://).';
+        el.style.display = 'block';
+      }
+
+      // ── Update deployment counters ────────────────────────────────────
+      const totalCount = metData.length + btpData.length + privateData.length + rfrData.length;
+      document.getElementById('deploy-count').textContent = totalCount;
+      document.getElementById('legend-count').textContent = totalCount;
+
+      const metLayer     = createDeploymentLayer(metData, 9);
+      const btpLayer     = createDeploymentLayer(btpData, 8);
+      const privateLayer = createDeploymentLayer(privateData, 7);
 
       metLayer.addTo(map);
       btpLayer.addTo(map);
