@@ -19,3 +19,7 @@ splats/*.bin
 # Large source material archives
 *.zip
 NEC & Met Files*/
+
+# Data pipeline — staging files and dataset backups
+data/staging/
+data/deployments/*.bak.json
