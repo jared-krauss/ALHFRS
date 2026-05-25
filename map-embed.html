@@ -31,12 +31,13 @@
       transition: flex-basis 0.35s ease;
     }
 
+    /* 36px title-bar + 64px filter-strip = 100px */
     #map {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      bottom: 36px;
+      bottom: 100px;
     }
 
     /* ── Title bar ───────────────────────────────────────── */
@@ -80,6 +81,100 @@
       text-decoration: underline;
     }
 
+    /* ── Filter strip ────────────────────────────────────── */
+    #filter-strip {
+      position: absolute;
+      bottom: 36px;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(9, 12, 20, 0.96);
+      border-top: 1px solid #1e2d4a;
+      display: flex;
+      flex-direction: column;
+      padding: 4px 0;
+      gap: 4px;
+      z-index: 900;
+      backdrop-filter: blur(4px);
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1;
+    }
+
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .filter-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3a4a68;
+      flex-shrink: 0;
+      width: 32px;
+    }
+
+    .chip-group {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      background: rgba(13, 17, 35, 0.6);
+      color: #6b7fa8;
+      border: 1px solid #1e2d4a;
+      padding: 1px 8px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      height: 22px;
+      line-height: 18px;
+    }
+
+    .chip:hover {
+      background: rgba(42, 58, 94, 0.7);
+      color: #9ba8c0;
+      border-color: #2a3a5e;
+    }
+
+    .chip.active {
+      background: rgba(233, 69, 96, 0.18);
+      color: #e94560;
+      border-color: #e94560;
+    }
+
+    .chip.month-chip.active {
+      background: rgba(111, 168, 208, 0.15);
+      color: #6fa8d0;
+      border-color: #4a7fa8;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: #3a4a68;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: color 0.12s;
+    }
+
+    .reset-btn:hover { color: #6b7fa8; }
+
     /* ── Splat pane ──────────────────────────────────────── */
     #splat-pane {
       flex: 0 0 0;
@@ -91,9 +186,7 @@
       flex-direction: column;
     }
 
-    #splat-pane.open {
-      flex: 0 0 400px;
-    }
+    #splat-pane.open { flex: 0 0 400px; }
 
     #splat-header {
       height: 40px;
@@ -114,11 +207,7 @@
       text-transform: uppercase;
     }
 
-    .splat-header-sub {
-      font-size: 10px;
-      color: #3a4a68;
-      margin-left: 8px;
-    }
+    .splat-header-sub { font-size: 10px; color: #3a4a68; margin-left: 8px; }
 
     #btn-close-splat {
       background: none;
@@ -133,12 +222,7 @@
 
     #btn-close-splat:hover { color: #9ba8c0; }
 
-    #splat-iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-      display: block;
-    }
+    #splat-iframe { flex: 1; width: 100%; border: none; display: block; }
 
     /* ── Layer panel ─────────────────────────────────────── */
     #layer-panel {
@@ -184,10 +268,7 @@
       border-color: #4a7fa8;
     }
 
-    .layer-btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
+    .layer-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
     .panel-section-label {
       font-size: 9px;
@@ -196,6 +277,70 @@
       text-transform: uppercase;
       color: #3a4a68;
       padding: 4px 2px 1px;
+    }
+
+    /* Operator chips inside panel */
+    .op-chip-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .op-chip {
+      background: rgba(13, 17, 35, 0.88);
+      color: #9ba8c0;
+      border: 1px solid #2a3a5e;
+      padding: 6px 14px 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 170px;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      backdrop-filter: blur(4px);
+      text-align: left;
+      width: 100%;
+    }
+
+    .op-chip:hover {
+      background: rgba(42, 58, 94, 0.95);
+      color: #d0d8ec;
+    }
+
+    .op-chip.active {
+      background: rgba(233, 69, 96, 0.15);
+      color: #e94560;
+      border-color: #e94560;
+    }
+
+    .op-chip-check {
+      font-size: 11px;
+      line-height: 1;
+      width: 12px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* Mobile hamburger toggle */
+    #btn-panel-toggle {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1001;
+      background: rgba(13, 17, 35, 0.88);
+      color: #9ba8c0;
+      border: 1px solid #2a3a5e;
+      padding: 7px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      backdrop-filter: blur(4px);
     }
 
     /* ── Popups ──────────────────────────────────────────── */
@@ -207,9 +352,7 @@
       color: #c8d3e8;
     }
 
-    .leaflet-popup-tip {
-      background: #131b2e;
-    }
+    .leaflet-popup-tip { background: #131b2e; }
 
     .lfr-popup {
       font-size: 12px;
@@ -218,29 +361,10 @@
       max-width: 300px;
     }
 
-    .popup-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #e2e8f8;
-      margin-bottom: 3px;
-    }
-
-    .popup-meta {
-      font-size: 11px;
-      color: #6b7fa8;
-      margin-bottom: 6px;
-      text-transform: capitalize;
-    }
-
-    .popup-purpose {
-      color: #9ba8c0;
-      margin-bottom: 5px;
-    }
-
-    .popup-stat {
-      color: #9ba8c0;
-      margin-bottom: 3px;
-    }
+    .popup-title { font-size: 13px; font-weight: 600; color: #e2e8f8; margin-bottom: 3px; }
+    .popup-meta { font-size: 11px; color: #6b7fa8; margin-bottom: 6px; text-transform: capitalize; }
+    .popup-purpose { color: #9ba8c0; margin-bottom: 5px; }
+    .popup-stat { color: #9ba8c0; margin-bottom: 3px; }
 
     .popup-notes {
       font-size: 11px;
@@ -268,10 +392,7 @@
       text-decoration: none;
     }
 
-    .popup-source:hover {
-      color: #6fa8d0;
-      text-decoration: underline;
-    }
+    .popup-source:hover { color: #6fa8d0; text-decoration: underline; }
 
     /* ── Legend ──────────────────────────────────────────── */
     .map-legend {
@@ -283,7 +404,7 @@
       color: #9ba8c0;
       backdrop-filter: blur(4px);
       min-width: 130px;
-      margin-bottom: 42px;
+      margin-bottom: 6px;
     }
 
     .legend-title {
@@ -295,12 +416,7 @@
       letter-spacing: 0.06em;
     }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 4px;
-    }
+    .legend-item { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
 
     .legend-dot {
       display: inline-block;
@@ -323,12 +439,7 @@
       margin-bottom: 4px;
     }
 
-    .legend-shape-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 4px;
-    }
+    .legend-shape-item { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
 
     .legend-circle {
       border-radius: 50%;
@@ -374,10 +485,39 @@
       text-align: center;
     }
 
-    /* ── Narrow screen: stack vertically ─────────────────── */
+    /* ── Mobile ──────────────────────────────────────────── */
     @media (max-width: 600px) {
       #shell { flex-direction: column; }
-      #splat-pane.open { flex: 0 0 320px; }
+      #splat-pane.open { flex: 0 0 280px; }
+
+      /* Show hamburger, hide layer panel by default */
+      #btn-panel-toggle { display: block; }
+
+      #layer-panel {
+        display: none;
+        position: absolute;
+        top: 54px;
+        right: 0;
+        left: 0;
+        max-height: 55vh;
+        overflow-y: auto;
+        border-radius: 0;
+        background: rgba(9, 12, 20, 0.97);
+        border: none;
+        border-bottom: 1px solid #2a3a5e;
+        z-index: 1001;
+        padding: 8px 12px;
+        gap: 4px;
+      }
+
+      #layer-panel.panel-open { display: flex; }
+
+      .layer-btn { min-width: 0; width: 100%; }
+      .op-chip   { min-width: 0; width: 100%; }
+
+      /* Chips shrink on narrow screens */
+      .chip { font-size: 10px; padding: 1px 6px; }
+      .filter-label { font-size: 8px; width: 28px; }
     }
   </style>
 </head>
@@ -388,12 +528,10 @@
       <div id="map"></div>
 
       <div id="layer-panel">
-        <div class="panel-section-label">Police</div>
+        <div class="panel-section-label">Layers</div>
         <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
-        <button class="layer-btn active" id="btn-met">Met Police LFR</button>
-        <button class="layer-btn active" id="btn-btp">BTP (stations)</button>
-        <div class="panel-section-label">Private</div>
-        <button class="layer-btn active" id="btn-private">Retail FRS (Facewatch)</button>
+        <div class="panel-section-label">Operators</div>
+        <div id="operator-chips" class="op-chip-group"></div>
         <div class="panel-section-label">3D documentation</div>
         <button class="layer-btn" id="btn-splat">Walworth 2024 — 3D view</button>
         <div class="panel-section-label">Coming soon</div>
@@ -401,12 +539,26 @@
         <button class="layer-btn" id="btn-community" disabled>Community</button>
       </div>
 
+      <button id="btn-panel-toggle" aria-label="Toggle layer panel">☰</button>
+
+      <div id="filter-strip">
+        <div class="filter-row">
+          <span class="filter-label">Year</span>
+          <div id="year-chips" class="chip-group"></div>
+          <button id="btn-reset" class="reset-btn" title="Clear year and month filters">Reset</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Month</span>
+          <div id="month-chips" class="chip-group"></div>
+        </div>
+      </div>
+
       <div id="load-error"></div>
 
       <div id="title-bar">
         <span class="title-bar-name">A London History of Facial Recognition Systems</span>
         <span class="title-bar-meta">
-          <span id="deploy-count">…</span> deployments documented · data to May 2026 ·
+          <span id="deploy-count">…</span> ·
           <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
         </span>
       </div>
@@ -432,9 +584,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // ── Deployment data loaded dynamically in init() ──────────────────────
-
-    // ── Config ────────────────────────────────────────────────────────────
+    // ── Constants ─────────────────────────────────────────────────────────────
     const QUALITY_COLORS = {
       confirmed:   '#e94560',
       approximate: '#f6a623',
@@ -448,13 +598,37 @@
       fillOpacity: 0,
     };
 
-    // ── Popup builder ─────────────────────────────────────────────────────
+    const RADII = { met: 9, btp: 8, private: 7 };
+
+    const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // ── Global state ──────────────────────────────────────────────────────────
+    // operators: Set of operator names currently VISIBLE. Starts fully populated.
+    // years/months: empty Set = all pass; non-empty = only matching pass.
+    const filterState = {
+      operators: new Set(),
+      years:     new Set(),
+      months:    new Set(),
+    };
+
+    const rawData   = { met: [], btp: [], private: [] };
+    const curLayers = { met: null, btp: null, private: null };
+
+    let _map          = null;
+    let _allOperators = new Set();
+    let _totalBase    = 0;
+
+    // ── Popup builder ─────────────────────────────────────────────────────────
     function buildPopupHTML(d) {
       const dateStr = d.date_end && d.date_end !== d.date_start
         ? `${d.date_start} – ${d.date_end}`
-        : d.date_start;
+        : (d.date_start ?? 'Unknown date');
 
-      const arrestsLine = d.outcome_arrests !== null
+      const purposeLine = d.stated_purpose
+        ? `<div class="popup-purpose">${d.stated_purpose}</div>`
+        : '';
+
+      const arrestsLine = d.outcome_arrests != null
         ? `<div class="popup-stat">Arrests recorded: <strong>${d.outcome_arrests}</strong></div>`
         : '';
 
@@ -467,43 +641,48 @@
         : '';
 
       const qualityColor = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
-      const deployType = d.deployment_type ? ` · ${d.deployment_type}` : '';
+      const deployType   = d.deployment_type ? ` · ${d.deployment_type}` : '';
+      const borough      = d.borough ?? '';
+      const boroughPart  = borough ? `${borough} · ` : '';
 
       return `
         <div class="lfr-popup">
-          <div class="popup-title">${d.location_name}</div>
-          <div class="popup-meta">${d.borough} · ${dateStr}${deployType}</div>
-          <div class="popup-purpose">${d.stated_purpose}</div>
-          ${arrestsLine}${claimedLine}
+          <div class="popup-title">${d.location_name ?? 'Unknown location'}</div>
+          <div class="popup-meta">${boroughPart}${dateStr}${deployType}</div>
+          ${purposeLine}${arrestsLine}${claimedLine}
           ${d.notes ? `<div class="popup-notes">${d.notes}</div>` : ''}
           <div class="popup-footer">
-            <span class="popup-quality" style="color:${qualityColor}">● ${d.data_quality}</span>
+            <span class="popup-quality" style="color:${qualityColor}">● ${d.data_quality ?? 'unverified'}</span>
             ${sourceLine}
           </div>
         </div>
       `;
     }
 
-    // ── Deployment layer ──────────────────────────────────────────────────
+    // ── Deployment layer ──────────────────────────────────────────────────────
     function createDeploymentLayer(deployments, radius) {
       const group = L.layerGroup();
       for (const d of deployments) {
-        if (!d.lat || !d.lon) continue;
+        if (d.lat == null || d.lon == null) continue;
         const color = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
-        L.circleMarker([d.lat, d.lon], {
-          radius: radius ?? 8,
-          fillColor: color,
-          color: '#fff',
-          weight: 1.5,
-          fillOpacity: 0.85,
-        })
-          .bindPopup(buildPopupHTML(d), { maxWidth: 340 })
-          .addTo(group);
+        try {
+          L.circleMarker([d.lat, d.lon], {
+            radius:      radius ?? 8,
+            fillColor:   color,
+            color:       '#fff',
+            weight:      1.5,
+            fillOpacity: 0.85,
+          })
+            .bindPopup(buildPopupHTML(d), { maxWidth: 340 })
+            .addTo(group);
+        } catch (e) {
+          console.warn('Skipping record', d.id, e.message);
+        }
       }
       return group;
     }
 
-    // ── Borough layer ─────────────────────────────────────────────────────
+    // ── Borough layer ─────────────────────────────────────────────────────────
     function createBoroughLayer(geojsonData) {
       return L.geoJSON(geojsonData, {
         style: BOROUGH_STYLE,
@@ -516,7 +695,7 @@
       });
     }
 
-    // ── Legend ────────────────────────────────────────────────────────────
+    // ── Legend ────────────────────────────────────────────────────────────────
     function createLegend(map) {
       const legend = L.control({ position: 'bottomleft' });
       legend.onAdd = () => {
@@ -542,52 +721,225 @@
             <span class="legend-circle" style="width:14px;height:14px;"></span>
             <span>Retail FRS</span>
           </div>
-          <div class="legend-note">ALHFRS · <span id="legend-count">…</span> deployments · May 2026</div>
+          <div class="legend-note">ALHFRS · <span id="legend-count">…</span> · May 2026</div>
         `;
         return div;
       };
       legend.addTo(map);
-      return legend;
     }
 
-    // ── Layer controls ────────────────────────────────────────────────────
-    function initControls(map, layers) {
-      function wire(btnId, layer) {
-        const btn = document.getElementById(btnId);
-        if (!btn) return;
-        if (!layer) {
-          btn.disabled = true;
-          btn.title = 'Data not loaded';
-          return;
-        }
-        let visible = true;
-        btn.addEventListener('click', () => {
-          visible = !visible;
-          btn.classList.toggle('active', visible);
-          visible ? layer.addTo(map) : map.removeLayer(layer);
-        });
+    // ── Filter logic ──────────────────────────────────────────────────────────
+    function matchesFilter(d) {
+      if (d.lat == null || d.lon == null) return false;
+      if (d.operator && !filterState.operators.has(d.operator)) return false;
+      if (filterState.years.size > 0) {
+        const y = d.date_start?.slice(0, 4);
+        if (!y || !filterState.years.has(y)) return false;
       }
-      wire('btn-boroughs', layers.boroughs);
-      wire('btn-met',      layers.met);
-      wire('btn-btp',      layers.btp);
-      wire('btn-private',  layers.private);
+      if (filterState.months.size > 0) {
+        const m = d.date_start?.slice(5, 7);
+        if (!m || !filterState.months.has(m)) return false;
+      }
+      return true;
     }
 
-    // ── Splat panel toggle ────────────────────────────────────────────────
+    function applyFilters() {
+      if (!_map) return;
+      let visible = 0;
+      for (const key of ['met', 'btp', 'private']) {
+        if (curLayers[key]) _map.removeLayer(curLayers[key]);
+        const filtered = rawData[key].filter(matchesFilter);
+        curLayers[key] = createDeploymentLayer(filtered, RADII[key]);
+        curLayers[key].addTo(_map);
+        visible += filtered.length;
+      }
+      const isFiltered =
+        filterState.years.size > 0 ||
+        filterState.months.size > 0 ||
+        filterState.operators.size < _allOperators.size;
+
+      const countEl  = document.getElementById('deploy-count');
+      const legendEl = document.getElementById('legend-count');
+      if (isFiltered) {
+        if (countEl)  countEl.textContent  = `${visible} of ${_totalBase} deployments visible`;
+        if (legendEl) legendEl.textContent = `${visible} shown`;
+      } else {
+        if (countEl)  countEl.textContent  = `${_totalBase} deployments documented · data to May 2026`;
+        if (legendEl) legendEl.textContent = `${_totalBase} deployments`;
+      }
+    }
+
+    // ── Filter UI builders ────────────────────────────────────────────────────
+    function buildOperatorChips() {
+      const container = document.getElementById('operator-chips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (const op of _allOperators) {
+        const btn = document.createElement('button');
+        btn.className = 'op-chip active';
+        btn.setAttribute('aria-pressed', 'true');
+
+        const check = document.createElement('span');
+        check.className = 'op-chip-check';
+        check.textContent = '✓';
+
+        const label = document.createElement('span');
+        label.textContent = op;
+
+        btn.appendChild(check);
+        btn.appendChild(label);
+
+        btn.addEventListener('click', () => {
+          if (filterState.operators.has(op)) {
+            filterState.operators.delete(op);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+            check.textContent = '';
+          } else {
+            filterState.operators.add(op);
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+            check.textContent = '✓';
+          }
+          applyFilters();
+        });
+
+        container.appendChild(btn);
+      }
+    }
+
+    function buildYearChips(years) {
+      const container = document.getElementById('year-chips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (const year of years) {
+        const btn = document.createElement('button');
+        btn.className = 'chip';
+        btn.textContent = year;
+        btn.setAttribute('aria-pressed', 'false');
+
+        btn.addEventListener('click', () => {
+          if (filterState.years.has(year)) {
+            filterState.years.delete(year);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          } else {
+            filterState.years.add(year);
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+          }
+          applyFilters();
+        });
+
+        container.appendChild(btn);
+      }
+    }
+
+    function buildMonthChips() {
+      const container = document.getElementById('month-chips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      MONTH_LABELS.forEach((label, i) => {
+        const monthNum = String(i + 1).padStart(2, '0');
+        const btn = document.createElement('button');
+        btn.className = 'chip month-chip';
+        btn.textContent = label;
+        btn.setAttribute('aria-pressed', 'false');
+
+        btn.addEventListener('click', () => {
+          if (filterState.months.has(monthNum)) {
+            filterState.months.delete(monthNum);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          } else {
+            filterState.months.add(monthNum);
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+          }
+          applyFilters();
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    function initResetBtn() {
+      const btn = document.getElementById('btn-reset');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        filterState.years.clear();
+        filterState.months.clear();
+        _allOperators.forEach(op => filterState.operators.add(op));
+
+        document.querySelectorAll('.chip.active').forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-pressed', 'false');
+        });
+        document.querySelectorAll('.op-chip').forEach(c => {
+          c.classList.add('active');
+          c.setAttribute('aria-pressed', 'true');
+          const check = c.querySelector('.op-chip-check');
+          if (check) check.textContent = '✓';
+        });
+
+        applyFilters();
+      });
+    }
+
+    // ── Borough control ───────────────────────────────────────────────────────
+    function initBoroughControl(map, boroughLayer) {
+      const btn = document.getElementById('btn-boroughs');
+      if (!btn) return;
+      if (!boroughLayer) {
+        btn.disabled = true;
+        btn.title = 'Data not loaded';
+        return;
+      }
+      let visible = true;
+      btn.addEventListener('click', () => {
+        visible = !visible;
+        btn.classList.toggle('active', visible);
+        visible ? boroughLayer.addTo(map) : map.removeLayer(boroughLayer);
+      });
+    }
+
+    // ── Mobile panel toggle ───────────────────────────────────────────────────
+    function initMobileToggle() {
+      const toggle = document.getElementById('btn-panel-toggle');
+      const panel  = document.getElementById('layer-panel');
+      if (!toggle || !panel) return;
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = panel.classList.toggle('panel-open');
+        toggle.textContent = open ? '✕' : '☰';
+      });
+
+      document.addEventListener('click', (e) => {
+        if (panel.classList.contains('panel-open') &&
+            !panel.contains(e.target) &&
+            e.target !== toggle) {
+          panel.classList.remove('panel-open');
+          toggle.textContent = '☰';
+        }
+      });
+    }
+
+    // ── Splat panel ───────────────────────────────────────────────────────────
     function initSplatPanel(map) {
-      const splatPane  = document.getElementById('splat-pane');
-      const btnSplat   = document.getElementById('btn-splat');
-      const btnClose   = document.getElementById('btn-close-splat');
-      const iframe     = document.getElementById('splat-iframe');
+      const splatPane = document.getElementById('splat-pane');
+      const btnSplat  = document.getElementById('btn-splat');
+      const btnClose  = document.getElementById('btn-close-splat');
+      const iframe    = document.getElementById('splat-iframe');
       let loaded = false;
 
       function open() {
         splatPane.classList.add('open');
         btnSplat.classList.add('splat-active');
-        if (!loaded) {
-          iframe.src = iframe.dataset.src;
-          loaded = true;
-        }
+        if (!loaded) { iframe.src = iframe.dataset.src; loaded = true; }
         setTimeout(() => map.invalidateSize(), 360);
       }
 
@@ -597,15 +949,15 @@
         setTimeout(() => map.invalidateSize(), 360);
       }
 
-      btnSplat.addEventListener('click', () => {
-        splatPane.classList.contains('open') ? close() : open();
-      });
+      btnSplat.addEventListener('click', () =>
+        splatPane.classList.contains('open') ? close() : open()
+      );
       btnClose.addEventListener('click', close);
     }
 
-    // ── Init ──────────────────────────────────────────────────────────────
+    // ── Init ──────────────────────────────────────────────────────────────────
     async function init() {
-      const map = L.map('map', {
+      _map = L.map('map', {
         center: [51.509, -0.118],
         zoom: 11,
         zoomControl: true,
@@ -614,58 +966,70 @@
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      }).addTo(map);
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
+          '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }).addTo(_map);
 
-      // ── Load deployment data from canonical JSON sources ──────────────
-      let metData = [], btpData = [], privateData = [], rfrData = [];
+      // ── Load deployment data ──────────────────────────────────────────────
       try {
-        const [metRes, btpRes, privRes, rfrRes] = await Promise.all([
+        const [metRes, btpRes, privRes] = await Promise.all([
           fetch('./data/deployments/met-police-lfr.json'),
           fetch('./data/deployments/btp-lfr.json'),
           fetch('./data/deployments/private-operators.json'),
-          fetch('./data/deployments/retrospective-fr.json'),
         ]);
-        if (metRes.ok)  metData     = (await metRes.json()).deployments  ?? [];
-        if (btpRes.ok)  btpData     = (await btpRes.json()).deployments  ?? [];
-        if (privRes.ok) privateData = (await privRes.json()).deployments ?? [];
-        if (rfrRes.ok)  rfrData     = (await rfrRes.json()).incidents    ?? [];
+        if (metRes.ok)  rawData.met     = (await metRes.json()).deployments  ?? [];
+        if (btpRes.ok)  rawData.btp     = (await btpRes.json()).deployments  ?? [];
+        if (privRes.ok) rawData.private = (await privRes.json()).deployments ?? [];
       } catch (err) {
         const el = document.getElementById('load-error');
         el.textContent = 'Failed to load deployment data. Serve via HTTP (not file://).';
         el.style.display = 'block';
+        return;
       }
 
-      // ── Update deployment counters ────────────────────────────────────
-      const totalCount = metData.length + btpData.length + privateData.length + rfrData.length;
-      document.getElementById('deploy-count').textContent = totalCount;
-      document.getElementById('legend-count').textContent = totalCount;
+      // ── Compute totals and extract unique operators/years ─────────────────
+      _totalBase = rawData.met.length + rawData.btp.length + rawData.private.length;
 
-      const metLayer     = createDeploymentLayer(metData, 9);
-      const btpLayer     = createDeploymentLayer(btpData, 8);
-      const privateLayer = createDeploymentLayer(privateData, 7);
+      const allYears = new Set();
+      for (const records of Object.values(rawData)) {
+        for (const d of records) {
+          if (d.operator)    _allOperators.add(d.operator);
+          if (d.date_start)  allYears.add(d.date_start.slice(0, 4));
+        }
+      }
+      _allOperators.forEach(op => filterState.operators.add(op));
 
-      metLayer.addTo(map);
-      btpLayer.addTo(map);
-      privateLayer.addTo(map);
+      // ── Build filter UI ───────────────────────────────────────────────────
+      buildOperatorChips();
+      buildYearChips([...allYears].sort());
+      buildMonthChips();
+      initResetBtn();
 
+      // ── Initial render ────────────────────────────────────────────────────
+      try {
+        applyFilters();
+      } catch (err) {
+        console.error('Layer creation failed:', err);
+        const el = document.getElementById('load-error');
+        el.textContent = `Map rendering error: ${err.message}`;
+        el.style.display = 'block';
+      }
+
+      // ── Borough layer ─────────────────────────────────────────────────────
       let boroughLayer = null;
       try {
         const res = await fetch('./map/data/london-boroughs.geojson');
         if (res.ok) {
           boroughLayer = createBoroughLayer(await res.json());
-          boroughLayer.addTo(map);
+          boroughLayer.addTo(_map);
         }
       } catch (_) { /* silent — button auto-disabled */ }
 
-      createLegend(map);
-      initControls(map, {
-        boroughs: boroughLayer,
-        met:      metLayer,
-        btp:      btpLayer,
-        private:  privateLayer,
-      });
-      initSplatPanel(map);
+      createLegend(_map);
+      initBoroughControl(_map, boroughLayer);
+      initSplatPanel(_map);
+      initMobileToggle();
     }
 
     document.addEventListener('DOMContentLoaded', init);
