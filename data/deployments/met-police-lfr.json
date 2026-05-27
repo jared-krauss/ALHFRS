@@ -1,7 +1,7 @@
 {
   "schema_version": "1.2",
   "source": "Met Police FOI disclosures; Big Brother Watch; Liberty; press reporting; Garbett GLA report (Feb 2026); 2023-2024 LFR deployment grid",
-  "last_updated": "2026-05-22",
+  "last_updated": "2026-05-27",
   "notes": "All records sourced from publicly available documents. data_quality reflects confidence in location/date accuracy: confirmed = primary source, approximate = derived from adjacent evidence, unverified = single secondary source only. Records lfr-009 through lfr-031 derive from Garbett GLA report (Feb 2026) cross-referenced with the 2023-2024 LFR deployment grid PDF; additional fields (vendor, outcome_faces_scanned, threshold, outcome_false_alerts) present only on these records.",
   "deployments": [
     {
@@ -5646,6 +5646,34 @@
       "source_url": null,
       "source_type": "garbett-gla-2024-deployment-grid",
       "notes": "Watchlist: 15229. Use case: Crime Hotspot. Source ref: https://www.met.police.uk/SysSiteAssets/media/downloads/force-content/met/advice/lfr/deployment-records/lfr-deployment-grid-2023-to-2024.pdf"
+    },
+    {
+      "id": "lfr-536",
+      "operator": "Metropolitan Police",
+      "operator_type": "law_enforcement",
+      "date_start": "2024-11-01",
+      "date_end": "2024-11-01",
+      "location_name": "Walworth Rd",
+      "borough": "Southwark",
+      "ward": "North Walworth",
+      "ward_code": "E05011107",
+      "lat": null,
+      "lon": null,
+      "location_cluster_id": null,
+      "deployment_type": "mobile",
+      "stated_purpose": "Crime Hotspot",
+      "watchlist_size": 13419,
+      "threshold": 0.64,
+      "outcome_alerts": 10,
+      "outcome_true_alerts": 10,
+      "outcome_false_alerts": 0,
+      "outcome_arrests": 3,
+      "outcome_faces_scanned": 10510,
+      "vendor": "NEC",
+      "data_quality": "confirmed",
+      "source_type": "met-lfr-deployment-grid",
+      "source_url": "https://www.met.police.uk/SysSiteAssets/media/downloads/force-content/met/advice/lfr/deployment-records/lfr-deployment-grid.pdf",
+      "notes": "Page 8 of Met LFR deployment grid PDF. Duration: 6h 21m. Missed by initial Garbett-GLA extraction (covering same source) — discovered via photographer eyewitness corroboration (Jared Krauss, photo EXIF 2024-11-01) cross-referenced back to the Met PDF. Triggers full multi-model re-extraction of the deployment grid."
     },
     {
       "id": "lfr-032",
