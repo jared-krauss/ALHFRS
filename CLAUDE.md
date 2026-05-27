@@ -2,6 +2,8 @@
 Context about recent project changes:
 ---
 Recent commits:
+af329f8 docs: auto-update CLAUDE.md via update-docs.py
+f35a36a docs: fix CLAUDE.md â€” 580 records, lfr-506 vs lfr-536, resolve geocoding + Walworth issues
 3f897a3 docs: auto-update CLAUDE.md via update-docs.py
 057098e data: add lfr-603 Victoria + lfr-604 Tottenham (2026-05-18, unverified)
 dfc948e data: geocode 215 null lat/lon records via Nominatim + manual fixes
@@ -19,9 +21,6 @@ eca6751 data: reverify 2024 records against Met PDF â€” fix 53 date swaps, 
 47553e2 data: add lfr-536 Walworth Rd 2024-11-01 (missed by Garbett extraction)
 2f30224 docs: add 2026-05-18 project audit + mempalace note in CLAUDE.md
 7bd3f98 feat: semantic operator-type colors + poppy pastel halation aesthetic
-9aa66bb fix(map-embed): resilient fetch, news panel, PDF script enhancements
-ba3516d feat(map-embed): multi-select filters, year/month filter strip, mobile layout, null-coord fix
-a2bd9f1 data: add 169 Garbett 2024 LFR records (lfr-367 to lfr-535)
 
 Current git status:
 ?? scripts/extract-pdf.py
@@ -38,7 +37,7 @@ Project root contents: CLAUDE.md, README.md, _archive, agents, data, docs, map, 
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (May 2026):**
-- Deployment data: **417 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
+- Deployment data: **580 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
 - The 2024 cohort is the largest gap — Garbett Excel is the right source but not yet migrated
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
@@ -294,8 +293,10 @@ Both registered 2026-05-26. If something isn't running: open Task Scheduler → 
 
 15. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
 
+---
 ## Archive
 `_archive/` is gitignored and holds dead code preserved for reference:
 
 - `map-london-boroughs.js` — hardcoded 23-borough GeoJSON that was once in `map/`. Superseded by the full-resolution `map/data/london-boroughs.geojson`. Do not import or restore.
 - Additional files may be added to this directory as part of project history and reference.
+---
