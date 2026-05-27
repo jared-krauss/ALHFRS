@@ -54,8 +54,16 @@ ALHFRS/
 │   └── pdf-extract-deployments.py   pdfplumber + Hermes3:8b PDF → staging JSON extractor
 ├── data/
 │   └── staging/
-│       ├── extract-2020-2022.json   9 records (merged into main ✓)
-│       └── extract-2023-2024.json   30 records (POOR QUALITY — hallucinated, do not merge)
+│       ├── extract-2020-2022.json      9 records (merged into main ✓)
+│       ├── extract-2023-2024.json      30 records (POOR QUALITY — hallucinated, do not merge)
+│       └── gemini-2021-extraction.json 5 records from Gemini 3.5 Flash (2026-05-26, needs verification before merge — see Known Issues)
+├── serve.ps1                        Start HTTP server on port 8741 (PowerShell, coloured output)
+├── serve.bat                        Start HTTP server on port 8741 (batch, minimal)
+├── tasks/
+│   ├── map-future-goals.md          Backlog for map-embed.html (Wayback Machine enrichment, etc.)
+│   ├── gemini-prompt-lfr-extraction.md  Full extraction prompt for LFR deployment data
+│   ├── gemini-prompt-geocoding.md   Geocoding prompt for 169 null lat/lon records
+│   └── gemini-output-merge-instructions.md  Instructions for merging staging JSON into main dataset
 ├── site/                        placeholder — website scaffold (TBD)
 ├── splats/
 │   ├── README.md                index-only approach, hosting options, map integration plan
@@ -69,13 +77,26 @@ ALHFRS/
 
 ## Running the map
 
-```powershell
-# From D:\Dev\ALHFRS\
-python -m http.server 8000
-# Open: http://localhost:8000/map/index.html
+**The map auto-starts on login** via Windows Task Scheduler ("ALHFRS Map Server"). Just open:
+
+```
+http://localhost:8741/map-embed.html
 ```
 
-**Must use HTTP, not file://.** `fetch()` calls in the map JS are blocked by the browser under `file://` origins. If the map shows a load error banner, check you're on `http://localhost:8000`.
+To start manually:
+```powershell
+# From D:\Dev\ALHFRS\  — two options:
+.\serve.ps1          # PowerShell with coloured output
+serve.bat            # minimal batch file
+# Or directly:
+python -m http.server 8741
+```
+
+**Must use HTTP, not file://.** `fetch()` calls fail under `file://` (Chrome CORS). If the map shows a load error banner, verify you're on `http://localhost:8741`.
+
+**Two map builds exist:**
+- `map-embed.html` — single-file self-contained build (the active build). Includes operator filter, year timeline, news panel, splat panel.
+- `map/index.html` — modular ES6 build (older; maintained separately in `map/js/`).
 
 ---
 
@@ -198,6 +219,17 @@ Do not create files in these directories without a plan for the accompanying sch
 
 ---
 
+## Task Scheduler entries (auto-start on login)
+
+| Task name | What it does |
+|---|---|
+| `ALHFRS Map Server` | `python -m http.server 8741` from `D:\Dev\ALHFRS\` |
+| `Hermes Agent` | Watches Layer-1_Inbox, routes new notes through Ollama → Layer-2 |
+
+Both registered 2026-05-26. If something isn't running: open Task Scheduler → find entry → right-click → Run.
+
+---
+
 ## Known issues / open work (May 2026)
 
 1. **2024 cohort missing** — records jump from 2023 (lfr-031) to 2025 (lfr-032). The Garbett Excel covers 2020–2025 with 254 records and contains 2024 data. Needs migration.
@@ -213,6 +245,12 @@ Do not create files in these directories without a plan for the accompanying sch
 6. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs populating.
 
 7. **Outcome data sparse.** Most records have null outcomes — intentional where data isn't public. Only a few records have `outcome_arrests` populated.
+
+8. **Gemini 2021 extraction unreliable.** `data/staging/gemini-2021-extraction.json` (5 records, 2026-05-26): The "zero deployments in 2021" claim likely contradicts our existing data. Croydon 173 arrest figure is probably an annual total misattributed to a single deployment. Victoria + Tottenham 2026-05-18 records (from itnews.com.au) are genuinely new and probably addable after de-duplication check. **Do not merge this file wholesale — validate record by record.**
+
+9. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
+
+10. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
 
 ## Archive
 

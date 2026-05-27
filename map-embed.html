@@ -456,6 +456,161 @@
       color: #3a4a68;
     }
 
+    /* ── News panel ──────────────────────────────────────────── */
+    #news-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 100px; /* above filter strip */
+      width: 340px;
+      background: rgba(9, 12, 20, 0.97);
+      border-left: 1px solid #1e2d4a;
+      display: flex;
+      flex-direction: column;
+      z-index: 800;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    #news-panel.open {
+      transform: translateX(0);
+    }
+
+    #news-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: #0d1117;
+      border-bottom: 1px solid #1e2d4a;
+      flex-shrink: 0;
+    }
+
+    .news-header-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #9ba8c0;
+      text-transform: uppercase;
+    }
+
+    .news-header-count {
+      font-size: 10px;
+      color: #3a4a68;
+      margin-left: 8px;
+    }
+
+    #btn-close-news {
+      background: none;
+      border: none;
+      color: #3a4a68;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color 0.15s;
+    }
+
+    #btn-close-news:hover { color: #9ba8c0; }
+
+    #news-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #2a3a5e transparent;
+    }
+
+    #news-list::-webkit-scrollbar { width: 4px; }
+    #news-list::-webkit-scrollbar-thumb { background: #2a3a5e; border-radius: 2px; }
+
+    .news-card {
+      padding: 10px 14px;
+      border-bottom: 1px solid #1a2438;
+      transition: background 0.12s;
+    }
+
+    .news-card:hover { background: rgba(42, 58, 94, 0.2); }
+    .news-card:last-child { border-bottom: none; }
+
+    .news-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #c8d3e8;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .news-card-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .news-card-title a:hover {
+      color: #6fa8d0;
+      text-decoration: underline;
+    }
+
+    .news-card-meta {
+      font-size: 10px;
+      color: #4a6a98;
+      margin-bottom: 5px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .news-card-pub { font-weight: 600; color: #6b7fa8; }
+
+    .news-card-location {
+      font-size: 10px;
+      color: #4a5a78;
+      margin-bottom: 4px;
+    }
+
+    .news-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: 4px;
+    }
+
+    .news-tag {
+      background: rgba(26, 36, 56, 0.8);
+      color: #4a6a98;
+      border: 1px solid #1e2d4a;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .news-card-link {
+      font-size: 10px;
+      color: #4a7fa8;
+      text-decoration: none;
+      margin-top: 3px;
+      display: inline-block;
+    }
+
+    .news-card-link:hover { color: #6fa8d0; text-decoration: underline; }
+
+    .panel-section-sublabel {
+      font-size: 8px;
+      font-weight: 500;
+      color: #2a3a5e;
+      padding: 0px 2px 3px;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 600px) {
+      #news-panel { width: 100%; }
+    }
+
     /* ── Borough tooltip ─────────────────────────────────── */
     .borough-tooltip {
       background: rgba(13, 17, 35, 0.85);
@@ -531,15 +686,31 @@
         <div class="panel-section-label">Layers</div>
         <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
         <div class="panel-section-label">Operators</div>
+        <div class="panel-section-sublabel">multi-select — click to toggle</div>
         <div id="operator-chips" class="op-chip-group"></div>
         <div class="panel-section-label">3D documentation</div>
         <button class="layer-btn" id="btn-splat">Walworth 2024 — 3D view</button>
+        <div class="panel-section-label">Media</div>
+        <button class="layer-btn" id="btn-news">News &amp; events</button>
         <div class="panel-section-label">Coming soon</div>
-        <button class="layer-btn" id="btn-news" disabled>News &amp; events</button>
         <button class="layer-btn" id="btn-community" disabled>Community</button>
       </div>
 
       <button id="btn-panel-toggle" aria-label="Toggle layer panel">☰</button>
+
+      <!-- News panel -->
+      <div id="news-panel">
+        <div id="news-header">
+          <div>
+            <span class="news-header-label">News &amp; events</span>
+            <span id="news-count" class="news-header-count"></span>
+          </div>
+          <button id="btn-close-news" title="Close news panel">×</button>
+        </div>
+        <div id="news-list">
+          <div style="padding:20px 14px;color:#3a4a68;font-size:11px;">Loading articles…</div>
+        </div>
+      </div>
 
       <div id="filter-strip">
         <div class="filter-row">
@@ -955,6 +1126,90 @@
       btnClose.addEventListener('click', close);
     }
 
+    // ── News panel ─────────────────────────────────────────────────────────────
+    const MONTH_NAMES_FULL = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function formatNewsDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d)) return dateStr;
+      return `${MONTH_NAMES_FULL[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+    }
+
+    function renderNewsCard(article) {
+      const url = article.url_canonical || article.url || '';
+      const title = article.title || 'Untitled';
+      const titleHtml = url
+        ? `<a href="${url}" target="_blank" rel="noopener">${title}</a>`
+        : title;
+
+      const location = [article.location_name, article.borough]
+        .filter(Boolean).join(' · ');
+
+      const tagsHtml = (article.tags || []).length > 0
+        ? `<div class="news-card-tags">${article.tags.map(t =>
+            `<span class="news-tag">${t}</span>`).join('')}</div>`
+        : '';
+
+      const locationHtml = location
+        ? `<div class="news-card-location">📍 ${location}</div>`
+        : '';
+
+      return `
+        <div class="news-card">
+          <div class="news-card-title">${titleHtml}</div>
+          <div class="news-card-meta">
+            <span class="news-card-pub">${article.publication || ''}</span>
+            <span>${formatNewsDate(article.date)}</span>
+          </div>
+          ${locationHtml}${tagsHtml}
+        </div>
+      `;
+    }
+
+    function initNewsPanel() {
+      const btnNews  = document.getElementById('btn-news');
+      const panel    = document.getElementById('news-panel');
+      const btnClose = document.getElementById('btn-close-news');
+      const listEl   = document.getElementById('news-list');
+      const countEl  = document.getElementById('news-count');
+      if (!btnNews || !panel) return;
+
+      let loaded = false;
+
+      async function loadNews() {
+        try {
+          const res = await fetch('./data/news/gmail-research-threads.json');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const articles = (data.articles || []).sort((a, b) =>
+            (b.date || '').localeCompare(a.date || ''));
+          if (countEl) countEl.textContent = `${articles.length} articles`;
+          listEl.innerHTML = articles.map(renderNewsCard).join('');
+          loaded = true;
+        } catch (err) {
+          listEl.innerHTML = `<div style="padding:14px;color:#e94560;font-size:11px;">
+            Could not load news data.<br>Serve via HTTP — see serve.ps1.</div>`;
+        }
+      }
+
+      function openPanel() {
+        panel.classList.add('open');
+        btnNews.classList.add('active');
+        if (!loaded) loadNews();
+      }
+
+      function closePanel() {
+        panel.classList.remove('open');
+        btnNews.classList.remove('active');
+      }
+
+      btnNews.addEventListener('click', () =>
+        panel.classList.contains('open') ? closePanel() : openPanel()
+      );
+      btnClose.addEventListener('click', closePanel);
+    }
+
     // ── Init ──────────────────────────────────────────────────────────────────
     async function init() {
       _map = L.map('map', {
@@ -971,21 +1226,32 @@
           '&copy; <a href="https://carto.com/attributions">CARTO</a>',
       }).addTo(_map);
 
-      // ── Load deployment data ──────────────────────────────────────────────
-      try {
-        const [metRes, btpRes, privRes] = await Promise.all([
-          fetch('./data/deployments/met-police-lfr.json'),
-          fetch('./data/deployments/btp-lfr.json'),
-          fetch('./data/deployments/private-operators.json'),
-        ]);
-        if (metRes.ok)  rawData.met     = (await metRes.json()).deployments  ?? [];
-        if (btpRes.ok)  rawData.btp     = (await btpRes.json()).deployments  ?? [];
-        if (privRes.ok) rawData.private = (await privRes.json()).deployments ?? [];
-      } catch (err) {
+      // ── Load deployment data — each source fetched independently ─────────
+      async function fetchDeployments(url, key) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            console.warn(`[ALHFRS] HTTP ${res.status} for ${url}`);
+            return [];
+          }
+          return (await res.json())[key] ?? [];
+        } catch (err) {
+          console.error(`[ALHFRS] Failed to load ${url}:`, err);
+          return [];
+        }
+      }
+
+      [rawData.met, rawData.btp, rawData.private] = await Promise.all([
+        fetchDeployments('./data/deployments/met-police-lfr.json', 'deployments'),
+        fetchDeployments('./data/deployments/btp-lfr.json',         'deployments'),
+        fetchDeployments('./data/deployments/private-operators.json','deployments'),
+      ]);
+
+      if (rawData.met.length === 0 && rawData.btp.length === 0 && rawData.private.length === 0) {
         const el = document.getElementById('load-error');
-        el.textContent = 'Failed to load deployment data. Serve via HTTP (not file://).';
+        el.textContent = 'Failed to load deployment data. Open a terminal in the ALHFRS folder and run: python -m http.server 8741 — then visit http://localhost:8741/map-embed.html';
         el.style.display = 'block';
-        return;
+        // Don't return — keep the map alive so the user sees the error on a working base map
       }
 
       // ── Compute totals and extract unique operators/years ─────────────────
@@ -1029,6 +1295,7 @@
       createLegend(_map);
       initBoroughControl(_map, boroughLayer);
       initSplatPanel(_map);
+      initNewsPanel();
       initMobileToggle();
     }
 
