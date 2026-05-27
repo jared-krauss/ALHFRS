@@ -1,7 +1,36 @@
 ---
+Context about recent project changes:
+---
+Recent commits:
+c0ee647 docs: auto-update CLAUDE.md via update-docs.py
+4b35a82 docs: auto-update CLAUDE.md via update-docs.py
+f460b2b docs: auto-update CLAUDE.md via update-docs.py
+eeb493e docs: auto-update CLAUDE.md via update-docs.py
+464b42a data: fix source_url for 178 records, remove 3 lfr-358-360 duplicates
+7cba254 data: fix lfr-016 Dalston values, remove lfr-591 duplicate
+410eb26 docs: auto-update CLAUDE.md via update-docs.py
+35be6c8 feat: merge semantic operator-type colors + halation aesthetic
+1094b2b data: add 35 new records from Met PDF (2023, 2025, 2020)
+61a4342 data: merge 20 orphan/duplicate pairs from 2024 reverification
+eca6751 data: reverify 2024 records against Met PDF â€” fix 53 date swaps, add 32 records
+47553e2 data: add lfr-536 Walworth Rd 2024-11-01 (missed by Garbett extraction)
+2f30224 docs: add 2026-05-18 project audit + mempalace note in CLAUDE.md
+7bd3f98 feat: semantic operator-type colors + poppy pastel halation aesthetic
+9aa66bb fix(map-embed): resilient fetch, news panel, PDF script enhancements
+ba3516d feat(map-embed): multi-select filters, year/month filter strip, mobile layout, null-coord fix
+a2bd9f1 data: add 169 Garbett 2024 LFR records (lfr-367 to lfr-535)
+8e91b05 fix(map): load deployments from JSON files instead of stale inline data
+e05d77d feat: borough filter + live count in timeline strip; fix stated_purpose on 2020-22 records
+0dc6d99 docs: update README â€” 366 records, schema v1.2, staging dir, splats index, map features
+
+Current git status:
+?? scripts/extract-pdf.py
+?? scripts/geocode-batch.py
+
+Project root contents: CLAUDE.md, README.md, _archive, agents, data, docs, map, map-embed.html, scripts, serve.bat, serve.ps1, site, splats, tasks
+
 # CLAUDE.md — A London History of Facial Recognition Systems (ALHFRS)
 > Claude Code context for this project. For the full human-readable overview see [README.md](README.md).
----
 
 ## What this project is
 **ALHFRS** is a multi-year documentary art and data visualisation project by Jared Krauss. It documents facial recognition system deployments across London — by the Metropolitan Police, British Transport Police, and private retail operators — and critically examines their legal basis, demographic impact, and accountability gaps.
@@ -82,10 +111,13 @@ To start manually:
 Start-Process -FilePath "http://localhost:8741/map-embed.html"
 ```
 
+---
 # From D:\Dev\ALHFRS\  — two options:
 .\serve.ps1          # PowerShell with coloured output
 serve.bat            # minimal batch file
+---
 
+---
 # Or directly:
 python -m http.server 8741
 
@@ -94,6 +126,7 @@ python -m http.server 8741
 **Two map builds exist:**
 - `map-embed.html` — single-file self-contained build (the active build). Includes operator filter, year timeline, news panel, splat panel.
 - `map/index.html` — modular ES6 build (older; maintained separately in `map/js/`).
+---
 
 ## Local LLM extraction pipeline
 PDF extraction uses `scripts/extract-pdf.py` (requires `D:\Dev\tools\.venv`):
@@ -263,10 +296,8 @@ Both registered 2026-05-26. If something isn't running: open Task Scheduler → 
 
 15. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
 
----
 ## Archive
 `_archive/` is gitignored and holds dead code preserved for reference:
 
 - `map-london-boroughs.js` — hardcoded 23-borough GeoJSON that was once in `map/`. Superseded by the full-resolution `map/data/london-boroughs.geojson`. Do not import or restore.
 - Additional files may be added to this directory as part of project history and reference.
----
