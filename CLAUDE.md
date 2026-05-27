@@ -38,8 +38,8 @@ Project root contents: CLAUDE.md, README.md, _archive, agents, data, docs, map, 
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (May 2026):**
-- Deployment data: **371 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
-- The 2024 cohort is the largest gap — Garbett Excel is the right source but not yet migrated
+- Deployment data: **580 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage; 580/580 pass validation (0 errors)
+- The 2024 cohort is now fully migrated from the Garbett Excel (lfr-367 to lfr-535)
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
 - Map: Live Leaflet map with marker clustering (`leaflet.markercluster`), year-filter timeline strip, 4 layers
@@ -219,7 +219,7 @@ Three subagent personas are defined in `agents/README.md`. Route work accordingl
 - Added 35 new records from Met PDF (2023, 2025, 2020)
 - Merged 20 orphan/duplicate pairs from 2024 reverification
 - Reverified 2024 records against Met PDF — fixed 53 date swaps, added 32 records
-- Added lfr-536 Walworth Rd 2024-11-01 (missed by Garbett extraction)
+- Added Walworth Rd 2024-11-01 (now lfr-506 in dataset, originally committed as lfr-536 before Garbett renumbering)
 - Added 2026-05-18 project audit + mempalace note in CLAUDE.md
 - Merged semantic operator-type colors + poppy pastel halation aesthetic
 - Fixed resilient fetch, news panel, PDF script enhancements
@@ -282,7 +282,7 @@ Both registered 2026-05-26. If something isn't running: open Task Scheduler → 
 
 8. **Gemini 2021 extraction unreliable.** `data/staging/gemini-2021-extraction.json` (5 records, 2026-05-26): The "zero deployments in 2021" claim likely contradicts our existing data. Croydon 173 arrest figure is probably an annual total misattributed to a single deployment. Victoria + Tottenham 2026-05-18 records (from itnews.com.au) are genuinely new and probably addable after de-duplication check. **Do not merge this file wholesale — validate record by record.**
 
-9. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
+9. ~~**null lat/lon records need geocoding**~~ — **resolved** (2026-05-27): all 215 null-coord records geocoded via Nominatim + borough boundary validation. See `scripts/geocode-batch.py`.
 
 10. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
 
@@ -292,7 +292,7 @@ Both registered 2026-05-26. If something isn't running: open Task Scheduler → 
 
 13. **Date swaps fixed in 2024 records** — additional records added as part of reverification process.
 
-14. **New deployment record for Walworth Rd (lfr-536)** — needs validation and integration.
+14. ~~**Walworth Rd lfr-536**~~ — **resolved**: record is lfr-506 (2024-11-01, Southwark, confirmed, Garbett source). Fully integrated and validated.
 
 15. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
 
