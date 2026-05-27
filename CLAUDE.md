@@ -190,6 +190,8 @@ Three subagent personas are defined in `agents/README.md`. Route work accordingl
 
 **Current orchestration stack:** Claude Code + local LLM harness (`D:\Dev\tools\llm-task.py`). Ollama at `localhost:11434` with hermes3:8b and qwen3:8b available. LiteLLM proxy at port 4000 (registered in Task Scheduler, may not be running — check before use).
 
+**MemPalace semantic memory** is available for this project. ChromaDB palace at `D:\MemPalace\palace` with 8,000+ indexed drawers. Access via the `mempalace-mcp.exe` MCP (29 tools) in Claude Code sessions. The `hermes` wing auto-indexes Layer-2 synthetic notes. Use semantic search over all project docs, prior research notes, and vault content before starting any new extraction or analysis work. Project files at `D:\Dev\MemPalace\`.
+
 ---
 
 ## /data-review command
