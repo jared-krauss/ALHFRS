@@ -7,7 +7,7 @@
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (May 2026):**
-- Deployment data: **366 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
+- Deployment data: **371 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
 - The 2024 cohort is the largest gap — Garbett Excel is the right source but not yet migrated
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
@@ -44,7 +44,8 @@ ALHFRS/
 │       └── london-wards.geojson     ward boundaries (loaded in config, not yet surfaced)
 ├── scripts/
 │   ├── validate-dataset.py          schema + data quality validator (stdlib only)
-│   └── pdf-extract-deployments.py   pdfplumber + Hermes3:8b PDF → staging JSON extractor
+│   ├── pdf-extract-deployments.py   pdfplumber + Hermes3:8b PDF → staging JSON extractor
+│   └── extract-pdf.py             new script for local LLM PDF extraction pipeline
 ├── data/
 │   └── staging/
 │       ├── extract-2020-2022.json      9 records (merged into main ✓)
@@ -67,7 +68,6 @@ ALHFRS/
 ```
 
 ## Running the map
-
 **The map auto-starts on login** via Windows Task Scheduler ("ALHFRS Map Server"). Just open:
 
 ```
@@ -83,7 +83,6 @@ Start-Process -FilePath "http://localhost:8741/map-embed.html"
 .\serve.ps1          # PowerShell with coloured output
 serve.bat            # minimal batch file
 
----
 # Or directly:
 python -m http.server 8741
 
@@ -103,21 +102,20 @@ python -m http.server 8741
 - Updated CLAUDE.md with 366 records, v1.2 schema, LLM pipeline, open issues.
 - Added Walworth 2024 Gaussian splat panel to `map-embed.html`.
 - Added scripts/README.md with validate-dataset.py reference.
-
-**Project root contents:** CLAUDE.md, README.md, _archive, agents, data, docs, map, map-embed.html, scripts, serve.bat, serve.ps1, site, splats, tasks
----
+- Added 2026-05-18 project audit + mempalace note in CLAUDE.md.
 
 ## Local LLM extraction pipeline
-PDF extraction uses `scripts/pdf-extract-deployments.py` (requires `D:\Dev\tools\.venv`):
+PDF extraction uses `scripts/extract-pdf.py` (requires `D:\Dev\tools\.venv`):
 
 ```powershell
-python scripts/pdf-extract-deployments.py --input D:\Data\met-pdfs --output D:\Output\deployments.json
+python scripts/extract-pdf.py --input D:\Data\met-pdfs --output D:\Output\deployments.json
 ```
 
 This script extracts deployment data from PDFs and saves it in JSON format. Ensure the virtual environment is activated before running the script.
 
 For more details, refer to `scripts/README.md`.
 
+---
 # From D:\Dev\ALHFRS\
 & "D:\Dev\tools\.venv\Scripts\python.exe" scripts\pdf-extract-deployments.py `
     --pdf "path\to\file.pdf" `
@@ -131,6 +129,7 @@ For more details, refer to `scripts/README.md`.
 **Corroboration:** Cross-reference across sources — discrepancies (same date, different location name) are analytically valuable. `met-police-lfr.json` has a `corroboration_notes` array for flagged discrepancies.
 
 General LLM task harness: `D:\Dev\tools\llm-task.py` — supports extract-json, summarize, update-md, tag, classify. Models: `hermes3:8b` (structured), `qwen3:8b` (writing), `qwen3:8b-lean` (fast).
+---
 
 ## Data schema overview
 All deployment files use **schema v1.2**. Required fields per record:
@@ -264,6 +263,16 @@ Both registered 2026-05-26. If something isn't running: open Task Scheduler → 
 9. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
 
 10. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
+
+11. **2024 records from Met PDF (2023, 2025, 2020)** — need verification and integration into existing data.
+
+12. **Orphan/duplicate pairs from 2024 reverification** — need manual resolution to ensure accuracy.
+
+13. **Date swaps fixed in 2024 records** — additional records added as part of reverification process.
+
+14. **New deployment record for Walworth Rd (lfr-536)** — needs validation and integration.
+
+15. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
 
 ---
 ## Archive
