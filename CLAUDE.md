@@ -2,6 +2,7 @@
 Context about recent project changes:
 ---
 Recent commits:
+d398a1e docs: auto-update CLAUDE.md via update-docs.py
 af329f8 docs: auto-update CLAUDE.md via update-docs.py
 f35a36a docs: fix CLAUDE.md â€” 580 records, lfr-506 vs lfr-536, resolve geocoding + Walworth issues
 3f897a3 docs: auto-update CLAUDE.md via update-docs.py
@@ -37,7 +38,7 @@ Project root contents: CLAUDE.md, README.md, _archive, agents, data, docs, map, 
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (May 2026):**
-- Deployment data: **580 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
+- Deployment data: **581 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
 - The 2024 cohort is the largest gap — Garbett Excel is the right source but not yet migrated
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
@@ -114,7 +115,6 @@ Start-Process -FilePath "http://localhost:8741/map-embed.html"
 .\serve.ps1          # PowerShell with coloured output
 serve.bat            # minimal batch file
 
----
 # Or directly:
 python -m http.server 8741
 
@@ -123,7 +123,6 @@ python -m http.server 8741
 **Two map builds exist:**
 - `map-embed.html` — single-file self-contained build (the active build). Includes operator filter, year timeline, news panel, splat panel.
 - `map/index.html` — modular ES6 build (older; maintained separately in `map/js/`).
----
 
 ## Local LLM extraction pipeline
 PDF extraction uses `scripts/extract-pdf.py` (requires `D:\Dev\tools\.venv`):
