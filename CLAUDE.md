@@ -84,7 +84,6 @@ Start-Process -FilePath "http://localhost:8741/map-embed.html"
 .\serve.ps1          # PowerShell with coloured output
 serve.bat            # minimal batch file
 
----
 # Or directly:
 python -m http.server 8741
 
@@ -114,7 +113,6 @@ python -m http.server 8741
 - Updated CLAUDE.md with 366 records, v1.2 schema, LLM pipeline, open issues.
 - Merged 2020-2022 staging records (9 new deployments, lfr-358 to lfr-366).
 - Added local LLM PDF extraction pipeline + 2020-22 staging data.
----
 
 ## Local LLM extraction pipeline
 PDF extraction uses `scripts/extract-pdf.py` (requires `D:\Dev\tools\.venv`):
@@ -127,6 +125,7 @@ This script extracts deployment data from PDFs and saves it in JSON format. Ensu
 
 For more details, refer to `scripts/README.md`.
 
+---
 # From D:\Dev\ALHFRS\
 & "D:\Dev\tools\.venv\Scripts\python.exe" scripts\pdf-extract-deployments.py `
     --pdf "path\to\file.pdf" `
@@ -140,6 +139,7 @@ For more details, refer to `scripts/README.md`.
 **Corroboration:** Cross-reference across sources — discrepancies (same date, different location name) are analytically valuable. `met-police-lfr.json` has a `corroboration_notes` array for flagged discrepancies.
 
 General LLM task harness: `D:\Dev\tools\llm-task.py` — supports extract-json, summarize, update-md, tag, classify. Models: `hermes3:8b` (structured), `qwen3:8b` (writing), `qwen3:8b-lean` (fast).
+---
 
 ## Data schema overview
 All deployment files use **schema v1.2**. Required fields per record:
