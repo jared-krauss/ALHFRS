@@ -23,21 +23,13 @@ from collections import defaultdict
 from pathlib import Path
 
 
-def fingerprint(rec, src='pdf'):
-    """Tuple of (watchlist_size, alerts, arrests, faces). Each field None-friendly."""
-    if src == 'pdf':
-        return (
-            rec.get('watchlist_size'),
-            rec.get('outcome_alerts'),
-            rec.get('outcome_arrests'),
-            rec.get('outcome_faces_scanned'),
-        )
-    return (
-        rec.get('watchlist_size'),
-        rec.get('outcome_alerts'),
-        rec.get('outcome_arrests'),
-        rec.get('outcome_faces_scanned'),
-    )
+def fingerprint(rec, src='pdf', loose=False):
+    """Tuple of metric values. By default (strict), uses (watchlist, alerts, arrests, faces).
+    If loose=True, drops watchlist (which is often null in older / non-grid sources)."""
+    fields = ['outcome_alerts', 'outcome_arrests', 'outcome_faces_scanned']
+    if not loose:
+        fields = ['watchlist_size'] + fields
+    return tuple(rec.get(f) for f in fields)
 
 
 def normalize_loc(s):
@@ -84,6 +76,8 @@ def main():
     ap.add_argument('--dataset', required=True)
     ap.add_argument('--year-filter', default=None)
     ap.add_argument('--report-out', required=True)
+    ap.add_argument('--loose', action='store_true',
+                    help='Loose fingerprint mode: drop watchlist_size (use for 2025+ records)')
     args = ap.parse_args()
 
     with open(args.pdf_extract, encoding='utf-8') as f:
@@ -98,14 +92,14 @@ def main():
     # Build fingerprint indexes
     pdf_by_fp = defaultdict(list)
     for r in pdf_recs:
-        fp = fingerprint(r, 'pdf')
+        fp = fingerprint(r, 'pdf', loose=args.loose)
         # Only useful if fingerprint has all non-null entries
         if all(v is not None for v in fp):
             pdf_by_fp[fp].append(r)
 
     ds_by_fp = defaultdict(list)
     for r in ds_recs:
-        fp = fingerprint(r, 'ds')
+        fp = fingerprint(r, 'ds', loose=args.loose)
         if all(v is not None for v in fp):
             ds_by_fp[fp].append(r)
 
@@ -148,21 +142,30 @@ def main():
             pdf_seen.add(pdf_id)
             ds_seen.add(best['id'])
             # Classify
-            if (best.get('date_start') == pdf_r['date_start']
-                and loc_score(pdf_r['location_name'], best.get('location_name','')) >= 0.5):
+            same_date = best.get('date_start') == pdf_r['date_start']
+            swap_match = best.get('date_start') == swap_date(pdf_r['date_start'])
+            loc_match = loc_score(pdf_r['location_name'], best.get('location_name','')) >= 0.3
+
+            if same_date and loc_match:
                 perfect.append((pdf_r, best))
-            elif best.get('date_start') == swap_date(pdf_r['date_start']):
+            elif swap_match and loc_match:
                 date_swap.append((pdf_r, best))
-            elif loc_score(pdf_r['location_name'], best.get('location_name','')) >= 0.5:
-                # Fingerprint + location match but date is different (not just DD/MM swap)
+            elif same_date:
+                # Same date + fingerprint, location differs (possible alt spelling)
+                location_drift.append((pdf_r, best))
+            elif swap_match:
+                # DD/MM swap + fingerprint match but locations differ
+                location_drift.append((pdf_r, best))
+            elif loc_match:
+                # Fingerprint + location match but date is different (not DD/MM swap)
                 location_drift.append((pdf_r, best))
             else:
-                # Fingerprint matches but location string very different
+                # Fingerprint matches but everything else differs - suspect
                 location_drift.append((pdf_r, best))
 
     # Records not yet matched
     for r in pdf_recs:
-        pdf_id = (r['date_start'], r['location_name'], fingerprint(r, 'pdf'))
+        pdf_id = (r['date_start'], r['location_name'], fingerprint(r, 'pdf', loose=args.loose))
         if pdf_id not in pdf_seen:
             new_in_pdf.append(r)
 
