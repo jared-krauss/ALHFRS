@@ -10,10 +10,77 @@
 
     html, body {
       height: 100%;
-      background: #0d1117;
+      background: #0c0f1a;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       overflow: hidden;
     }
+
+    /* ── Halation / atmospheric light bleed ──────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(255,110,180,0.13) 0%, transparent 65%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -150px; right: -100px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(126,212,253,0.10) 0%, transparent 65%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #map-halation {
+      position: fixed;
+      top: 30%; left: 35%;
+      transform: translate(-50%, -50%);
+      width: 900px; height: 500px;
+      background: radial-gradient(ellipse, rgba(167,139,250,0.07) 0%, transparent 70%);
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @media (max-width: 768px) {
+      body::before { width: 420px; height: 420px; opacity: 0.7; }
+      body::after  { width: 360px; height: 360px; opacity: 0.7; }
+      #map-halation { width: 540px; height: 300px; opacity: 0.7; }
+    }
+
+    /* ── Marker glow (operator-type classes) ─────────────── */
+    .leaflet-interactive.marker-met     { filter: drop-shadow(0 0 5px rgba(255,110,180,0.75)); }
+    .leaflet-interactive.marker-btp     { filter: drop-shadow(0 0 5px rgba(126,212,253,0.75)); }
+    .leaflet-interactive.marker-private { filter: drop-shadow(0 0 5px rgba(167,139,250,0.75)); }
+    .leaflet-interactive.marker-rfr     { filter: drop-shadow(0 0 5px rgba(251,146,60,0.75));  }
+
+    /* ── Op-chip semantic colors (active state) ──────────── */
+    .op-chip[data-optype="met"].active     { border-color: #ff6eb4; background: rgba(255,110,180,0.18); color: #ff6eb4; }
+    .op-chip[data-optype="btp"].active     { border-color: #7ed4fd; background: rgba(126,212,253,0.18); color: #7ed4fd; }
+    .op-chip[data-optype="private"].active { border-color: #a78bfa; background: rgba(167,139,250,0.18); color: #a78bfa; }
+
+    /* Inactive chip: subtle left-border color hint */
+    .op-chip[data-optype="met"]     { border-left: 3px solid rgba(255,110,180,0.35); }
+    .op-chip[data-optype="btp"]     { border-left: 3px solid rgba(126,212,253,0.35); }
+    .op-chip[data-optype="private"] { border-left: 3px solid rgba(167,139,250,0.35); }
+
+    /* Active: full left border */
+    .op-chip[data-optype="met"].active     { border-left-color: #ff6eb4; border-left-width: 3px; }
+    .op-chip[data-optype="btp"].active     { border-left-color: #7ed4fd; border-left-width: 3px; }
+    .op-chip[data-optype="private"].active { border-left-color: #a78bfa; border-left-width: 3px; }
+
+    /* ── Popup operator accent border ────────────────────── */
+    .popup-met     .leaflet-popup-content-wrapper { border-color: rgba(255,110,180,0.5); }
+    .popup-btp     .leaflet-popup-content-wrapper { border-color: rgba(126,212,253,0.5); }
+    .popup-private .leaflet-popup-content-wrapper { border-color: rgba(167,139,250,0.5); }
+    .popup-rfr     .leaflet-popup-content-wrapper { border-color: rgba(251,146,60,0.5);  }
 
     /* ── Shell ───────────────────────────────────────────── */
     #shell {
@@ -38,6 +105,7 @@
       left: 0;
       right: 0;
       bottom: 100px;
+      z-index: 1;
     }
 
     /* ── Title bar ───────────────────────────────────────── */
@@ -148,9 +216,9 @@
     }
 
     .chip.active {
-      background: rgba(233, 69, 96, 0.18);
-      color: #e94560;
-      border-color: #e94560;
+      background: rgba(200, 211, 232, 0.14);
+      color: #c8d3e8;
+      border-color: #4a5e82;
     }
 
     .chip.month-chip.active {
@@ -194,7 +262,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 12px;
-      background: #0d1117;
+      background: #0c0f1a;
       border-bottom: 1px solid #1e2d4a;
       flex-shrink: 0;
     }
@@ -257,9 +325,9 @@
     }
 
     .layer-btn.active {
-      background: rgba(233, 69, 96, 0.15);
-      color: #e94560;
-      border-color: #e94560;
+      background: rgba(255, 110, 180, 0.15);
+      color: #ff6eb4;
+      border-color: #ff6eb4;
     }
 
     .layer-btn.splat-active {
@@ -312,9 +380,9 @@
     }
 
     .op-chip.active {
-      background: rgba(233, 69, 96, 0.15);
-      color: #e94560;
-      border-color: #e94560;
+      background: rgba(200, 211, 232, 0.12);
+      color: #c8d3e8;
+      border-color: #4a5e82;
     }
 
     .op-chip-check {
@@ -483,7 +551,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 12px;
-      background: #0d1117;
+      background: #0c0f1a;
       border-bottom: 1px solid #1e2d4a;
       flex-shrink: 0;
     }
@@ -630,9 +698,9 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 2000;
-      background: #2a0a0a;
-      border: 1px solid #e94560;
-      color: #e94560;
+      background: rgba(255, 110, 180, 0.07);
+      border: 1px solid #ff6eb4;
+      color: #ff6eb4;
       padding: 16px 20px;
       border-radius: 6px;
       font-size: 13px;
@@ -677,6 +745,7 @@
   </style>
 </head>
 <body>
+  <div id="map-halation" aria-hidden="true"></div>
   <div id="shell">
 
     <div id="map-pane">
@@ -756,10 +825,27 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // ── Constants ─────────────────────────────────────────────────────────────
+    // Semantic operator-type colors (poppy neon-pastel palette)
+    const OPERATOR_COLORS = {
+      met:     '#ff6eb4',  // Met Police LFR — hot coral-pink
+      btp:     '#7ed4fd',  // BTP LFR — electric sky blue
+      private: '#a78bfa',  // Private/Facewatch — soft violet
+      rfr:     '#fb923c',  // Retrospective FR — warm amber (future)
+      default: '#94a3b8',  // fallback neutral
+    };
+
+    // Quality expressed as opacity (secondary signal)
+    const QUALITY_OPACITY = {
+      confirmed:   1.0,
+      approximate: 0.72,
+      unverified:  0.48,
+    };
+
+    // QUALITY_COLORS retained for popup quality dot encoding
     const QUALITY_COLORS = {
-      confirmed:   '#e94560',
-      approximate: '#f6a623',
-      unverified:  '#8899aa',
+      confirmed:   '#a3e635',  // lime green — high confidence
+      approximate: '#f6a623',  // amber — inferred
+      unverified:  '#8899aa',  // slate — single source
     };
 
     const BOROUGH_STYLE = {
@@ -772,6 +858,15 @@
     const RADII = { met: 9, btp: 8, private: 7 };
 
     const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // ── Operator type resolver ────────────────────────────────────────────────
+    function operatorType(rec) {
+      const op = (rec.operator || '').toLowerCase();
+      if (op.includes('metropolitan') || op.includes('met police')) return 'met';
+      if (op.includes('british transport') || op.includes('btp'))    return 'btp';
+      if (op.includes('retrospective'))                               return 'rfr';
+      return 'private';
+    }
 
     // ── Global state ──────────────────────────────────────────────────────────
     // operators: Set of operator names currently VISIBLE. Starts fully populated.
@@ -835,16 +930,20 @@
       const group = L.layerGroup();
       for (const d of deployments) {
         if (d.lat == null || d.lon == null) continue;
-        const color = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
+        const type        = operatorType(d);
+        const markerColor = OPERATOR_COLORS[type] ?? OPERATOR_COLORS.default;
+        const opacity     = QUALITY_OPACITY[d.data_quality] ?? 0.75;
         try {
           L.circleMarker([d.lat, d.lon], {
             radius:      radius ?? 8,
-            fillColor:   color,
-            color:       '#fff',
+            fillColor:   markerColor,
+            color:       markerColor,
             weight:      1.5,
-            fillOpacity: 0.85,
+            fillOpacity: opacity,
+            opacity:     0.9,
+            className:   `marker-${type}`,
           })
-            .bindPopup(buildPopupHTML(d), { maxWidth: 340 })
+            .bindPopup(buildPopupHTML(d), { maxWidth: 340, className: `popup-${type}` })
             .addTo(group);
         } catch (e) {
           console.warn('Skipping record', d.id, e.message);
@@ -872,25 +971,24 @@
       legend.onAdd = () => {
         const div = L.DomUtil.create('div', 'map-legend');
         div.innerHTML = `
-          <div class="legend-title">Data confidence</div>
-          ${Object.entries(QUALITY_COLORS).map(([key, color]) => `
-            <div class="legend-item">
-              <span class="legend-dot" style="background:${color}"></span>
-              <span>${key}</span>
-            </div>
-          `).join('')}
-          <div class="legend-section">Operator</div>
-          <div class="legend-shape-item">
-            <span class="legend-circle" style="width:18px;height:18px;"></span>
-            <span>Met Police</span>
+          <div class="legend-title">Deployment type</div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#ff6eb4;box-shadow:0 0 6px rgba(255,110,180,0.65)"></span>
+            <span>Met Police LFR</span>
           </div>
-          <div class="legend-shape-item">
-            <span class="legend-circle" style="width:16px;height:16px;"></span>
-            <span>BTP (rail)</span>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#7ed4fd;box-shadow:0 0 6px rgba(126,212,253,0.65)"></span>
+            <span>BTP LFR</span>
           </div>
-          <div class="legend-shape-item">
-            <span class="legend-circle" style="width:14px;height:14px;"></span>
-            <span>Retail FRS</span>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#a78bfa;box-shadow:0 0 6px rgba(167,139,250,0.65)"></span>
+            <span>Private (Facewatch)</span>
+          </div>
+          <div class="legend-section">Data quality</div>
+          <div class="legend-note" style="line-height:1.6">
+            <span style="opacity:1.0">●</span> confirmed &nbsp;
+            <span style="opacity:0.72">●</span> approx &nbsp;
+            <span style="opacity:0.48">●</span> unverified
           </div>
           <div class="legend-note">ALHFRS · <span id="legend-count">…</span> · May 2026</div>
         `;
@@ -950,6 +1048,7 @@
         const btn = document.createElement('button');
         btn.className = 'op-chip active';
         btn.setAttribute('aria-pressed', 'true');
+        btn.setAttribute('data-optype', operatorType({ operator: op }));
 
         const check = document.createElement('span');
         check.className = 'op-chip-check';
@@ -1188,7 +1287,7 @@
           listEl.innerHTML = articles.map(renderNewsCard).join('');
           loaded = true;
         } catch (err) {
-          listEl.innerHTML = `<div style="padding:14px;color:#e94560;font-size:11px;">
+          listEl.innerHTML = `<div style="padding:14px;color:#ff6eb4;font-size:11px;">
             Could not load news data.<br>Serve via HTTP — see serve.ps1.</div>`;
         }
       }
