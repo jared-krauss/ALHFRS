@@ -1,5 +1,7 @@
+---
 # CLAUDE.md — A London History of Facial Recognition Systems (ALHFRS)
 > Claude Code context for this project. For the full human-readable overview see [README.md](README.md).
+---
 
 ## What this project is
 **ALHFRS** is a multi-year documentary art and data visualisation project by Jared Krauss. It documents facial recognition system deployments across London — by the Metropolitan Police, British Transport Police, and private retail operators — and critically examines their legal basis, demographic impact, and accountability gaps.
@@ -93,27 +95,6 @@ python -m http.server 8741
 - `map-embed.html` — single-file self-contained build (the active build). Includes operator filter, year timeline, news panel, splat panel.
 - `map/index.html` — modular ES6 build (older; maintained separately in `map/js/`).
 
-**Recent changes:**
-- Added semantic operator-type colors and halation aesthetics.
-- Merged 35 new records from Met PDF (2023, 2025, 2020).
-- Merged 20 orphan/duplicate pairs from 2024 reverification.
-- Reverified 2024 records against Met PDF — fixed 53 date swaps and added 32 records.
-- Added lfr-536 Walworth Rd 2024-11-01 (missed by Garbett extraction).
-- Updated README with 366 records, schema v1.2, staging dir, splats index, map features.
-- Updated CLAUDE.md with 366 records, v1.2 schema, LLM pipeline, open issues.
-- Added Walworth 2024 Gaussian splat panel to `map-embed.html`.
-- Added scripts/README.md with validate-dataset.py reference.
-- Added 2026-05-18 project audit + mempalace note in CLAUDE.md.
-- Updated map-embed.html for resilient fetch, news panel, and PDF script enhancements.
-- Added multi-select filters, year/month filter strip, mobile layout, null-coord fix to `map-embed.html`.
-- Added 169 Garbett 2024 LFR records (lfr-367 to lfr-535).
-- Updated map to load deployments from JSON files instead of stale inline data.
-- Added borough filter + live count in timeline strip; fixed stated_purpose on 2020-22 records.
-- Updated README with 366 records, schema v1.2, staging dir, splats index, and map features.
-- Updated CLAUDE.md with 366 records, v1.2 schema, LLM pipeline, open issues.
-- Merged 2020-2022 staging records (9 new deployments, lfr-358 to lfr-366).
-- Added local LLM PDF extraction pipeline + 2020-22 staging data.
-
 ## Local LLM extraction pipeline
 PDF extraction uses `scripts/extract-pdf.py` (requires `D:\Dev\tools\.venv`):
 
@@ -125,7 +106,6 @@ This script extracts deployment data from PDFs and saves it in JSON format. Ensu
 
 For more details, refer to `scripts/README.md`.
 
----
 # From D:\Dev\ALHFRS\
 & "D:\Dev\tools\.venv\Scripts\python.exe" scripts\pdf-extract-deployments.py `
     --pdf "path\to\file.pdf" `
@@ -139,7 +119,6 @@ For more details, refer to `scripts/README.md`.
 **Corroboration:** Cross-reference across sources — discrepancies (same date, different location name) are analytically valuable. `met-police-lfr.json` has a `corroboration_notes` array for flagged discrepancies.
 
 General LLM task harness: `D:\Dev\tools\llm-task.py` — supports extract-json, summarize, update-md, tag, classify. Models: `hermes3:8b` (structured), `qwen3:8b` (writing), `qwen3:8b-lean` (fast).
----
 
 ## Data schema overview
 All deployment files use **schema v1.2**. Required fields per record:
@@ -284,8 +263,10 @@ Both registered 2026-05-26. If something isn't running: open Task Scheduler → 
 
 15. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
 
+---
 ## Archive
 `_archive/` is gitignored and holds dead code preserved for reference:
 
 - `map-london-boroughs.js` — hardcoded 23-borough GeoJSON that was once in `map/`. Superseded by the full-resolution `map/data/london-boroughs.geojson`. Do not import or restore.
 - Additional files may be added to this directory as part of project history and reference.
+---
