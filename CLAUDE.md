@@ -1,34 +1,3 @@
----
-Context about recent project changes:
----
-Recent commits:
-d398a1e docs: auto-update CLAUDE.md via update-docs.py
-af329f8 docs: auto-update CLAUDE.md via update-docs.py
-f35a36a docs: fix CLAUDE.md â€” 580 records, lfr-506 vs lfr-536, resolve geocoding + Walworth issues
-3f897a3 docs: auto-update CLAUDE.md via update-docs.py
-057098e data: add lfr-603 Victoria + lfr-604 Tottenham (2026-05-18, unverified)
-dfc948e data: geocode 215 null lat/lon records via Nominatim + manual fixes
-c0ee647 docs: auto-update CLAUDE.md via update-docs.py
-4b35a82 docs: auto-update CLAUDE.md via update-docs.py
-f460b2b docs: auto-update CLAUDE.md via update-docs.py
-eeb493e docs: auto-update CLAUDE.md via update-docs.py
-464b42a data: fix source_url for 178 records, remove 3 lfr-358-360 duplicates
-7cba254 data: fix lfr-016 Dalston values, remove lfr-591 duplicate
-410eb26 docs: auto-update CLAUDE.md via update-docs.py
-35be6c8 feat: merge semantic operator-type colors + halation aesthetic
-1094b2b data: add 35 new records from Met PDF (2023, 2025, 2020)
-61a4342 data: merge 20 orphan/duplicate pairs from 2024 reverification
-eca6751 data: reverify 2024 records against Met PDF â€” fix 53 date swaps, add 32 records
-47553e2 data: add lfr-536 Walworth Rd 2024-11-01 (missed by Garbett extraction)
-2f30224 docs: add 2026-05-18 project audit + mempalace note in CLAUDE.md
-7bd3f98 feat: semantic operator-type colors + poppy pastel halation aesthetic
-
-Current git status:
-?? scripts/extract-pdf.py
-
-Project root contents: CLAUDE.md, README.md, _archive, agents, data, docs, map, map-embed.html, scripts, serve.bat, serve.ps1, site, splats, tasks
----
-
 # CLAUDE.md — A London History of Facial Recognition Systems (ALHFRS)
 > Claude Code context for this project. For the full human-readable overview see [README.md](README.md).
 
