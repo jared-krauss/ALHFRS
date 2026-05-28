@@ -21,7 +21,7 @@
       position: fixed;
       top: -200px; left: -200px;
       width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(255,110,180,0.13) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(255,110,180,0.06) 0%, transparent 65%);
       filter: blur(80px);
       pointer-events: none;
       z-index: 0;
@@ -32,7 +32,7 @@
       position: fixed;
       bottom: -150px; right: -100px;
       width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(126,212,253,0.10) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(126,212,253,0.05) 0%, transparent 65%);
       filter: blur(70px);
       pointer-events: none;
       z-index: 0;
@@ -56,10 +56,10 @@
     }
 
     /* ── Marker glow (operator-type classes) ─────────────── */
-    .leaflet-interactive.marker-met     { filter: drop-shadow(0 0 5px rgba(255,110,180,0.75)); }
-    .leaflet-interactive.marker-btp     { filter: drop-shadow(0 0 5px rgba(126,212,253,0.75)); }
-    .leaflet-interactive.marker-private { filter: drop-shadow(0 0 5px rgba(167,139,250,0.75)); }
-    .leaflet-interactive.marker-rfr     { filter: drop-shadow(0 0 5px rgba(251,146,60,0.75));  }
+    .leaflet-interactive.marker-met     { filter: drop-shadow(0 0 3px rgba(255,110,180,0.40)); }
+    .leaflet-interactive.marker-btp     { filter: drop-shadow(0 0 3px rgba(126,212,253,0.40)); }
+    .leaflet-interactive.marker-private { filter: drop-shadow(0 0 3px rgba(167,139,250,0.40)); }
+    .leaflet-interactive.marker-rfr     { filter: drop-shadow(0 0 3px rgba(251,146,60, 0.40)); }
 
     /* ── Op-chip semantic colors (active state) ──────────── */
     .op-chip[data-optype="met"].active     { border-color: #ff6eb4; background: rgba(255,110,180,0.18); color: #ff6eb4; }
@@ -98,13 +98,13 @@
       transition: flex-basis 0.35s ease;
     }
 
-    /* 36px title-bar + 64px filter-strip = 100px */
+    /* 52px title-bar + 64px filter-strip = 116px */
     #map {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      bottom: 100px;
+      bottom: 116px;
       z-index: 1;
     }
 
@@ -114,7 +114,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 36px;
+      height: 52px;
       background: rgba(10, 13, 22, 0.96);
       border-top: 1px solid #1e2d4a;
       display: flex;
@@ -131,6 +131,15 @@
       letter-spacing: 0.05em;
       color: #c8d3e8;
       text-transform: uppercase;
+    }
+
+    .title-bar-subtitle {
+      font-size: 9px;
+      font-weight: 400;
+      color: #7a8aa8;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      margin-top: 3px;
     }
 
     .title-bar-meta {
@@ -152,7 +161,7 @@
     /* ── Filter strip ────────────────────────────────────── */
     #filter-strip {
       position: absolute;
-      bottom: 36px;
+      bottom: 52px;
       left: 0;
       right: 0;
       height: 64px;
@@ -328,6 +337,13 @@
       background: rgba(255, 110, 180, 0.15);
       color: #ff6eb4;
       border-color: #ff6eb4;
+    }
+
+    /* Borough boundaries button — neutral cartographic blue, not operator-type pink */
+    #btn-boroughs.active {
+      background: rgba(106, 154, 186, 0.15);
+      color: #6a9aba;
+      border-color: #6a9aba;
     }
 
     .layer-btn.splat-active {
@@ -517,11 +533,28 @@
     }
 
     .legend-note {
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px solid #1e2d4a;
+      margin-top: 3px;
       font-size: 10px;
       color: #3a4a68;
+      line-height: 1.5;
+    }
+
+    .legend-intro {
+      font-size: 9px;
+      color: #5a6a8a;
+      font-style: italic;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      max-width: 160px;
+    }
+
+    .legend-size-row {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      font-size: 10px;
+      color: #6b7fa8;
+      margin: 4px 0 2px;
     }
 
     /* ── News panel ──────────────────────────────────────────── */
@@ -529,7 +562,7 @@
       position: absolute;
       top: 0;
       right: 0;
-      bottom: 100px; /* above filter strip */
+      bottom: 116px; /* above filter strip + title bar */
       width: 340px;
       background: rgba(9, 12, 20, 0.97);
       border-left: 1px solid #1e2d4a;
@@ -796,7 +829,10 @@
       <div id="load-error"></div>
 
       <div id="title-bar">
-        <span class="title-bar-name">A London History of Facial Recognition Systems</span>
+        <div>
+          <div class="title-bar-name">A London History of Facial Recognition Systems</div>
+          <div class="title-bar-subtitle">Each dot marks a day police deployed live facial recognition cameras on a London street.</div>
+        </div>
         <span class="title-bar-meta">
           <span id="deploy-count">…</span> ·
           <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
@@ -850,12 +886,17 @@
 
     const BOROUGH_STYLE = {
       color: '#2a3a5e',
-      weight: 1,
+      weight: 0.75,
       fillColor: 'transparent',
       fillOpacity: 0,
     };
 
-    const RADII = { met: 9, btp: 8, private: 7 };
+    // Per-layer config: Met uses arrests-scaled radius; BTP/private use fixed (no arrests data)
+    const LAYER_CONFIG = {
+      met:     { arrestsEncoding: true },
+      btp:     { radius: 5 },
+      private: { radius: 5 },
+    };
 
     const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -925,24 +966,54 @@
       `;
     }
 
+    // ── Visual encoding helpers ───────────────────────────────────────────────
+    // Radius from arrests count (sqrt scale, capped 3–12px).
+    // 0→4, 1→5, 4→6, 9→8, 16→9, 25→11, 36+→12. null→3 (data gap, dashed ring).
+    function arrestsRadius(d) {
+      const a = d.outcome_arrests;
+      if (a == null) return 3;
+      return Math.min(12, Math.max(4, Math.round(3 + Math.sqrt(a) * 1.5)));
+    }
+
+    // Stroke opacity from deployment year — newer = brighter ring.
+    function yearStrokeOpacity(dateStr) {
+      const y = parseInt(dateStr?.slice(0, 4) ?? '2024');
+      if (y >= 2025) return 0.9;
+      if (y >= 2024) return 0.7;
+      if (y >= 2023) return 0.5;
+      return 0.25;
+    }
+
     // ── Deployment layer ──────────────────────────────────────────────────────
-    function createDeploymentLayer(deployments, radius) {
+    function createDeploymentLayer(deployments, config) {
       const group = L.layerGroup();
       for (const d of deployments) {
         if (d.lat == null || d.lon == null) continue;
         const type        = operatorType(d);
         const markerColor = OPERATOR_COLORS[type] ?? OPERATOR_COLORS.default;
-        const opacity     = QUALITY_OPACITY[d.data_quality] ?? 0.75;
+
+        let r, dashArray;
+        if (config.arrestsEncoding) {
+          r         = arrestsRadius(d);
+          dashArray = (d.outcome_arrests == null) ? '5, 3' : null;
+        } else {
+          r         = config.radius ?? 5;
+          dashArray = null;
+        }
+
+        const circleOpts = {
+          radius:      r,
+          fillColor:   markerColor,
+          color:       markerColor,
+          weight:      1.5,
+          fillOpacity: QUALITY_OPACITY[d.data_quality] ?? 0.75,
+          opacity:     yearStrokeOpacity(d.date_start),
+          className:   `marker-${type}`,
+        };
+        if (dashArray) circleOpts.dashArray = dashArray;
+
         try {
-          L.circleMarker([d.lat, d.lon], {
-            radius:      radius ?? 8,
-            fillColor:   markerColor,
-            color:       markerColor,
-            weight:      1.5,
-            fillOpacity: opacity,
-            opacity:     0.9,
-            className:   `marker-${type}`,
-          })
+          L.circleMarker([d.lat, d.lon], circleOpts)
             .bindPopup(buildPopupHTML(d), { maxWidth: 340, className: `popup-${type}` })
             .addTo(group);
         } catch (e) {
@@ -971,17 +1042,18 @@
       legend.onAdd = () => {
         const div = L.DomUtil.create('div', 'map-legend');
         div.innerHTML = `
+          <div class="legend-intro">Each dot = one day of live facial recognition scanning.</div>
           <div class="legend-title">Deployment type</div>
           <div class="legend-item">
-            <span class="legend-dot" style="background:#ff6eb4;box-shadow:0 0 6px rgba(255,110,180,0.65)"></span>
+            <span class="legend-dot" style="background:#ff6eb4;box-shadow:0 0 4px rgba(255,110,180,0.50)"></span>
             <span>Met Police LFR</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background:#7ed4fd;box-shadow:0 0 6px rgba(126,212,253,0.65)"></span>
+            <span class="legend-dot" style="background:#7ed4fd;box-shadow:0 0 4px rgba(126,212,253,0.50)"></span>
             <span>BTP LFR</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background:#a78bfa;box-shadow:0 0 6px rgba(167,139,250,0.65)"></span>
+            <span class="legend-dot" style="background:#a78bfa;box-shadow:0 0 4px rgba(167,139,250,0.50)"></span>
             <span>Private (Facewatch)</span>
           </div>
           <div class="legend-section">Data quality</div>
@@ -990,6 +1062,16 @@
             <span style="opacity:0.72">●</span> approx &nbsp;
             <span style="opacity:0.48">●</span> unverified
           </div>
+          <div class="legend-section">Arrests recorded</div>
+          <div class="legend-size-row">
+            <span style="width:8px;height:8px;background:#ff6eb4;border-radius:50%;display:inline-block;flex-shrink:0"></span><span style="margin:0 6px 0 3px">0</span>
+            <span style="width:12px;height:12px;background:#ff6eb4;border-radius:50%;display:inline-block;flex-shrink:0"></span><span style="margin:0 6px 0 3px">1–9</span>
+            <span style="width:18px;height:18px;background:#ff6eb4;border-radius:50%;display:inline-block;flex-shrink:0"></span><span style="margin:0 6px 0 3px">10+</span>
+          </div>
+          <div class="legend-note" style="margin-top:3px">
+            <span style="display:inline-block;width:8px;height:8px;border:1px dashed #6b7fa8;border-radius:50%;vertical-align:middle"></span>&nbsp;data not disclosed
+          </div>
+          <div class="legend-note">Ring brightness = recency · brighter = 2025–26</div>
           <div class="legend-note">ALHFRS · <span id="legend-count">…</span> · May 2026</div>
         `;
         return div;
@@ -1018,7 +1100,7 @@
       for (const key of ['met', 'btp', 'private']) {
         if (curLayers[key]) _map.removeLayer(curLayers[key]);
         const filtered = rawData[key].filter(matchesFilter);
-        curLayers[key] = createDeploymentLayer(filtered, RADII[key]);
+        curLayers[key] = createDeploymentLayer(filtered, LAYER_CONFIG[key]);
         curLayers[key].addTo(_map);
         visible += filtered.length;
       }
