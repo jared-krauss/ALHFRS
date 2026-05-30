@@ -1,6 +1,20 @@
 # CLAUDE.md — A London History of Facial Recognition Systems (ALHFRS)
 > Claude Code context for this project. For the full human-readable overview see [README.md](README.md).
 
+## Shell Priority — PowerShell FIRST
+
+**This is a Windows machine. PowerShell is the default shell for ALL operations.**
+
+| Tool | Use it when |
+|------|-------------|
+| **PowerShell** (`powershell.exe`) | Default for everything: file ops, git, running scripts, process management, env vars |
+| **Windows MCP** (`mcp__Windows-MCP__PowerShell`) | Cowork/Dispatch context without a Code session |
+| **WSL / Bash** | Only if the task explicitly requires Linux-only tooling |
+
+**Why:** WSL path mapping breaks git worktrees — `.git` files contain Windows paths (`D:\Dev\...`) that WSL can't resolve. `bash cd` + relative paths produce wrong working directories. This has caused real failures. PowerShell works cleanly for all standard dev tasks.
+
+**If a Bash command fails or produces unexpected output, switch to PowerShell immediately. Do not retry Bash.**
+
 ## What this project is
 **ALHFRS** is a multi-year documentary art and data visualisation project by Jared Krauss. It documents facial recognition system deployments across London — by the Metropolitan Police, British Transport Police, and private retail operators — and critically examines their legal basis, demographic impact, and accountability gaps.
 
