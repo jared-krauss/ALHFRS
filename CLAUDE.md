@@ -130,7 +130,7 @@ For more details, refer to `scripts/README.md`.
 
 **Corroboration:** Cross-reference across sources — discrepancies (same date, different location name) are analytically valuable. `met-police-lfr.json` has a `corroboration_notes` array for flagged discrepancies.
 
-General LLM task harness: `D:\Dev\tools\llm-task.py` — supports extract-json, summarize, update-md, tag, classify. Models: `hermes3:8b` (structured), `qwen3:8b` (writing), `qwen3:8b-lean` (fast).
+General LLM task harness: `D:\Dev\tools\llm-task.py` — supports extract-json, summarize, update-md, tag, classify. Models: `hermes3:8b` (structured), `qwen2.5-coder:7b` (code/docs), `mistral:latest` (fast), `deepseek-r1:7b` (reasoning).
 
 ## Data schema overview
 All deployment files use **schema v1.2**. Required fields per record:
@@ -189,7 +189,7 @@ Three subagent personas are defined in `agents/README.md`. Route work accordingl
 | **Data Cleanup & Verification** | Adding or reviewing records, sourcing, data_quality auditing, validator output triage |
 | **Marketing & Public Rollout** | Artist statements, exhibition copy, press releases, community outreach, social media |
 
-**Current orchestration stack:** Claude Code + local LLM harness (`D:\Dev\tools\llm-task.py`). Ollama at `localhost:11434` with hermes3:8b and qwen3:8b available. LiteLLM proxy at port 4000 (registered in Task Scheduler, may not be running — check before use).
+**Current orchestration stack:** Claude Code + local LLM harness (`D:\Dev\tools\llm-task.py`). Ollama at `localhost:11434` with hermes3:8b, qwen2.5-coder:7b, mistral:latest, deepseek-r1:7b available. LiteLLM proxy at port 4000 (registered in Task Scheduler, may not be running — check before use).
 
 **MemPalace semantic memory** is available for this project. ChromaDB palace at `D:\MemPalace\palace` with 8,000+ indexed drawers. Access via the `mempalace-mcp.exe` MCP (29 tools) in Claude Code sessions. The `hermes` wing auto-indexes Layer-2 synthetic notes. Use semantic search over all project docs, prior research notes, and vault content before starting any new extraction or analysis work. Project files at `D:\Dev\MemPalace\`.
 
