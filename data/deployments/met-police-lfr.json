@@ -128,7 +128,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
       "source_type": "FOI_disclosure",
-      "notes": "Croydon High Street area. See also lfr-008, same zone, Oct 2025 static camera escalation."
+      "notes": "Croydon High Street area. See also lfr-008, same zone, Oct 2025 static camera escalation. FOI 01.FOI.24.035019 (Apr 2024) was checked for per-deployment arrest data: the disclosure refers to the MPS LFR Deployment Grid PDF, which begins its Croydon entries in Dec 2023 — this May 2022 deployment is not individually listed in any archived version of the grid. outcome_arrests cannot be populated from this source."
     },
     {
       "id": "lfr-363",
@@ -563,7 +563,7 @@
       "data_quality": "confirmed",
       "source_url": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/",
       "source_type": "FOI_disclosure",
-      "notes": "Same physical complex as lfr-003 (2020). 167m separation in coordinates reflects different entrance points of the same mall."
+      "notes": "Same physical complex as lfr-003 (2020). 167m separation in coordinates reflects different entrance points of the same mall. FOI 01.FOI.24.035019 (Apr 2024) was checked for per-deployment arrest data: the disclosure refers to the MPS LFR Deployment Grid PDF, which lists Camden deployments on 08/09/23 and 09/09/23 but no Westfield Stratford / Newham entry for 07/09/23. outcome_arrests cannot be populated from this source."
     },
     {
       "id": "lfr-020",
@@ -1380,7 +1380,7 @@
       "deployment_type": "mobile",
       "location_name": "Liverpool Street Station area",
       "borough": "City of London",
-      "ward": null,
+      "ward": "Bishopsgate",
       "lat": 51.5178,
       "lon": -0.0823,
       "location_cluster_id": null,
