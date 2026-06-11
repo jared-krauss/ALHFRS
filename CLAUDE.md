@@ -244,6 +244,15 @@ Do not create files in these directories without a plan for the accompanying sch
 
 Both registered 2026-05-26. If something isn't running: open Task Scheduler → find entry → right-click → Run.
 
+## MemPalace
+
+Before starting any work, run to load stored context:
+```powershell
+mempalace search "ALHFRS facial recognition London deployment surveillance Met Police" --wing dev --results 5
+mempalace search "ALHFRS facial recognition project brief" --wing wiki --results 3
+```
+Wiki results: background/ideation context, may be stale — see root CLAUDE.md MemPalace section for snippet-handling rules.
+
 ## Decisions
 
 - **2023-24 PDF extract:** abandoned Hermes3:8b extraction over Gemini because Hermes3 hallucinates regular-interval records on pages containing watchlist-criteria sections. (2026-05-30)
