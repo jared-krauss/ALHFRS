@@ -255,8 +255,7 @@ Wiki results: background/ideation context, may be stale — see root CLAUDE.md M
 
 ## Decisions
 
-- **2023-24 PDF extract:** abandoned Hermes3:8b extraction over Gemini because Hermes3 hallucinates regular-interval records on pages containing watchlist-criteria sections. (2026-05-30)
-- **data_quality enum:** three values (confirmed/approximate/unverified) over two because approximate captures inferred-but-sourced data that is neither fully verified nor fabricated. (2026-05-30)
+Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **not here.** Do not add decision entries to this file.
 
 ## Known issues / open work (May 2026)
 1. **2024 cohort missing** — records jump from 2023 (lfr-031) to 2025 (lfr-032). The Garbett Excel covers 2020–2025 with 254 records and contains 2024 data. Needs migration.
