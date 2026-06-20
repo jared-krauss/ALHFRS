@@ -20,9 +20,8 @@
 
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
-**Current state (May 2026):**
-- Deployment data: **581 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage with gaps in 2024
-- The 2024 cohort is the largest gap — Garbett Excel is the right source but not yet migrated
+**Current state (June 2026):**
+- Deployment data: **580 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage. 2024 is well-represented (183 records) — the earlier "2024 gap" was largely already filled; the Garbett 2024 staging file adds only ~64 genuinely-new records, pending quality check before merge.
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
 - Map: Live Leaflet map with marker clustering (`leaflet.markercluster`), year-filter timeline strip, 4 layers
@@ -258,7 +257,7 @@ Wiki results: background/ideation context, may be stale — see root CLAUDE.md M
 Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **not here.** Do not add decision entries to this file.
 
 ## Known issues / open work (May 2026)
-1. **2024 cohort missing** — records jump from 2023 (lfr-031) to 2025 (lfr-032). The Garbett Excel covers 2020–2025 with 254 records and contains 2024 data. Needs migration.
+1. **2024 cohort — largely already present (was wrongly logged as "missing").** The dataset holds 183 records dated 2024. The Garbett 2024 staging file (`data/staging/garbett-2024.json`) overlaps heavily with what's already merged; a test import adds only ~64 genuinely-new records, each needing a quality check before merge. Treat as top-up, not gap-fill.
 
 2. **2023-24 PDF extraction poor quality** — `data/staging/extract-2023-2024.json` has 30 hallucinated records with regular 2-week intervals. Do not merge. Needs Gemini API or revised prompt that skips watchlist-criteria sections.
 
