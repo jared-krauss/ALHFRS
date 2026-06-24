@@ -37,7 +37,7 @@ ALHFRS/
 │   └── README.md                three agent persona definitions for subagent dispatch
 ├── data/
 │   ├── deployments/             structured JSON deployment records (schema v1.2)
-│   │   ├── met-police-lfr.json      8 Met Police LFR deployments (2020–2026)
+│   │   ├── met-police-lfr.json      Met Police LFR deployments (2020–2026) — see Current state for live count
 │   │   ├── btp-lfr.json             2 British Transport Police LFR trials (Feb 2026)
 │   │   ├── private-operators.json   5 Facewatch/Sainsbury's retail FRS records
 │   │   └── retrospective-fr.json    4 RFR false-positive incidents (schema v1.0)
