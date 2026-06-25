@@ -21,7 +21,7 @@
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (June 2026):**
-- Deployment data: **580 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage. 2024 is well-represented (183 records) — the earlier "2024 gap" was largely already filled; the Garbett 2024 staging file adds only ~64 genuinely-new records, pending quality check before merge.
+- Deployment data: **644 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage. The Garbett 2024 top-up (64 records) has been merged and verified — 0 validator errors, 887 warnings (mostly expected near-duplicate flags). See `_review/DATA-CHANGES.md` for the full changelog.
 - Legal data: 4 court cases / ICO enforcement actions
 - News archive: 21 research articles
 - Map: Live Leaflet map with marker clustering (`leaflet.markercluster`), year-filter timeline strip, 4 layers
@@ -257,35 +257,33 @@ Wiki results: background/ideation context, may be stale — see root CLAUDE.md M
 Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **not here.** Do not add decision entries to this file.
 
 ## Known issues / open work (May 2026)
-1. **2024 cohort — largely already present (was wrongly logged as "missing").** The dataset holds 183 records dated 2024. The Garbett 2024 staging file (`data/staging/garbett-2024.json`) overlaps heavily with what's already merged; a test import adds only ~64 genuinely-new records, each needing a quality check before merge. Treat as top-up, not gap-fill.
+1. **2023-24 PDF extraction poor quality** — `data/staging/extract-2023-2024.json` has 30 hallucinated records with regular 2-week intervals. Do not merge. Needs Gemini API or revised prompt that skips watchlist-criteria sections.
 
-2. **2023-24 PDF extraction poor quality** — `data/staging/extract-2023-2024.json` has 30 hallucinated records with regular 2-week intervals. Do not merge. Needs Gemini API or revised prompt that skips watchlist-criteria sections.
+2. **Corroboration discrepancies logged** — `corroboration_notes` in `met-police-lfr.json`: same-date records with different location names from different sources (2020-02-11, 2020-02-27). Analytically interesting — don't resolve blindly.
 
-3. **Corroboration discrepancies logged** — `corroboration_notes` in `met-police-lfr.json`: same-date records with different location names from different sources (2020-02-11, 2020-02-27). Analytically interesting — don't resolve blindly.
+3. **`map/data/london-wards.geojson` (1.05 MB) has no layer toggle yet.** Ward-level boundaries loaded in config; toggle planned.
 
-4. **`map/data/london-wards.geojson` (1.05 MB) has no layer toggle yet.** Ward-level boundaries loaded in config; toggle planned.
+4. **Some news archive URLs are share.google redirects.** `data/news/gmail-research-threads.json` — `url_canonical` partially filled; remainder need resolving.
 
-5. **Some news archive URLs are share.google redirects.** `data/news/gmail-research-threads.json` — `url_canonical` partially filled; remainder need resolving.
+5. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs populating.
 
-6. **`lfr-006` (Liverpool Street) has null `ward`.** City of London ward data needs populating.
+6. **Outcome data sparse.** Most records have null outcomes — intentional where data isn't public. Only a few records have `outcome_arrests` populated.
 
-7. **Outcome data sparse.** Most records have null outcomes — intentional where data isn't public. Only a few records have `outcome_arrests` populated.
+7. **Gemini 2021 extraction unreliable.** `data/staging/gemini-2021-extraction.json` (5 records, 2026-05-26): The "zero deployments in 2021" claim likely contradicts our existing data. Croydon 173 arrest figure is probably an annual total misattributed to a single deployment. Victoria + Tottenham 2026-05-18 records (from itnews.com.au) are genuinely new and probably addable after de-duplication check. **Do not merge this file wholesale — validate record by record.**
 
-8. **Gemini 2021 extraction unreliable.** `data/staging/gemini-2021-extraction.json` (5 records, 2026-05-26): The "zero deployments in 2021" claim likely contradicts our existing data. Croydon 173 arrest figure is probably an annual total misattributed to a single deployment. Victoria + Tottenham 2026-05-18 records (from itnews.com.au) are genuinely new and probably addable after de-duplication check. **Do not merge this file wholesale — validate record by record.**
+8. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
 
-9. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
+9. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
 
-10. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
+10. **2024 records from Met PDF (2023, 2025, 2020)** — need verification and integration into existing data.
 
-11. **2024 records from Met PDF (2023, 2025, 2020)** — need verification and integration into existing data.
+11. **Orphan/duplicate pairs from 2024 reverification** — need manual resolution to ensure accuracy.
 
-12. **Orphan/duplicate pairs from 2024 reverification** — need manual resolution to ensure accuracy.
+12. **Date swaps fixed in 2024 records** — additional records added as part of reverification process.
 
-13. **Date swaps fixed in 2024 records** — additional records added as part of reverification process.
+13. **New deployment record for Walworth Rd (lfr-536)** — needs validation and integration.
 
-14. **New deployment record for Walworth Rd (lfr-536)** — needs validation and integration.
-
-15. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
+14. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
 
 ---
 ## Archive
