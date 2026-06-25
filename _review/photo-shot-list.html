@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALHFRS — Photo Shot List</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#fbfaf8; --fg:#1a1a1a; --muted:#6b6660; --card:#ffffff; --line:#e4ded5;
+    --accent:#c0395b; --accent-soft:#f7a8b8; --shot:#2e7d54; --skip:#9a8f88;
+    --chip:#f1ece5;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#16151a; --fg:#e8e6e3; --muted:#9a948d; --card:#201e26; --line:#34313c;
+      --accent:#f7a8b8; --accent-soft:#7a3f50; --shot:#5fcf93; --skip:#6e6760; --chip:#2a2730; }
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{ margin:0; font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--fg); background:var(--bg); padding:0 14px env(safe-area-inset-bottom,24px); }
+  header{ position:sticky; top:0; z-index:5; background:var(--bg); padding:16px 0 10px;
+    border-bottom:1px solid var(--line); }
+  h1{ font-size:1.3rem; margin:0 0 2px; }
+  .sub{ color:var(--muted); font-size:.82rem; margin:0 0 10px; }
+  .progress-wrap{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .bar{ flex:1; height:9px; border-radius:6px; background:var(--chip); overflow:hidden; }
+  .bar > i{ display:block; height:100%; width:0; background:var(--shot); transition:width .25s; }
+  .count{ font-size:.8rem; color:var(--muted); white-space:nowrap; }
+  .filters{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; -ms-overflow-style:none; scrollbar-width:none; }
+  .filters::-webkit-scrollbar{ display:none; }
+  .filter{ flex:0 0 auto; border:1px solid var(--line); background:var(--card); color:var(--fg);
+    font-size:.8rem; padding:6px 11px; border-radius:999px; cursor:pointer; }
+  .filter[aria-pressed="true"]{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  main{ padding:12px 0 90px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:13px 14px; margin-bottom:11px; }
+  .card.is-shot{ border-color:var(--shot); }
+  .card.is-skip{ opacity:.62; }
+  .card.hidden{ display:none; }
+  .top{ display:flex; align-items:baseline; gap:8px; }
+  .rank{ font-size:.78rem; color:var(--muted); font-variant-numeric:tabular-nums; min-width:1.4em; }
+  .name{ font-weight:700; font-size:1.04rem; flex:1; }
+  .star{ font-size:1.15rem; line-height:1; background:none; border:none; cursor:pointer;
+    color:var(--line); padding:2px; }
+  .star.on{ color:#e0a82e; }
+  .meta{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .badge{ font-size:.72rem; padding:3px 8px; border-radius:6px; background:var(--chip); color:var(--muted); }
+  .badge.dep{ background:var(--accent-soft); color:var(--accent); font-weight:600; }
+  .detail{ font-size:.9rem; color:var(--fg); margin:6px 0 4px; }
+  .flags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .flag{ font-size:.7rem; padding:2px 7px; border-radius:6px; border:1px dashed var(--line); color:var(--muted); }
+  .flag.precise{ color:var(--shot); border-color:var(--shot); }
+  .flag.local{ color:var(--accent); border-color:var(--accent-soft); }
+  .seg{ display:flex; gap:6px; margin-top:11px; }
+  .seg button{ flex:1; padding:9px 4px; font-size:.82rem; border:1px solid var(--line);
+    background:var(--bg); color:var(--fg); border-radius:9px; cursor:pointer; font-weight:600; }
+  .seg button.sel[data-s="todo"]{ background:var(--chip); }
+  .seg button.sel[data-s="shot"]{ background:var(--shot); color:#fff; border-color:var(--shot); }
+  .seg button.sel[data-s="skip"]{ background:var(--skip); color:#fff; border-color:var(--skip); }
+  .noteline{ margin-top:9px; }
+  .noteline textarea{ width:100%; border:1px solid var(--line); border-radius:9px; background:var(--bg);
+    color:var(--fg); padding:8px; font:inherit; font-size:.85rem; resize:vertical; min-height:38px; }
+  .toolbar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px 14px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0)); background:var(--card);
+    border-top:1px solid var(--line); }
+  .toolbar button{ flex:1; padding:11px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg); color:var(--fg); font-weight:600; font-size:.85rem; cursor:pointer; }
+  .toolbar button.primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .foot{ color:var(--muted); font-size:.76rem; line-height:1.5; margin:18px 0 12px; }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:78px; background:#222; color:#fff;
+    padding:9px 16px; border-radius:999px; font-size:.82rem; opacity:0; transition:opacity .2s; pointer-events:none; z-index:9; }
+  .toast.show{ opacity:.95; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📷 ALHFRS Shot List</h1>
+  <p class="sub">London facial-recognition hotspots, ranked by deployment frequency. Tap to mark each one. Saved on this device.</p>
+  <div class="progress-wrap">
+    <div class="bar"><i id="barfill"></i></div>
+    <span class="count" id="count">0 shot</span>
+  </div>
+  <div class="filters" id="filters">
+    <button class="filter" data-f="all" aria-pressed="true">All</button>
+    <button class="filter" data-f="todo" aria-pressed="false">To shoot</button>
+    <button class="filter" data-f="shot" aria-pressed="false">Shot</button>
+    <button class="filter" data-f="skip" aria-pressed="false">Skipped</button>
+    <button class="filter" data-f="star" aria-pressed="false">★ Priority</button>
+  </div>
+</header>
+
+<main id="list"></main>
+
+<div class="toolbar">
+  <button id="copy">Copy progress</button>
+  <button id="reset">Reset all</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [
+ {n:"Croydon — North End / town centre", a:"Croydon · Fairfield", d:56, r:"May 2022 – Apr 2026",
+  t:"Croydon's main pedestrianised shopping street, and the single most-surveilled spot in the data by far. Oct 2025 escalation to permanent static cameras at the north & south ends of the High Street — the fixed infrastructure is worth documenting specifically. Same town centre as #7.", precise:true},
+ {n:"Westminster — Coventry St / Piccadilly", a:"Westminster · St James's", d:26, r:"May 2023 – Sep 2024",
+  t:"Clusters around Coventry Street (between Piccadilly Circus and Leicester Square). One deployment tied to the King's Coronation (May 2023). Often labelled just “Westminster.”", local:true},
+ {n:"Stratford — Broadway / Westfield", a:"Newham · Stratford & New Town", d:23, r:"Feb 2020 – Apr 2026",
+  t:"Stratford Broadway and the Westfield Stratford City / Stratford Shopping Centre complex. One of the earliest deployments (June 2020, BLM period). Long history — strong “then and now” location."},
+ {n:"Oxford Circus / Oxford St", a:"Westminster · West End", d:19, r:"Feb 2020 – Feb 2026",
+  t:"Junction of Oxford St and Regent St (data notes “J/W Argyll St”). One St Patrick's Day deployment; one record notes a deployment stopped by a technical fault. High-footfall retail core."},
+ {n:"Romford — Market / South Street", a:"Havering · St Alban's", d:15, r:"Feb 2020 – Mar 2026",
+  t:"Romford Market on South Street — a major long-running street market, high footfall. One of the earliest documented Met mobile deployments (Feb 2020)."},
+ {n:"Tooting Broadway", a:"Wandsworth · Tooting Broadway", d:13, r:"Feb 2024 – Mar 2026",
+  t:"Data specifies “outside Tooting Broadway Tube station.” Consistent crime-hotspot label. The Tube entrance is a concrete, pinpointable spot.", precise:true},
+ {n:"Croydon — George Street", a:"Croydon · Fairfield", d:11, r:"Dec 2023 – Sep 2024",
+  t:"A few streets east of North End (#1) — same town centre, distinct street. Tram stops run along George St. In practice the same Croydon-centre surveillance zone."},
+ {n:"Woolwich — Powis Street", a:"Greenwich · Woolwich Arsenal", d:10, r:"Jan 2025 – Mar 2026",
+  t:"Powis Street is Woolwich's main pedestrianised shopping street. Consistent crime-hotspot use. Near Woolwich Arsenal station / Elizabeth line."},
+ {n:"Walthamstow Central — High St / Square", a:"Waltham Forest · William Morris", d:10, r:"Jan 2025 – Feb 2026",
+  t:"Walthamstow High Street (Europe's longest outdoor market) and the Town Square by the station. Data variants point at both the market and the square."},
+ {n:"Barking — Station Parade", a:"Barking & Dagenham · Barking Central", d:9, r:"Jun 2024 – Mar 2026",
+  t:"Station Parade, right by Barking station. Specific and pinpointable.", precise:true},
+ {n:"Walworth Road", a:"Southwark · North Walworth", d:9, r:"Jan 2024 – Feb 2026",
+  t:"Data specifies “Walworth Rd, junction with East St” (East Street market is just off Walworth Rd). This is also the site of the project's existing Gaussian splat capture — there's already 3D documentation here to align photography with.", precise:true, splat:true},
+ {n:"Kingston — Clarence Street", a:"Kingston upon Thames · Kingston Town", d:9, r:"Feb 2024 – Mar 2026",
+  t:"Clarence Street, Kingston's main pedestrianised shopping street. Pinpointable.", precise:true},
+ {n:"Dalston — Kingsland (High St)", a:"Hackney · Dalston", d:8, r:"Jan 2022 – Feb 2026",
+  t:"Around Dalston Kingsland station / Kingsland High Street. One variant references “Sainsbury's Dalston” — a private-operator overlap may exist here, worth checking which operator. Long span (since 2022)."},
+ {n:"East Ham — High Street North", a:"Newham · East Ham", d:8, r:"Jan 2025 – Apr 2026",
+  t:"Data specifies “High St North, outside Lidl” — an unusually precise marker.", precise:true},
+ {n:"Newham — Green Street (Upton Park)", a:"Newham · Green Street", d:8, r:"Jan 2025 – Apr 2026",
+  t:"Data specifies “Green Street junction with Harold Road.” A well-known South Asian shopping street near the former Upton Park ground.", precise:true},
+ {n:"Ilford — High Road / High Street", a:"Redbridge · Clementswood", d:8, r:"Feb 2025 – Mar 2026",
+  t:"Ilford High Road / pedestrianised High Street. Street-level; exact camera spot needs your local knowledge.", local:true},
+ {n:"Brixton — Brixton Road", a:"Lambeth · Coldharbour", d:7, r:"Feb 2023 – Feb 2026",
+  t:"Brixton Road, the main drag through Brixton centre (near the Tube and Brixton Market). Street-level; exact spot needs your local knowledge.", local:true},
+ {n:"Wembley Central (station)", a:"Brent · Wembley Central", d:7, r:"Jan 2025 – Jan 2026",
+  t:"By Wembley Central station / High Road. (This is Wembley Central, not the stadium — different place.) Pinpointable at the station.", precise:true},
+ {n:"Tottenham Court Rd / Leicester Sq", a:"Camden · West End edge", d:7, r:"Mar 2022 – Apr 2026",
+  t:"Variants split between Tottenham Court Road and Leicester Square — two nearby West End spots grouped together. Decide which to shoot, or treat as two visits.", local:true},
+ {n:"Hackney — Mare Street", a:"Hackney · Hackney Central", d:7, r:"Jul 2024 – Apr 2026",
+  t:"Mare Street, central Hackney's main road (near Hackney Central / the Town Hall). Street-level; exact spot needs your local knowledge.", local:true}
+];
+
+const KEY = "alhfrs-shotlist-v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e){ state = {}; }
+let filter = "all";
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function get(i){ return state[i] || {status:"todo", star:false, note:""}; }
+
+function render(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  DATA.forEach((loc, i) => {
+    const s = get(i);
+    const card = document.createElement("div");
+    card.className = "card" + (s.status==="shot"?" is-shot":"") + (s.status==="skip"?" is-skip":"");
+    const show = filter==="all" || (filter==="star"? s.star : s.status===filter);
+    if(!show) card.classList.add("hidden");
+
+    const flags = [];
+    if(loc.precise) flags.push('<span class="flag precise">📍 precise spot in data</span>');
+    if(loc.local)   flags.push('<span class="flag local">🗺️ needs your local knowledge</span>');
+    if(loc.splat)   flags.push('<span class="flag">🧊 has 3D splat</span>');
+
+    card.innerHTML = `
+      <div class="top">
+        <span class="rank">${i+1}</span>
+        <span class="name">${loc.n}</span>
+        <button class="star ${s.star?'on':''}" data-i="${i}" aria-label="Priority">★</button>
+      </div>
+      <div class="meta">
+        <span class="badge dep">${loc.d} deployments</span>
+        <span class="badge">${loc.a}</span>
+        <span class="badge">${loc.r}</span>
+      </div>
+      <div class="detail">${loc.t}</div>
+      ${flags.length?`<div class="flags">${flags.join("")}</div>`:""}
+      <div class="seg" data-i="${i}">
+        <button data-s="todo" class="${s.status==='todo'?'sel':''}">To shoot</button>
+        <button data-s="shot" class="${s.status==='shot'?'sel':''}">✓ Shot</button>
+        <button data-s="skip" class="${s.status==='skip'?'sel':''}">✕ Skip</button>
+      </div>
+      <div class="noteline">
+        <textarea data-i="${i}" placeholder="Notes — access, time of day, what you got…">${s.note||""}</textarea>
+      </div>`;
+    list.appendChild(card);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const shot = DATA.filter((_,i)=>get(i).status==="shot").length;
+  document.getElementById("count").textContent = shot + " / " + DATA.length + " shot";
+  document.getElementById("barfill").style.width = (shot/DATA.length*100) + "%";
+}
+
+document.getElementById("list").addEventListener("click", e => {
+  const seg = e.target.closest(".seg button");
+  if(seg){ const i=+seg.parentElement.dataset.i; const s=get(i);
+    s.status = seg.dataset.s; state[i]=s; save(); render(); return; }
+  const star = e.target.closest(".star");
+  if(star){ const i=+star.dataset.i; const s=get(i); s.star=!s.star; state[i]=s; save(); render(); }
+});
+document.getElementById("list").addEventListener("input", e => {
+  const ta = e.target.closest("textarea");
+  if(ta){ const i=+ta.dataset.i; const s=get(i); s.note=ta.value; state[i]=s; save(); }
+});
+document.getElementById("filters").addEventListener("click", e => {
+  const b = e.target.closest(".filter"); if(!b) return;
+  filter = b.dataset.f;
+  [...document.querySelectorAll(".filter")].forEach(f=>f.setAttribute("aria-pressed", f===b));
+  render();
+});
+
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1600); }
+
+document.getElementById("copy").addEventListener("click", async () => {
+  let out = "ALHFRS shot-list progress\n";
+  const order = {shot:0, todo:1, skip:2};
+  DATA.map((loc,i)=>({loc,s:get(i)})).sort((a,b)=>order[a.s.status]-order[b.s.status])
+    .forEach(({loc,s})=>{
+      const mark = s.status==="shot"?"[x] SHOT":s.status==="skip"?"[-] skip":"[ ] to shoot";
+      out += `${mark}${s.star?" ★":""} — ${loc.n}${s.note?` (note: ${s.note})`:""}\n`;
+    });
+  try { await navigator.clipboard.writeText(out); toast("Progress copied"); }
+  catch(e){ toast("Copy failed — long-press to select"); }
+});
+document.getElementById("reset").addEventListener("click", () => {
+  if(confirm("Clear all your shot-list marks and notes?")){ state={}; save(); filter="all";
+    [...document.querySelectorAll(".filter")].forEach(f=>f.setAttribute("aria-pressed", f.dataset.f==="all")); render(); toast("Reset"); }
+});
+
+render();
+</script>
+
+<main></main>
+<p class="foot" style="padding:0 0 80px">
+  A note on the ranking: counts reflect what's <em>documented</em> in the dataset, which is itself uneven —
+  well-recorded hotspots (Croydon, Stratford) are over-represented versus places the Met deployed but disclosed
+  less about. So this is "most-documented," close to but not identical to "most-deployed." Your marks and notes
+  are saved only on this device.
+</p>
+</body>
+</html>
