@@ -105,9 +105,12 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   variants** for sub-types: a slightly adjusted shape for permanent/semi-permanent cameras, and a
   variant for retrospective FR (RFR). Rule: **shape = operator, variant = sub-type**, and keep the
   variant to **one** visual dimension (e.g. solid fill vs hollow outline) so it stays legible.
-  *This resolves the current legend-vs-map mismatch:* the legend currently shows shapes but every map
-  marker is a circle. Jared **likes** the shapes — so the fix is to make the **actual markers** use
-  them (feedback #8 / #17), not to drop them.
+  *Note on current state:* an earlier accessibility pass (built in the same review worktree as the
+  rest of this plan) added shape glyphs (●▲■) to the legend/chips only — but that pass never reached
+  the live map and is now superseded (§5b), so today's live legend and markers are both plain
+  circles with no shape cue at all. Jared **likes** the shape idea from that pass — so Phase 0/1
+  should build it properly: **real shape markers on the map itself** (feedback #8 / #17), with the
+  legend mirroring those same shapes rather than a separate text-glyph treatment.
 - **Colour palette + typography.** Lock these (the current build uses a "poppy pastel halation"
   aesthetic — carry the intent forward, refine as Jared's eye dictates).
 - **Legend redesign.** Collapsible; **data-quality removed** from it (moves into click-details, per
@@ -117,6 +120,8 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   grid-breaking) to guide the eye (feedback #12, #13). Assistant proposes; Jared's eye refines.
 - **Prominent intro / onboarding copy.** Decide the wording and placement of the in-map explanation
   of what the dots mean (feedback #5, #19), and whether there's also a one-time welcome card.
+- **Accessibility checklist (§5b below).** Lock focus-visible styling, ARIA patterns, and minimum
+  text size into the Phase-0 visual system itself, not as a pass applied after Phase 1 is built.
 
 ### Phase 1 — Core map rebuilt on MapLibre (parity + the basics fixed)
 
@@ -129,6 +134,9 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   `operator` property (`icon-image` expression). This is idiomatic, GPU-fast MapLibre. *(Leaflet
   equivalent would have been the free `Leaflet.SvgShapeMarkers` plugin or hand-rolled `L.divIcon`
   SVG — cheaper, but we're on MapLibre by choice.)*
+- **Accessible fallback for the data layer (§5a below).** Symbol/circle layers are GPU-fast but
+  invisible to screen readers and not keyboard-focusable. Plan the keyboard-navigable list/table
+  view and the click-details panel's keyboard behaviour alongside the marker work, not after it.
 - **Responsive + cross-browser** (feedback #1, #15): size the map container with modern CSS viewport
   units (**`svh`/`dvh`**, with a `100vh` fallback line first for old browsers) so it fills exactly the
   visible screen and doesn't hide under the mobile address bar; add a **landscape** media query.
@@ -140,13 +148,13 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   Leaflet: its symbol layer **automatically hides colliding labels** for you (control with
   `text-allow-overlap` / `icon-allow-overlap` left at their default `false`, plus `symbol-sort-key`
   to choose which labels win). *(On Leaflet this needed the free `Leaflet.LabelTextCollision` plugin.)*
-- **Spotlight on London** (feedback #20) — see §5 below for the exact MapLibre method (this is where
+- **Spotlight on London** (feedback #20) — see §6 below for the exact MapLibre method (this is where
   MapLibre is *weaker* than Leaflet, so it's spelled out separately).
 - **Prominent intro** drawing the eye to what the dots mean (feedback #5, #19); **better default
   zoom/centre** so London fills the frame instead of sitting tiny (feedback #5).
 - **Bottom strip re-spaced** (feedback #7); **legend collapsible** (feedback #3); **filter buttons
   with a stark ON state that clears instantly** (feedback #2 — rebuilt fresh so the old "stuck
-  highlight" can't recur; see the CSS note in §6); **menu/news layering correct** (feedback #4).
+  highlight" can't recur; see the CSS note in §7); **menu/news layering correct** (feedback #4).
 
 ### Phase 2 — Click-details panel (build the frame, fill over time) (feedback #18)
 
@@ -199,7 +207,52 @@ Out of scope here; listed so nobody scope-creeps into them:
 
 ---
 
-## 5. The "spotlight on London" effect on MapLibre — spell-out (IMPORTANT)
+## 5. Accessibility — bake into Phase 0/1, don't retrofit (IMPORTANT)
+
+Added after a doc review (2026-06-27) found the worktree's earlier Leaflet accessibility pass had
+never reached `main`. Two things follow, one new and one carried over:
+
+1. **A new problem the MapLibre choice itself introduces** (§5a) — nothing about Leaflet prepared
+   for this; it has to be designed in from Phase 1, not bolted on after.
+2. **A checklist carried over from that earlier Leaflet pass** (§5b) — those specific Leaflet-side
+   fixes were deliberately **not** ported (decision `a11y-fixes-superseded-by-maplibre` in
+   `DECISIONS.md`: superseded by this rebuild rather than retrofitted into the old map). The fixes
+   themselves don't carry over, but the checklist they were built against still applies here.
+
+### 5a. MapLibre canvas markers are invisible to screen readers (new — design around it)
+
+MapLibre draws the deployment points on a WebGL canvas. Unlike Leaflet's DOM markers, canvas-drawn
+points are **not in the page's accessibility tree and are not keyboard-focusable** — screen-reader
+and keyboard-only users cannot perceive or reach the dots directly, however the symbol layer is
+styled. Build an accessible path for the **data**, not just the chrome:
+
+- Make the **click-details panel the primary accessible surface**: fully keyboard-operable, move
+  focus into it on open, `Esc` closes and returns focus to the trigger.
+- Provide a **keyboard-navigable list/table view of deployments** (filterable the same way as the
+  map) as the non-visual equivalent of the dots, and/or `aria-live` announcements of filter results.
+- For the full ~644-point layer, GL circle/symbol layers are still the right performant choice —
+  but they're inaccessible by nature, so the list/panel fallback is *how the bar gets met*, not an
+  optional extra. Reserve `maplibregl.Marker` (real DOM markers, focusable) for a handful of key
+  points only, if a specific point ever needs direct DOM accessibility.
+- Treat "the data is reachable without a mouse or sight" as a **requirement**, not a nice-to-have.
+
+### 5b. UI-chrome accessibility checklist (engine-independent — every panel/legend/filter/button)
+
+- Visible `:focus-visible` outline on **every** interactive control (none existed in the old build).
+- ARIA: `aria-expanded` on panel/menu toggles; `role="group"` + `aria-label` on the year/month/
+  operator filter-chip groups; a descriptive per-chip `aria-label`; `aria-pressed` on toggle chips.
+- No control or legend text below ~12–14px.
+- Never rely on colour alone for operator type — pair colour with shape (already the Phase 0/1
+  plan; make sure the legend mirrors the same shapes the markers actually use, not text glyphs
+  bolted on separately).
+- Disabled controls get a tooltip/label saying why (e.g. "Community — coming soon").
+- Affordance hints for non-obvious interactions (e.g. "click a year to filter").
+- Watch focus order + stacking (`z-index`): opening a panel must not render it behind another layer
+  or trap focus (feedback #4 — the existing fix for this specific bug is noted in §7 below).
+
+---
+
+## 6. The "spotlight on London" effect on MapLibre — spell-out (IMPORTANT)
 
 This is the one place where choosing MapLibre **costs us** built-in support, so it needs care.
 
@@ -228,7 +281,7 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 
 ---
 
-## 6. Notes on specific bug fixes (no library needed)
+## 7. Notes on specific bug fixes (no library needed)
 
 - **"Stuck highlight" filter buttons** (feedback #2): the current bug is the classic mobile
   **"sticky hover/focus"** — a `:hover`/`:focus` style sticks after tapping until you tap elsewhere.
@@ -244,7 +297,7 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 
 ---
 
-## 7. Feature → tool / approach map (MapLibre-native vs plugin vs "Leaflet would've sufficed")
+## 8. Feature → tool / approach map (MapLibre-native vs plugin vs "Leaflet would've sufficed")
 
 | Feature (feedback #) | On MapLibre (the chosen path) | Native or extra? | Cheaper Leaflet alt we passed up |
 |---|---|---|---|
@@ -253,6 +306,7 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 | Clustering | GeoJSON source `cluster: true` | **Native** | `leaflet.markercluster` (already in use) |
 | Responsive sizing (#1, #15) | CSS `svh`/`dvh` + `map.resize()` on resize/rotate | CSS + a few JS lines | identical approach on Leaflet (`invalidateSize()`) |
 | Operator **shapes** on markers (#8, #17) | Symbol layer, `addImage()` + data-driven `icon-image` | **Native (data-driven)** | free `Leaflet.SvgShapeMarkers` or `L.divIcon` SVG |
+| **Accessible fallback for ~644 canvas points** (new — not from Jared's feedback) | Keyboard-navigable list/table view + click-details panel as the primary accessible surface; `aria-live` filter announcements (§5a) | **Required hand-built workaround — MapLibre's canvas has no accessibility tree** | Leaflet's DOM markers are natively focusable and screen-reader-visible — this row wouldn't exist on Leaflet |
 | **Spotlight on London** (#20) | Turf.js inverted polygon → MapLibre `fill` layer | **Plugin (Turf.js) + hand-wiring; MapLibre has NO built-in mask** | free `Leaflet.Mask` plugin — **would have been easier** |
 | **Click-details panel** (#18) | Own HTML panel toggled on the layer `click` event | Hand-built | free `leaflet-sidebar-v2` plugin |
 | **Time animation** (#6) | Animated date variable → symbol-layer filter expression | Hand-wired (GPU-smooth) | free `Leaflet.timeline` plugin (play button built in) |
@@ -264,11 +318,13 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 **Reading this table:** most rows say a free Leaflet plugin would have sufficed. That is the honest
 cost of the MapLibre decision, and it's fine — Jared chose MapLibre for the long game, not because
 these features demanded it. The **two real MapLibre wins** are (a) automatic label-collision hiding
-and (b) the GPU foundation for future 3D. The **one real MapLibre cost** is the spotlight mask (§5).
+and (b) the GPU foundation for future 3D. The **two real MapLibre costs** are the spotlight mask
+(§6) and the canvas-accessibility workaround (§5a) — both hand-built because MapLibre has no native
+answer where Leaflet would have had one (`Leaflet.Mask`; natively-focusable DOM markers).
 
 ---
 
-## 8. Verification (before any swap to live)
+## 9. Verification (before any swap to live)
 
 - **Test on Jared's real phone over Tailscale** (the PC serves the map; the phone reaches it via
   Tailscale). Check **portrait AND landscape** — the landscape (short, wide viewport) case is where
@@ -285,7 +341,7 @@ and (b) the GPU foundation for future 3D. The **one real MapLibre cost** is the 
 
 ---
 
-## 9. Open items / things needing Jared's judgement
+## 10. Open items / things needing Jared's judgement
 
 1. **Is "Pretext" still relevant given MapLibre?** Jared named the **Pretext** library
    (github.com/chenglou/pretext, free/MIT) as the "browser front-engine" text technique he half-
@@ -309,7 +365,7 @@ into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.
 
 ---
 
-## 10. Quick reference — where things live
+## 11. Quick reference — where things live
 
 - **Current live map:** `map-embed.html` (single-file Leaflet build) — **keep serving this until swap.**
 - **Older modular Leaflet build:** `map/index.html` + `map/js/` — not the active build.
@@ -321,39 +377,3 @@ into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.
   not `file://`, or `fetch()` calls fail. Map auto-starts on login via the "ALHFRS Map Server" task.
 - **Source material behind this plan:** `_review/MAP-FEEDBACK.md`, `_review/MAP-RESEARCH.md`,
   `_review/MAP-UPGRADE-PLAN.md`.
-
----
-
-## 11. Accessibility (bake into Phase 0/1)
-
-Two accessibility items to build in from the start — cheap now, expensive to retrofit. The first
-is a NEW problem the MapLibre choice introduces; the second is a checklist carried over from an
-earlier Leaflet accessibility pass (those fixes were NOT ported — they're superseded by this
-rebuild, see decision `a11y-fixes-superseded-by-maplibre` — but the checklist still applies to the
-new UI you're building).
-
-### 11.1 MapLibre canvas markers are invisible to screen readers (new issue — must plan for it)
-MapLibre draws the deployment points on a WebGL canvas. Unlike Leaflet's DOM markers, canvas-drawn
-points are NOT in the page's accessibility tree and are NOT keyboard-focusable — so screen-reader
-and keyboard-only users cannot perceive or reach the dots directly. Build an accessible path for
-the DATA, not just the chrome:
-- Make the **click-details panel the primary accessible surface**: fully keyboard-operable, move
-  focus into it on open, Esc closes and returns focus to the trigger.
-- Provide a **keyboard-navigable list/table view of deployments** (filterable the same way as the
-  map) as a non-visual equivalent to the dots, and/or aria-live announcements of filter results.
-- For the full ~644-point layer, GL circle/symbol layers are the right performant choice but are
-  inaccessible by nature — the list/panel fallback is how you meet the bar. Reserve
-  `maplibregl.Marker` (real DOM markers) only for a few key points if DOM accessibility is needed there.
-- Treat "the data is reachable without a mouse or sight" as a requirement, not a nice-to-have.
-
-### 11.2 UI-chrome accessibility checklist (engine-independent — every panel/legend/filter/button)
-- Visible `:focus-visible` outlines on EVERY interactive control (none existed in the old build).
-- ARIA: `aria-expanded` on panel/menu toggles; `role="group"` + `aria-label` on the year/month/
-  operator filter-chip groups; per-chip `aria-label`; `aria-pressed` on toggle chips.
-- No control or legend text below ~12–14px.
-- Never rely on colour alone for operator type — pair colour with shape (already planned as shaped
-  markers; mirror the same shapes in the legend).
-- Disabled controls get a tooltip/label saying why (e.g. "Community — coming soon").
-- Affordance hints for non-obvious interactions (e.g. "click a year to filter").
-- Watch focus order + stacking (z-index): opening a panel must not render it behind another layer
-  or trap focus (an earlier build had the news panel appear behind the menu).
