@@ -10,6 +10,7 @@
 
 ## 2026-06
 
+- **a11y-fixes-superseded-by-maplibre** [ALHFRS] (2026-06-27): chose to let the MapLibre rebuild supersede the unmerged Leaflet accessibility fixes (focus outlines, ARIA, shape glyphs) over porting them into the live map first, because Phase 0/1 of the rebuild reimplements the same markup from scratch anyway.
 - **map-engine-maplibre** [ALHFRS] (2026-06-23): chose a from-scratch MapLibre GL JS rebuild over upgrading the existing Leaflet map, because Jared prioritised a long-term GPU/3D foundation over the lower-risk Leaflet path (informed override — the assistant's evidence-based recommendation was to stay on Leaflet).
 - **data-quality-into-detail-panel** [ALHFRS] (2026-06-23): chose to show a record's data-quality only inside the click-details panel over keeping it in the always-on legend, because the legend treatment (and the "ring brightness = recency" cue) was confusing and ineffective.
 
