@@ -321,3 +321,39 @@ into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.
   not `file://`, or `fetch()` calls fail. Map auto-starts on login via the "ALHFRS Map Server" task.
 - **Source material behind this plan:** `_review/MAP-FEEDBACK.md`, `_review/MAP-RESEARCH.md`,
   `_review/MAP-UPGRADE-PLAN.md`.
+
+---
+
+## 11. Accessibility (bake into Phase 0/1)
+
+Two accessibility items to build in from the start — cheap now, expensive to retrofit. The first
+is a NEW problem the MapLibre choice introduces; the second is a checklist carried over from an
+earlier Leaflet accessibility pass (those fixes were NOT ported — they're superseded by this
+rebuild, see decision `a11y-fixes-superseded-by-maplibre` — but the checklist still applies to the
+new UI you're building).
+
+### 11.1 MapLibre canvas markers are invisible to screen readers (new issue — must plan for it)
+MapLibre draws the deployment points on a WebGL canvas. Unlike Leaflet's DOM markers, canvas-drawn
+points are NOT in the page's accessibility tree and are NOT keyboard-focusable — so screen-reader
+and keyboard-only users cannot perceive or reach the dots directly. Build an accessible path for
+the DATA, not just the chrome:
+- Make the **click-details panel the primary accessible surface**: fully keyboard-operable, move
+  focus into it on open, Esc closes and returns focus to the trigger.
+- Provide a **keyboard-navigable list/table view of deployments** (filterable the same way as the
+  map) as a non-visual equivalent to the dots, and/or aria-live announcements of filter results.
+- For the full ~644-point layer, GL circle/symbol layers are the right performant choice but are
+  inaccessible by nature — the list/panel fallback is how you meet the bar. Reserve
+  `maplibregl.Marker` (real DOM markers) only for a few key points if DOM accessibility is needed there.
+- Treat "the data is reachable without a mouse or sight" as a requirement, not a nice-to-have.
+
+### 11.2 UI-chrome accessibility checklist (engine-independent — every panel/legend/filter/button)
+- Visible `:focus-visible` outlines on EVERY interactive control (none existed in the old build).
+- ARIA: `aria-expanded` on panel/menu toggles; `role="group"` + `aria-label` on the year/month/
+  operator filter-chip groups; per-chip `aria-label`; `aria-pressed` on toggle chips.
+- No control or legend text below ~12–14px.
+- Never rely on colour alone for operator type — pair colour with shape (already planned as shaped
+  markers; mirror the same shapes in the legend).
+- Disabled controls get a tooltip/label saying why (e.g. "Community — coming soon").
+- Affordance hints for non-obvious interactions (e.g. "click a year to filter").
+- Watch focus order + stacking (z-index): opening a panel must not render it behind another layer
+  or trap focus (an earlier build had the news panel appear behind the menu).
