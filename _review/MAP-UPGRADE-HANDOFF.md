@@ -397,15 +397,22 @@ answer where Leaflet would have had one (`Leaflet.Mask`; natively-focusable DOM 
    operator**; variants (permanent/mobile cameras, RFR) stay reserved-but-not-built, except RFR's
    *colour* treatment has now been decided ahead of time — see the Phase 0 exception note above and
    `rfr-colour-operator-fill-plus-outline` in `DECISIONS.md`.
-4. **MOSTLY RESOLVED (2026-06-28):** colours locked to real brand values — Met = Brandfetch International
-   Klein Blue `#0032A0`; BTP = Brandfetch Smalt `#003399`; Private = Sainsbury's official `#F06C00` +
-   **square** shape (confirmed). **Important consequence:** Met and BTP's fills are nearly
-   indistinguishable at marker size — shape carries the differentiation between them, not colour.
-   **Met shape: checker-band shield, confirmed** (echoes the Sillitoe tartan, since Met's real heraldic
-   crest is too ornate to reduce to marker size). **BTP shape: still open** — elongated shield vs
-   wheel-motif, pick still pending on `_review/phase0-met-btp-shapes.html`. **RFR outline: neon red
-   `#FF1744`, confirmed** (not electric magenta). Intro copy is being elicited separately via
-   `_review/phase0-intro-copy-questions.html` — Jared is writing it himself, not the builder.
+4. **COLOURS RESOLVED, SHAPES OPEN AGAIN (updated 2026-06-29):** colours locked to real brand values —
+   Met = Brandfetch International Klein Blue `#0032A0`; BTP = Brandfetch Smalt `#003399`; Private =
+   Sainsbury's official `#F06C00` + **square** shape (confirmed). **Important consequence:** Met and
+   BTP's fills are nearly indistinguishable at marker size — shape carries the differentiation between
+   them, not colour. **Met/BTP shapes are NOT settled** — `_review/phase0-met-btp-shapes.html`'s hand-drawn
+   options (plain/checker-band shield, elongated shield, wheel) are **superseded**: Jared judged them
+   oversimplified and not actually tracing the two forces' real, visually distinct badge silhouettes.
+   He is now sourcing both shapes from a separate Claude design session, fed the actual Met/BTP badge
+   reference images (via Brandfetch) plus a written brief (constraints: derive the real silhouette,
+   not a generic shield; stay legible filled at ~16-24px repeated hundreds of times; flat single-colour
+   fill, no gradients; simple low-point-count SVG, `viewBox` around `0 0 64 64`). **Do not use the
+   mockup's shapes if you're picking this up cold — wait for the externally-designed SVGs**, expected
+   back as two labelled SVG files (Met Police, British Transport Police). That file's colour reference
+   is still accurate, just not its shapes. **RFR outline: neon red `#FF1744`, confirmed** (not electric
+   magenta). Intro copy is being elicited separately via `_review/phase0-intro-copy-questions.html` —
+   Jared is writing it himself, not the builder.
 5. **RESOLVED (2026-06-28): scope widened beyond London, mechanic confirmed — see §6a.** Regions
    ungrey themselves once historically relevant and stay lit permanently. Confirmed regions and data:
    Cardiff/South Wales (merged, `swp-001..015`), Hull/Humberside (merged, `lfr-672`), Sunderland/
@@ -422,10 +429,17 @@ into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.
 - **Current live map:** `map-embed.html` (single-file Leaflet build) — **keep serving this until swap.**
 - **Older modular Leaflet build:** `map/index.html` + `map/js/` — not the active build.
 - **Deployment data (carries over unchanged):** `data/deployments/*.json` (schema v1.2).
-- **London outline for the spotlight mask:** `map/data/london-boroughs.geojson`.
+- **London outline for the spotlight mask:** `map/data/london-boroughs.geojson`. **Still needed for
+  §6a's multi-region mask:** boundary polygons for South Wales/Cardiff, Hull/Humberside, and Sunderland/
+  Northumbria — none sourced yet, get these before building §6a, not just London's.
 - **News for the detail panel:** `data/news/gmail-research-threads.json`.
-- **Validator (only if you touch data):** `python scripts/validate-dataset.py <file>`.
+- **Validator (only if you touch data):** `python scripts/validate-dataset.py <file>` — now correctly
+  handles `retrospective-fr.json`'s `incidents[]` schema too (fixed 2026-06-28; previously silently
+  skipped that file entirely).
 - **Serve locally:** `python -m http.server 8741` (or `serve.ps1` / `serve.bat`) — must be **HTTP**,
   not `file://`, or `fetch()` calls fail. Map auto-starts on login via the "ALHFRS Map Server" task.
+- **Operator marker shapes (Met/BTP):** not finalized — check whether Jared has dropped two SVGs
+  (from his Claude design session) into `_review/` before assuming the mockup's shapes are final. See
+  §10 item 4.
 - **Source material behind this plan:** `_review/MAP-FEEDBACK.md`, `_review/MAP-RESEARCH.md`,
   `_review/MAP-UPGRADE-PLAN.md`.
