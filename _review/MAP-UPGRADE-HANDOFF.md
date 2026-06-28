@@ -287,30 +287,34 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
   Use a semi-opaque **dim**; if you want a touch of blur, a CSS `backdrop-filter: blur()` on an overlay
   is the only easy route, and only in browsers that support it. **Recommend dim.**
 
-### 6a. Scope widened beyond London — regions ungrey themselves over time (DRAFT, 2026-06-28)
+### 6a. Scope widened beyond London — regions ungrey themselves over time (CONFIRMED, 2026-06-28)
 
-Jared has decided the project should show "important or outside-of-London deployments... especially
-if [they] played a role in London's development" — e.g. the Wales LFR trials that produced the
-*Bridges* legal precedent, or 2024 RFR use after the Southport riots. This changes the spotlight
-mechanic from "one static London mask" to **multiple region masks, gated by the same animated date
-variable that drives Phase 3's dot-accumulation filter**:
+Jared decided the project should show "important or outside-of-London deployments... especially if
+[they] played a role in London's development" — e.g. the Wales LFR trials that produced the *Bridges*
+legal precedent, or 2024 RFR use after the Southport riots. **Confirmed mechanic** (Jared's own words:
+"a place lights up the moment it becomes relevant to the story, then stays lit forever after"). This
+changes the spotlight from "one static London mask" to **multiple region masks, gated by the same
+animated date variable that drives Phase 3's dot-accumulation filter**:
 
 - **London stays always-lit** — the core subject, lit from the very start of the timeline.
 - **Other regions ungrey themselves the moment they become historically relevant**, then **stay lit**
-  (matching the existing "dots accumulate, never disappear" rule — locked decision 4). Concretely, once
-  real dates/regions are confirmed: Cardiff/South Wales ungreys ~2017 (the SWP AFR trials), Hull/
-  Humberside ungreys 2018 (the Met's own joint trial there, already merged as `lfr-672`), Sunderland/
-  Northumbria ungreys August 2024 (RFR use after the riots) — pending Jared's confirmation, see §10.
+  permanently (matching the existing "dots accumulate, never disappear" rule — locked decision 4).
+  Confirmed regions so far: **Cardiff/South Wales ungreys 2017** (South Wales Police's AFR trials, now
+  merged as `swp-001..015` in `data/deployments/south-wales-police-lfr.json` — this is the factual
+  basis for the `legal-001` *Bridges* case); **Hull/Humberside ungreys 2018** (the Met's own joint
+  trial there, merged as `lfr-672`); **Sunderland/Northumbria ungreys August 2024** (RFR use after the
+  riots, merged as `rfr-005` in `retrospective-fr.json`). More regions may be added as more history is
+  sourced — the mechanic doesn't change, just the region list.
 - **"If it's not in view, it doesn't matter"** (Jared's framing) — this is a property of the mask/fill
   layer's per-region opacity, not anything that needs special off-screen handling. The default view
   just needs to be wide enough on load to show whichever regions are already lit at the animation's
   current position (which, with the animation off by default, means *all* regions that have ever
   become relevant — same logic as dots showing the full accumulated picture until you press play).
 - **Practical implication:** the single London-boroughs mask polygon isn't enough any more. Each
-  "context region" needs its own boundary polygon (county/force-area boundaries, not just a point) and
+  context region needs its own boundary polygon (county/force-area boundaries, not just a point) and
   its own `date_first_relevant` value to gate it from the same currentDate variable Phase 3 already
-  drives. **Do not build this until §10's open item on scope is confirmed** — it changes Phase 1
-  (spotlight) and Phase 3 (time filter) from independent phases into a coupled mechanic.
+  drives. This couples Phase 1 (spotlight) and Phase 3 (time filter) into one mechanic — build them
+  together, not as independent phases, for this specific feature.
 
 ---
 
@@ -393,24 +397,20 @@ answer where Leaflet would have had one (`Leaflet.Mask`; natively-focusable DOM 
    operator**; variants (permanent/mobile cameras, RFR) stay reserved-but-not-built, except RFR's
    *colour* treatment has now been decided ahead of time — see the Phase 0 exception note above and
    `rfr-colour-operator-fill-plus-outline` in `DECISIONS.md`.
-4. **RESOLVED (2026-06-28): colours locked to real brand values, Private shape locked.** Met = Brandfetch
-   International Klein Blue `#0032A0`; BTP = Brandfetch Smalt `#003399`; Private = Sainsbury's official
-   `#F06C00` + **square** shape (confirmed). **Important consequence:** Met and BTP's fills are nearly
-   indistinguishable at marker size — shape must carry the differentiation between them, not colour.
-   Met/BTP shape is still open, being decided via `_review/phase0-met-btp-shapes.html` (shield vs
-   checker-band-shield for Met, evoking the Sillitoe tartan since Met's actual heraldic crest is too
-   ornate to reduce; elongated shield vs wheel-motif for BTP, since their real crest is also shield-based
-   with a railway-wheel element). Check that file's "Your picks" section before Phase-1 locks it in.
-   RFR's outline colour (§Phase 0 exception note) is still pending final confirm — neon red `#FF1744`
-   vs electric magenta `#FF2DF5`, same file. Intro copy is being elicited separately via
+4. **MOSTLY RESOLVED (2026-06-28):** colours locked to real brand values — Met = Brandfetch International
+   Klein Blue `#0032A0`; BTP = Brandfetch Smalt `#003399`; Private = Sainsbury's official `#F06C00` +
+   **square** shape (confirmed). **Important consequence:** Met and BTP's fills are nearly
+   indistinguishable at marker size — shape carries the differentiation between them, not colour.
+   **Met shape: checker-band shield, confirmed** (echoes the Sillitoe tartan, since Met's real heraldic
+   crest is too ornate to reduce to marker size). **BTP shape: still open** — elongated shield vs
+   wheel-motif, pick still pending on `_review/phase0-met-btp-shapes.html`. **RFR outline: neon red
+   `#FF1744`, confirmed** (not electric magenta). Intro copy is being elicited separately via
    `_review/phase0-intro-copy-questions.html` — Jared is writing it himself, not the builder.
-5. **OPEN (2026-06-28): scope widened beyond London — see §6a for the mechanic, confirmation pending.**
-   Jared wants nationally-significant out-of-London context shown, revealed region-by-region as the
-   timeline reaches each one (not a static second London). Candidate regions from research so far:
-   Cardiff/South Wales (SWP's AFR trials, 2017-2018 — the factual basis for the *Bridges* legal case
-   already in `data/legal/enforcement-actions.json` as `legal-001`), Hull/Humberside (already merged,
-   2018), Sunderland/Northumbria (RFR after the August 2024 riots — staged, pending merge confirm).
-   Do not build the multi-region mask until Jared confirms §6a's mechanic matches what he meant.
+5. **RESOLVED (2026-06-28): scope widened beyond London, mechanic confirmed — see §6a.** Regions
+   ungrey themselves once historically relevant and stay lit permanently. Confirmed regions and data:
+   Cardiff/South Wales (merged, `swp-001..015`), Hull/Humberside (merged, `lfr-672`), Sunderland/
+   Northumbria (merged, `rfr-005`). Build this together with Phase 3, not as an independent Phase-1
+   task — see §6a for why they're coupled.
 
 If anything else blocks progress mid-build, stop that part and write the problem + simplest options
 into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.
