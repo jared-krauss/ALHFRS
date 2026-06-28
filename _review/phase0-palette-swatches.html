@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALHFRS — Phase 0 palette &amp; shapes</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#fbfaf8; --fg:#1a1a1a; --muted:#6b6660; --card:#ffffff; --line:#e4ded5;
+    --accent:#c0395b; --accent-soft:#f7a8b8; --chip:#f1ece5; --good:#2e7d54;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#16151a; --fg:#e8e6e3; --muted:#9a948d; --card:#201e26; --line:#34313c;
+      --accent:#f7a8b8; --accent-soft:#7a3f50; --chip:#2a2730; --good:#5fcf93; }
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{ margin:0; font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--fg); background:var(--bg); padding:0 14px env(safe-area-inset-bottom,28px); }
+  header{ position:sticky; top:0; z-index:5; background:var(--bg); padding:16px 0 10px;
+    border-bottom:1px solid var(--line); }
+  h1{ font-size:1.25rem; margin:0 0 2px; }
+  .sub{ color:var(--muted); font-size:.85rem; margin:0; }
+  main{ padding:14px 0 100px; }
+  section{ margin-bottom:26px; }
+  h2{ font-size:1rem; margin:0 0 4px; }
+  p.hint{ color:var(--muted); font-size:.82rem; margin:0 0 12px; }
+  .locked{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:12px 14px; }
+  .locked .swatch{ width:40px; height:40px; border-radius:50%; flex:0 0 auto; }
+  .locked .label{ font-weight:700; }
+  .locked .badge{ margin-left:auto; font-size:.72rem; background:var(--chip); color:var(--good);
+    padding:4px 9px; border-radius:999px; font-weight:600; }
+  .row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .opt{ flex:1 1 130px; background:var(--card); border:2px solid var(--line); border-radius:14px;
+    padding:12px; text-align:center; cursor:pointer; min-width:110px; }
+  .opt[aria-pressed="true"]{ border-color:var(--accent); }
+  .opt .swatch{ width:40px; height:40px; border-radius:50%; margin:0 auto 8px; }
+  .opt .name{ font-weight:700; font-size:.9rem; }
+  .opt .hex{ color:var(--muted); font-size:.74rem; margin-top:2px; }
+  .opt .check{ font-size:.74rem; color:var(--accent); font-weight:700; margin-top:4px; visibility:hidden; }
+  .opt[aria-pressed="true"] .check{ visibility:visible; }
+  .shapegrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .shapeopt{ background:var(--card); border:2px solid var(--line); border-radius:14px;
+    padding:10px 4px; text-align:center; cursor:pointer; }
+  .shapeopt[aria-pressed="true"]{ border-color:var(--accent); }
+  .shapeopt svg{ width:38px; height:38px; }
+  .shapeopt .name{ font-size:.74rem; color:var(--muted); margin-top:4px; }
+  .shapeopt[aria-pressed="true"] .name{ color:var(--accent); font-weight:700; }
+  .rfr-demo{ display:flex; gap:22px; align-items:center; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:14px; }
+  .rfr-demo .item{ text-align:center; }
+  .rfr-demo svg{ width:40px; height:40px; }
+  .rfr-demo .name{ font-size:.74rem; color:var(--muted); margin-top:6px; }
+  .preview{ width:100%; border:1px solid var(--line); border-radius:10px; background:var(--card);
+    color:var(--fg); padding:10px; font:13px/1.5 ui-monospace,Menlo,Consolas,monospace; resize:vertical;
+    min-height:130px; }
+  .toolbar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px 14px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0)); background:var(--card);
+    border-top:1px solid var(--line); }
+  .toolbar button{ flex:1; padding:13px; border-radius:10px; border:1px solid var(--line);
+    background:var(--accent); color:#fff; font-weight:700; font-size:.9rem; }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:78px; background:#222; color:#fff;
+    padding:9px 16px; border-radius:999px; font-size:.82rem; opacity:0; transition:opacity .2s; pointer-events:none; z-index:9; }
+  .toast.show{ opacity:.95; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ALHFRS — Phase 0 colours &amp; shapes</h1>
+  <p class="sub">Tap your picks below, then tap "Copy my picks" and paste into chat.</p>
+</header>
+<main>
+
+  <section>
+    <h2>BTP</h2>
+    <p class="hint">Confirmed unchanged.</p>
+    <div class="locked">
+      <div class="swatch" style="background:#7ed4fd"></div>
+      <div class="label">Electric sky blue · #7ed4fd</div>
+      <div class="badge">confirmed</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Met Police colour</h2>
+    <p class="hint">No single official Met brand blue exists publicly — these are two pastel-neon-compatible reads.</p>
+    <div class="row" id="grp-met">
+      <button class="opt" data-group="met" data-value="A|#3E63DD|cobalt" aria-pressed="false">
+        <div class="swatch" style="background:#3E63DD"></div>
+        <div class="name">A · cobalt</div>
+        <div class="hex">#3E63DD</div>
+        <div class="check">✓ picked</div>
+      </button>
+      <button class="opt" data-group="met" data-value="B|#2F4B8F|navy" aria-pressed="false">
+        <div class="swatch" style="background:#2F4B8F"></div>
+        <div class="name">B · navy</div>
+        <div class="hex">#2F4B8F</div>
+        <div class="check">✓ picked</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Private operator colour</h2>
+    <p class="hint">Sainsbury's publishes a real design-system orange — option A uses it exactly.</p>
+    <div class="row" id="grp-priv">
+      <button class="opt" data-group="priv" data-value="A|#F06C00|official" aria-pressed="false">
+        <div class="swatch" style="background:#F06C00"></div>
+        <div class="name">A · official</div>
+        <div class="hex">#F06C00</div>
+        <div class="check">✓ picked</div>
+      </button>
+      <button class="opt" data-group="priv" data-value="B|#FF8A3D|lighter" aria-pressed="false">
+        <div class="swatch" style="background:#FF8A3D"></div>
+        <div class="name">B · lighter</div>
+        <div class="hex">#FF8A3D</div>
+        <div class="check">✓ picked</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>RFR outline colour</h2>
+    <p class="hint">RFR keeps the operator's own fill colour (so you can still see which force did it) and adds a standout outline ring to flag "this one is retrospective." Pick the outline colour.</p>
+    <div class="row" id="grp-rfr">
+      <button class="opt" data-group="rfr" data-value="neon red|#FF1744" aria-pressed="false">
+        <div class="swatch" style="background:#FF1744"></div>
+        <div class="name">neon red</div>
+        <div class="hex">#FF1744</div>
+        <div class="check">✓ picked</div>
+      </button>
+      <button class="opt" data-group="rfr" data-value="electric magenta|#FF2DF5" aria-pressed="false">
+        <div class="swatch" style="background:#FF2DF5"></div>
+        <div class="name">electric magenta</div>
+        <div class="hex">#FF2DF5</div>
+        <div class="check">✓ picked</div>
+      </button>
+    </div>
+    <div class="rfr-demo" style="margin-top:10px;">
+      <div class="item">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#3E63DD"/></svg>
+        <div class="name">Met LFR</div>
+      </div>
+      <div class="item">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#3E63DD" stroke="#FF1744" stroke-width="4"/></svg>
+        <div class="name">Met RFR</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Met shape</h2>
+    <p class="hint">Chosen for staying readable as a tiny dot at city-wide zoom, not for how it looks blown up.</p>
+    <div class="shapegrid" id="grp-metshape">
+      <button class="shapeopt" data-group="metshape" data-value="circle" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#3E63DD"/></svg>
+        <div class="name">circle</div>
+      </button>
+      <button class="shapeopt" data-group="metshape" data-value="shield" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><path d="M24,4 L40,10 L40,26 C40,36 32,42 24,44 C16,42 8,36 8,26 L8,10 Z" fill="#3E63DD"/></svg>
+        <div class="name">shield</div>
+      </button>
+      <button class="shapeopt" data-group="metshape" data-value="badge" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><polygon points="24,4 42,18 36,42 12,42 6,18" fill="#3E63DD"/></svg>
+        <div class="name">badge</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>BTP shape</h2>
+    <div class="shapegrid" id="grp-btpshape">
+      <button class="shapeopt" data-group="btpshape" data-value="triangle" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><polygon points="24,6 42,40 6,40" fill="#7ed4fd"/></svg>
+        <div class="name">triangle</div>
+      </button>
+      <button class="shapeopt" data-group="btpshape" data-value="diamond" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><polygon points="24,4 44,24 24,44 4,24" fill="#7ed4fd"/></svg>
+        <div class="name">diamond</div>
+      </button>
+      <button class="shapeopt" data-group="btpshape" data-value="inverted triangle" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><polygon points="24,44 42,30 24,16 6,30" fill="#7ed4fd"/></svg>
+        <div class="name">inverted △</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Private shape</h2>
+    <div class="shapegrid" id="grp-privshape">
+      <button class="shapeopt" data-group="privshape" data-value="square" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><rect x="6" y="6" width="36" height="36" rx="6" fill="#F06C00"/></svg>
+        <div class="name">square</div>
+      </button>
+      <button class="shapeopt" data-group="privshape" data-value="hexagon" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><polygon points="24,4 40,14 40,34 24,44 8,34 8,14" fill="#F06C00"/></svg>
+        <div class="name">hexagon</div>
+      </button>
+      <button class="shapeopt" data-group="privshape" data-value="octagon" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><polygon points="16,4 32,4 44,16 44,32 32,44 16,44 4,32 4,16" fill="#F06C00"/></svg>
+        <div class="name">octagon</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Your picks</h2>
+    <textarea class="preview" id="preview" readonly></textarea>
+  </section>
+
+</main>
+<div class="toolbar">
+  <button id="copyBtn">Copy my picks</button>
+</div>
+<div class="toast" id="toast">Copied — paste it back to Claude</div>
+
+<script>
+  var STORE_KEY = 'alhfrs_phase0_picks';
+  var groups = ['met','priv','rfr','metshape','btpshape','privshape'];
+  var labels = {
+    met:'Met colour', priv:'Private colour', rfr:'RFR outline',
+    metshape:'Met shape', btpshape:'BTP shape', privshape:'Private shape'
+  };
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { state = {}; }
+
+  function applyState(){
+    groups.forEach(function(g){
+      document.querySelectorAll('[data-group="'+g+'"]').forEach(function(btn){
+        btn.setAttribute('aria-pressed', String(btn.dataset.value === state[g]));
+      });
+    });
+    updatePreview();
+  }
+
+  function updatePreview(){
+    var lines = [];
+    groups.forEach(function(g){
+      var v = state[g];
+      lines.push(labels[g] + ': ' + (v ? v.split('|').join(' ') : '(not picked yet)'));
+    });
+    document.getElementById('preview').value = lines.join('\n');
+  }
+
+  document.querySelectorAll('.opt, .shapeopt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state[btn.dataset.group] = btn.dataset.value;
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      applyState();
+    });
+  });
+
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  async function copyText(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch(e){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); } catch(e2) {}
+      document.body.removeChild(ta);
+      return true;
+    }
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    copyText(document.getElementById('preview').value);
+    showToast('Copied — paste it back to Claude');
+  });
+
+  applyState();
+</script>
+</body>
+</html>

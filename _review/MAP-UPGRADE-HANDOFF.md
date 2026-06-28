@@ -63,8 +63,12 @@ These are settled. Build to them.
    with **clearly-marked empty slots** for Jared's photos, community submissions, and a Gaussian-splat
    embed to fill later.
 4. **Time animation:** dots **ACCUMULATE** over time (cumulative, not a moving window); **play/stop**;
-   **off by default**; **loops**. Data currently starts **2020** (earliest records Feb 2020), so the
-   animation **begins where the data begins** — note this; it is not 2016.
+   **off by default**; **loops**. The animation **begins where the data begins** — currently **2020**
+   live (earliest merged records Feb 2020), but Jared wants the dataset extended back to **2016-2019**
+   (the Met's original LFR trial period — Notting Hill Carnival 2016/2017 among others). Sourcing of
+   those records is in progress (2026-06-28, see `DECISIONS.md` → `extend-timeline-to-2016`) and not
+   yet merged. **Build against whatever `met-police-lfr.json` actually contains at build time** — this
+   is a data dependency, not a code one; the animation logic doesn't change either way.
 5. **Scope:** **CORE MAP first.** Data-viz ideas are a separate later track.
 6. **Splat embed:** prototype via the **free Luma iframe**; own it long-term via **free self-hosted
    SuperSplat export** (fits Jared's existing COLMAP / Gaussian-splat pipeline on his GTX 1080).
@@ -105,6 +109,10 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   variants** for sub-types: a slightly adjusted shape for permanent/semi-permanent cameras, and a
   variant for retrospective FR (RFR). Rule: **shape = operator, variant = sub-type**, and keep the
   variant to **one** visual dimension (e.g. solid fill vs hollow outline) so it stays legible.
+  *Exception (2026-06-28):* RFR specifically uses **two** dimensions — keep the operator's own fill
+  colour (so "which force" stays readable) and add a standout outline ring (candidates: neon red
+  `#FF1744` or electric magenta `#FF2DF5`, Jared to confirm) to flag "retrospective." See
+  `DECISIONS.md` → `rfr-colour-operator-fill-plus-outline`.
   *Note on current state:* an earlier accessibility pass (built in the same review worktree as the
   rest of this plan) added shape glyphs (●▲■) to the legend/chips only — but that pass never reached
   the live map and is now superseded (§5b), so today's live legend and markers are both plain
@@ -351,14 +359,22 @@ answer where Leaflet would have had one (`Leaflet.Mask`; natively-focusable DOM 
    here is making a very text-heavy panel re-flow smoothly. **Recommendation:** keep Pretext in the
    back pocket for the detail/news panels if they ever feel janky; do **not** treat it as a map
    dependency. Likely moot for the map itself. Flagged for Jared only because he asked about it.
-2. **Data start: 2020, not 2016.** The animation and any "history" framing begin at **2020** (earliest
-   records Feb 2020). If Jared has or plans **pre-2020** records, say so and the timeline extends back.
-   Otherwise all "since 2020" copy is correct as-is.
-3. **Shape-variant future scope.** The shape scheme **reserves** room for sub-type variants (permanent
-   vs mobile cameras; RFR), but those variants are **not built this round.** Confirm Jared's happy that
-   the first build ships with **one shape per operator** and variants come later.
-4. **Final shapes/colours/copy** are Phase-0 design decisions that want Jared's eye before Phase-1
-   coding locks them in.
+2. **RESOLVED (2026-06-28): data start is moving to 2016, not staying at 2020.** Jared confirmed he
+   wants the Met's 2016-2019 trial period included. A background research task is sourcing and
+   verifying those records into `data/staging/trials-2016-2019.json` (not yet merged — see
+   `DECISIONS.md` → `extend-timeline-to-2016`). Build the animation logic to read whatever date range
+   `met-police-lfr.json` actually contains at build time; don't hardcode 2020 as the start.
+3. **RESOLVED (2026-06-28): ship simple.** Jared confirmed the first build ships with **one shape per
+   operator**; variants (permanent/mobile cameras, RFR) stay reserved-but-not-built, except RFR's
+   *colour* treatment has now been decided ahead of time — see the Phase 0 exception note above and
+   `rfr-colour-operator-fill-plus-outline` in `DECISIONS.md`.
+4. **IN PROGRESS (2026-06-28):** final shapes/colours are being decided via an interactive picker sent
+   to Jared (`_review/phase0-palette-swatches.html`) — candidates: Met blue (cobalt `#3E63DD` vs navy
+   `#2F4B8F`), private orange (Sainsbury's official `#F06C00` vs lighter `#FF8A3D`), and 3 shape
+   options each for Met/BTP/Private. Check that file's "Your picks" section (or ask Jared directly) for
+   the final answer before Phase-1 coding locks shapes/colours in. Intro copy is being elicited
+   separately via `_review/phase0-intro-copy-questions.html` — Jared is writing it himself, not the
+   builder.
 
 If anything else blocks progress mid-build, stop that part and write the problem + simplest options
 into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALHFRS — Intro copy questions</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#fbfaf8; --fg:#1a1a1a; --muted:#6b6660; --card:#ffffff; --line:#e4ded5;
+    --accent:#c0395b; --accent-soft:#f7a8b8; --chip:#f1ece5;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#16151a; --fg:#e8e6e3; --muted:#9a948d; --card:#201e26; --line:#34313c;
+      --accent:#f7a8b8; --accent-soft:#7a3f50; --chip:#2a2730; }
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{ margin:0; font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--fg); background:var(--bg); padding:0 14px env(safe-area-inset-bottom,28px); }
+  header{ position:sticky; top:0; z-index:5; background:var(--bg); padding:16px 0 10px;
+    border-bottom:1px solid var(--line); }
+  h1{ font-size:1.25rem; margin:0 0 2px; }
+  .sub{ color:var(--muted); font-size:.85rem; margin:0; }
+  main{ padding:14px 0 110px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:14px; margin-bottom:14px; }
+  .qnum{ font-size:.72rem; color:var(--accent); font-weight:700; text-transform:uppercase;
+    letter-spacing:.04em; margin:0 0 4px; }
+  .qtext{ font-weight:700; font-size:1rem; margin:0 0 10px; }
+  textarea.ans{ width:100%; border:1px solid var(--line); border-radius:10px; background:var(--bg);
+    color:var(--fg); padding:10px; font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    resize:vertical; min-height:70px; }
+  textarea.ans:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  h2{ font-size:.95rem; margin:18px 0 8px; }
+  .preview{ width:100%; border:1px solid var(--line); border-radius:10px; background:var(--card);
+    color:var(--fg); padding:10px; font:13px/1.5 ui-monospace,Menlo,Consolas,monospace; resize:vertical;
+    min-height:160px; }
+  .toolbar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px 14px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0)); background:var(--card);
+    border-top:1px solid var(--line); }
+  .toolbar button{ flex:1; padding:13px; border-radius:10px; border:1px solid var(--line);
+    background:var(--accent); color:#fff; font-weight:700; font-size:.9rem; }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:78px; background:#222; color:#fff;
+    padding:9px 16px; border-radius:999px; font-size:.82rem; opacity:0; transition:opacity .2s; pointer-events:none; z-index:9; }
+  .toast.show{ opacity:.95; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Intro copy — your words</h1>
+  <p class="sub">Answer as many as you want, in your own words. Then tap "Copy my answers" and paste into chat.</p>
+</header>
+<main>
+
+  <div class="card">
+    <p class="qnum">Question 1</p>
+    <p class="qtext">If someone reads exactly one sentence on this map and then closes the tab, what should that sentence say?</p>
+    <textarea class="ans" data-q="1" placeholder="Type here…"></textarea>
+  </div>
+
+  <div class="card">
+    <p class="qnum">Question 2</p>
+    <p class="qtext">Is the voice closer to a journalist laying out facts, or someone asking the viewer to feel something specific?</p>
+    <textarea class="ans" data-q="2" placeholder="Type here…"></textarea>
+  </div>
+
+  <div class="card">
+    <p class="qnum">Question 3</p>
+    <p class="qtext">Finish this, in your own words: "You're looking at…"</p>
+    <textarea class="ans" data-q="3" placeholder="Type here…"></textarea>
+  </div>
+
+  <div class="card">
+    <p class="qnum">Question 4</p>
+    <p class="qtext">Does a number belong up front (deployment count, year range), or is that the wrong opening move?</p>
+    <textarea class="ans" data-q="4" placeholder="Type here…"></textarea>
+  </div>
+
+  <h2>Preview of what gets copied</h2>
+  <textarea class="preview" id="preview" readonly></textarea>
+
+</main>
+<div class="toolbar">
+  <button id="copyBtn">Copy my answers</button>
+</div>
+<div class="toast" id="toast">Copied — paste it back to Claude</div>
+
+<script>
+  var STORE_KEY = 'alhfrs_intro_copy_answers';
+  var questions = {
+    1: "If someone reads exactly one sentence on this map and then closes the tab, what should that sentence say?",
+    2: "Is the voice closer to a journalist laying out facts, or someone asking the viewer to feel something specific?",
+    3: 'Finish this, in your own words: "You\'re looking at…"',
+    4: "Does a number belong up front (deployment count, year range), or is that the wrong opening move?"
+  };
+
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { saved = {}; }
+
+  document.querySelectorAll('textarea.ans').forEach(function(ta){
+    var q = ta.dataset.q;
+    if (saved[q]) ta.value = saved[q];
+    ta.addEventListener('input', function(){
+      saved[q] = ta.value;
+      localStorage.setItem(STORE_KEY, JSON.stringify(saved));
+      updatePreview();
+    });
+  });
+
+  function updatePreview(){
+    var lines = [];
+    Object.keys(questions).forEach(function(q){
+      var ta = document.querySelector('textarea[data-q="'+q+'"]');
+      lines.push('Q'+q+': ' + questions[q]);
+      lines.push('A'+q+': ' + (ta.value.trim() || '(no answer yet)'));
+      lines.push('');
+    });
+    document.getElementById('preview').value = lines.join('\n').trim();
+  }
+
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  async function copyText(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch(e){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); } catch(e2) {}
+      document.body.removeChild(ta);
+      return true;
+    }
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    copyText(document.getElementById('preview').value);
+    showToast('Copied — paste it back to Claude');
+  });
+
+  updatePreview();
+</script>
+</body>
+</html>

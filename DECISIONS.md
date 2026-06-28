@@ -10,6 +10,8 @@
 
 ## 2026-06
 
+- **rfr-colour-operator-fill-plus-outline** [ALHFRS] (2026-06-28): chose RFR markers to keep the operator's own fill colour with a distinct standout outline ring (candidates: neon red #FF1744 / electric magenta #FF2DF5) over a fully separate RFR colour or a same-colour hollow ring, because it preserves "which operator" at a glance while still flagging "retrospective" unambiguously.
+- **extend-timeline-to-2016** [ALHFRS] (2026-06-28): chose to extend the deployment dataset and time-animation start back to 2016-2019 (the Met's original LFR trial period) over keeping 2020 as the documented start, per Jared's request; sourcing/verification is in progress, not yet merged.
 - **a11y-fixes-superseded-by-maplibre** [ALHFRS] (2026-06-27): chose to let the MapLibre rebuild supersede the unmerged Leaflet accessibility fixes (focus outlines, ARIA, shape glyphs) over porting them into the live map first, because Phase 0/1 of the rebuild reimplements the same markup from scratch anyway.
 - **map-engine-maplibre** [ALHFRS] (2026-06-23): chose a from-scratch MapLibre GL JS rebuild over upgrading the existing Leaflet map, because Jared prioritised a long-term GPU/3D foundation over the lower-risk Leaflet path (informed override — the assistant's evidence-based recommendation was to stay on Leaflet).
 - **data-quality-into-detail-panel** [ALHFRS] (2026-06-23): chose to show a record's data-quality only inside the click-details panel over keeping it in the always-on legend, because the legend treatment (and the "ring brightness = recency" cue) was confusing and ineffective.
