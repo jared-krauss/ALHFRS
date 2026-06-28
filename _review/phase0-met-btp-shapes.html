@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALHFRS — Met &amp; BTP shapes</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#fbfaf8; --fg:#1a1a1a; --muted:#6b6660; --card:#ffffff; --line:#e4ded5;
+    --accent:#c0395b; --good:#2e7d54; --chip:#f1ece5;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#16151a; --fg:#e8e6e3; --muted:#9a948d; --card:#201e26; --line:#34313c;
+      --accent:#f7a8b8; --good:#5fcf93; --chip:#2a2730; }
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{ margin:0; font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--fg); background:var(--bg); padding:0 14px env(safe-area-inset-bottom,28px); }
+  header{ position:sticky; top:0; z-index:5; background:var(--bg); padding:16px 0 10px;
+    border-bottom:1px solid var(--line); }
+  h1{ font-size:1.2rem; margin:0 0 6px; }
+  .sub{ color:var(--muted); font-size:.85rem; margin:0; }
+  .warn{ background:var(--chip); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+    font-size:.82rem; margin-top:10px; }
+  main{ padding:14px 0 100px; }
+  section{ margin-bottom:26px; }
+  h2{ font-size:1rem; margin:0 0 4px; }
+  p.hint{ color:var(--muted); font-size:.82rem; margin:0 0 12px; }
+  .locked{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:12px 14px; margin-bottom:16px; }
+  .locked .swatch{ width:36px; height:36px; border-radius:6px; flex:0 0 auto; }
+  .locked .label{ font-weight:700; font-size:.92rem; }
+  .locked .badge{ margin-left:auto; font-size:.72rem; background:var(--chip); color:var(--good);
+    padding:4px 9px; border-radius:999px; font-weight:600; white-space:nowrap; }
+  .row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .opt{ flex:1 1 130px; background:var(--card); border:2px solid var(--line); border-radius:14px;
+    padding:14px; text-align:center; cursor:pointer; min-width:120px; }
+  .opt[aria-pressed="true"]{ border-color:var(--accent); }
+  .opt svg{ width:52px; height:52px; }
+  .opt .name{ font-weight:700; font-size:.88rem; margin-top:6px; }
+  .opt .check{ font-size:.74rem; color:var(--accent); font-weight:700; margin-top:3px; visibility:hidden; }
+  .opt[aria-pressed="true"] .check{ visibility:visible; }
+  .sidebyside{ display:flex; gap:18px; align-items:center; justify-content:center; background:var(--card);
+    border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:10px; }
+  .sidebyside .item{ text-align:center; }
+  .sidebyside svg{ width:44px; height:44px; }
+  .sidebyside .name{ font-size:.78rem; color:var(--muted); margin-top:6px; }
+  .preview{ width:100%; border:1px solid var(--line); border-radius:10px; background:var(--card);
+    color:var(--fg); padding:10px; font:13px/1.5 ui-monospace,Menlo,Consolas,monospace; resize:vertical;
+    min-height:90px; }
+  .toolbar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px 14px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0)); background:var(--card);
+    border-top:1px solid var(--line); }
+  .toolbar button{ flex:1; padding:13px; border-radius:10px; border:1px solid var(--line);
+    background:var(--accent); color:#fff; font-weight:700; font-size:.9rem; }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:78px; background:#222; color:#fff;
+    padding:9px 16px; border-radius:999px; font-size:.82rem; opacity:0; transition:opacity .2s; pointer-events:none; z-index:9; }
+  .toast.show{ opacity:.95; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ALHFRS — Met &amp; BTP shapes</h1>
+  <p class="sub">Colours are now locked to the real brand values. Pick a shape for each.</p>
+  <div class="warn">Met (#0032A0) and BTP (#003399) are nearly the same blue at marker size — see the side-by-side below. Shape is doing all the differentiation work now, not colour.</div>
+</header>
+<main>
+
+  <div class="sidebyside">
+    <div class="item">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#0032A0"/></svg>
+      <div class="name">Met #0032A0</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#003399"/></svg>
+      <div class="name">BTP #003399</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Private (confirmed)</h2>
+    <div class="locked">
+      <div class="swatch" style="background:#F06C00; border-radius:4px;"></div>
+      <div class="label">Sainsbury's orange · square</div>
+      <div class="badge">confirmed</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Met Police shape</h2>
+    <p class="hint">Their real visual signature is the Sillitoe tartan — the chequered band on Met uniforms — more recognisable at small size than their full heraldic crest.</p>
+    <div class="row" id="grp-met">
+      <button class="opt" data-group="met" data-value="plain shield" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><path d="M24,4 L40,10 L40,26 C40,36 32,42 24,44 C16,42 8,36 8,26 L8,10 Z" fill="#0032A0"/></svg>
+        <div class="name">plain shield</div>
+        <div class="check">✓ picked</div>
+      </button>
+      <button class="opt" data-group="met" data-value="checker-band shield" aria-pressed="false">
+        <svg viewBox="0 0 48 48">
+          <path d="M24,4 L40,10 L40,26 C40,36 32,42 24,44 C16,42 8,36 8,26 L8,10 Z" fill="#0032A0"/>
+          <rect x="9" y="20" width="5" height="5" fill="#fff"/>
+          <rect x="19" y="20" width="5" height="5" fill="#fff"/>
+          <rect x="29" y="20" width="5" height="5" fill="#fff"/>
+          <rect x="14" y="25" width="5" height="5" fill="#fff"/>
+          <rect x="24" y="25" width="5" height="5" fill="#fff"/>
+          <rect x="34" y="25" width="5" height="2" fill="#fff"/>
+        </svg>
+        <div class="name">checker-band shield</div>
+        <div class="check">✓ picked</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>BTP shape</h2>
+    <p class="hint">Their actual crest is shield-based too (lion + railway wheel + portcullis), so a differently-proportioned shield still reads as accurate — or lean into the wheel motif since BTP = rail policing.</p>
+    <div class="row" id="grp-btp">
+      <button class="opt" data-group="btp" data-value="elongated shield" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><path d="M24,4 L38,9 L38,30 C38,38 32,43 24,45 C16,43 10,38 10,30 L10,9 Z" fill="#003399"/></svg>
+        <div class="name">elongated shield</div>
+        <div class="check">✓ picked</div>
+      </button>
+      <button class="opt" data-group="btp" data-value="wheel" aria-pressed="false">
+        <svg viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="19" fill="none" stroke="#003399" stroke-width="5"/>
+          <circle cx="24" cy="24" r="6" fill="#003399"/>
+          <line x1="24" y1="5" x2="24" y2="13" stroke="#003399" stroke-width="4"/>
+          <line x1="24" y1="35" x2="24" y2="43" stroke="#003399" stroke-width="4"/>
+          <line x1="5" y1="24" x2="13" y2="24" stroke="#003399" stroke-width="4"/>
+          <line x1="35" y1="24" x2="43" y2="24" stroke="#003399" stroke-width="4"/>
+        </svg>
+        <div class="name">wheel</div>
+        <div class="check">✓ picked</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>RFR outline — confirming</h2>
+    <p class="hint">Last message said "pink ring" — reading that as electric magenta below, not neon red. Tap whichever one you actually meant.</p>
+    <div class="row" id="grp-rfr">
+      <button class="opt" data-group="rfr" data-value="neon red #FF1744" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#0032A0" stroke="#FF1744" stroke-width="4"/></svg>
+        <div class="name">neon red</div>
+        <div class="check">✓ picked</div>
+      </button>
+      <button class="opt" data-group="rfr" data-value="electric magenta #FF2DF5" aria-pressed="false">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#0032A0" stroke="#FF2DF5" stroke-width="4"/></svg>
+        <div class="name">electric magenta</div>
+        <div class="check">✓ picked</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Your picks</h2>
+    <textarea class="preview" id="preview" readonly></textarea>
+  </section>
+
+</main>
+<div class="toolbar">
+  <button id="copyBtn">Copy my picks</button>
+</div>
+<div class="toast" id="toast">Copied — paste it back to Claude</div>
+
+<script>
+  var STORE_KEY = 'alhfrs_phase0_metbtp_picks';
+  var groups = ['met','btp','rfr'];
+  var labels = { met:'Met shape', btp:'BTP shape', rfr:'RFR outline' };
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { state = {}; }
+
+  function applyState(){
+    groups.forEach(function(g){
+      document.querySelectorAll('[data-group="'+g+'"]').forEach(function(btn){
+        btn.setAttribute('aria-pressed', String(btn.dataset.value === state[g]));
+      });
+    });
+    updatePreview();
+  }
+
+  function updatePreview(){
+    var lines = [];
+    groups.forEach(function(g){
+      var v = state[g];
+      lines.push(labels[g] + ': ' + (v || '(not picked yet)'));
+    });
+    document.getElementById('preview').value = lines.join('\n');
+  }
+
+  document.querySelectorAll('.opt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state[btn.dataset.group] = btn.dataset.value;
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      applyState();
+    });
+  });
+
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  async function copyText(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch(e){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); } catch(e2) {}
+      document.body.removeChild(ta);
+      return true;
+    }
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    copyText(document.getElementById('preview').value);
+    showToast('Copied — paste it back to Claude');
+  });
+
+  applyState();
+</script>
+</body>
+</html>
