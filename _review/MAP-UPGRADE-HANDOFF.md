@@ -198,9 +198,10 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   *(On Leaflet this was the free `Leaflet.timeline` plugin, which reads per-point dates and has a
   built-in play button — cheaper out of the box; on MapLibre you wire the playhead yourself, but you
   get GPU-smooth transitions.)*
-- **Data-start note:** the animation **starts at 2020** (earliest records are Feb 2020), **not 2016.**
-  If Jared later adds pre-2020 records, extend the timeline start backwards — no code change beyond the
-  date bounds.
+- **Data-start note:** the animation **starts at 2016** — the 10 original Met LFR trial deployments
+  (Notting Hill Carnival 2016/2017 through Romford 2019) are merged as `lfr-669`–`lfr-678`. Build
+  the playhead bounds from whatever `met-police-lfr.json` actually contains at build time; don't
+  hardcode any year. See §10 item 2 (RESOLVED).
 
 ### Future track (noted, NOT this round)
 
