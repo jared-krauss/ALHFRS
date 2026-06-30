@@ -21,10 +21,13 @@
 **Primary output:** An interactive website with a Leaflet deployment map, Gaussian splat embeds of physical deployment locations, and a community submission workflow.
 
 **Current state (June 2026):**
-- Deployment data: **644 records** in `met-police-lfr.json` (schema v1.2); 2020–2026 coverage. The Garbett 2024 top-up (64 records) has been merged and verified — 0 validator errors, 887 warnings (mostly expected near-duplicate flags). See `_review/DATA-CHANGES.md` for the full changelog.
+- Deployment data: **654 records** in `met-police-lfr.json` (schema v1.2); now **2016–2026** coverage (extended back from 2020 — the Met's original 2016-2019 LFR trial period, including Notting Hill Carnival 2016/2017 and Port of Hull, is merged as `lfr-669`-`lfr-678`). See `_review/DATA-CHANGES.md` for the pre-2026-06 changelog.
+- **New operator file:** `data/deployments/south-wales-police-lfr.json` — 14 records (SWP's 2017-2018 AFR trials; this is the deployment data behind the `legal-001` *Bridges* case). One further record (unverified date) held back in `data/staging/south-wales-police-lfr.json`.
 - Legal data: 4 court cases / ICO enforcement actions
+- Retrospective FR (`retrospective-fr.json`): **5 incidents** (added `rfr-005`, Northumbria Police use after the Aug 2024 Sunderland riots)
 - News archive: 21 research articles
-- Map: Live Leaflet map with marker clustering (`leaflet.markercluster`), year-filter timeline strip, 4 layers
+- Map: Live Leaflet map with marker clustering (`leaflet.markercluster`), year-filter timeline strip, 4 layers — **still the live build**, nothing below has shipped to it yet
+- **MapLibre rebuild — Phase 0 design decisions in progress, not yet built.** Operator colours (real brand values), Private's shape, the RFR-ring treatment, and a scope decision to show nationally-significant out-of-London context (Wales, Hull, Sunderland) are locked. Met/BTP marker shapes are still pending (an external Claude design pass, not the project's earlier mockup). Full detail, what's resolved vs. open: `_review/MAP-UPGRADE-HANDOFF.md`. Do not assume the live map is MapLibre — it isn't yet.
 - Splats: `splats/index.json` manifest in place; no splat files captured yet
 - Website, community workflow: architecture planned, not yet built
 
@@ -37,10 +40,11 @@ ALHFRS/
 │   └── README.md                three agent persona definitions for subagent dispatch
 ├── data/
 │   ├── deployments/             structured JSON deployment records (schema v1.2)
-│   │   ├── met-police-lfr.json      Met Police LFR deployments (2020–2026) — see Current state for live count
+│   │   ├── met-police-lfr.json      Met Police LFR deployments (2016–2026) — see Current state for live count
 │   │   ├── btp-lfr.json             2 British Transport Police LFR trials (Feb 2026)
+│   │   ├── south-wales-police-lfr.json  14 SWP AFR trial deployments (2017–2018) — new operator, added 2026-06-28
 │   │   ├── private-operators.json   5 Facewatch/Sainsbury's retail FRS records
-│   │   └── retrospective-fr.json    4 RFR false-positive incidents (schema v1.0)
+│   │   └── retrospective-fr.json    5 RFR incidents (schema v1.0)
 │   ├── legal/
 │   │   └── enforcement-actions.json 4 court cases and ICO regulatory actions
 │   ├── news/
@@ -193,6 +197,7 @@ Three subagent personas are defined in `agents/README.md`. Route work accordingl
 **MemPalace semantic memory** is available for this project. ChromaDB palace at `D:\MemPalace\palace` with 8,000+ indexed drawers. Access via the `mempalace-mcp.exe` MCP (29 tools) in Claude Code sessions. The `hermes` wing auto-indexes Layer-2 synthetic notes. Use semantic search over all project docs, prior research notes, and vault content before starting any new extraction or analysis work. Project files at `D:\Dev\MemPalace\`.
 
 **Recent changes:**
+- Added South Wales Police as a new operator (14 records) + 10 original 2016-2019 Met trials + 1 Northumbria RFR record; fixed a validator bug that silently skipped `retrospective-fr.json`; started MapLibre rebuild Phase 0 (see `_review/MAP-UPGRADE-HANDOFF.md`)
 - Merged semantic operator-type colors + halation aesthetic
 - Added 35 new records from Met PDF (2023, 2025, 2020)
 - Merged 20 orphan/duplicate pairs from 2024 reverification
@@ -256,7 +261,7 @@ Wiki results: background/ideation context, may be stale — see root CLAUDE.md M
 
 Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **not here.** Do not add decision entries to this file.
 
-## Known issues / open work (May 2026)
+## Known issues / open work (June 2026)
 1. **2023-24 PDF extraction poor quality** — `data/staging/extract-2023-2024.json` has 30 hallucinated records with regular 2-week intervals. Do not merge. Needs Gemini API or revised prompt that skips watchlist-criteria sections.
 
 2. **Corroboration discrepancies logged** — `corroboration_notes` in `met-police-lfr.json`: same-date records with different location names from different sources (2020-02-11, 2020-02-27). Analytically interesting — don't resolve blindly.
@@ -271,19 +276,17 @@ Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **
 
 7. **Gemini 2021 extraction unreliable.** `data/staging/gemini-2021-extraction.json` (5 records, 2026-05-26): The "zero deployments in 2021" claim likely contradicts our existing data. Croydon 173 arrest figure is probably an annual total misattributed to a single deployment. Victoria + Tottenham 2026-05-18 records (from itnews.com.au) are genuinely new and probably addable after de-duplication check. **Do not merge this file wholesale — validate record by record.**
 
-8. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
+8. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
 
-9. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
+9. **`swp-010` (South Wales Police, Liam Gallagher concert) held back from merge.** Date is an estimate, not source-confirmed — sits in `data/staging/south-wales-police-lfr.json` pending a better source before it can be added as `swp-010`.
 
-10. **2024 records from Met PDF (2023, 2025, 2020)** — need verification and integration into existing data.
+10. **2021 data gap.** No deployments in `met-police-lfr.json` for 2021 — the year was missed by the original PDF extraction. See `tasks/2021-data-gap.md` for sourcing approach. Max ID currently `lfr-678`; next merge should start from `lfr-679`.
 
-11. **Orphan/duplicate pairs from 2024 reverification** — need manual resolution to ensure accuracy.
-
-12. **Date swaps fixed in 2024 records** — additional records added as part of reverification process.
-
-13. **New deployment record for Walworth Rd (lfr-536)** — needs validation and integration.
-
-14. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
+**Resolved (no longer open):**
+- ~~169 null lat/lon records~~ — **all 654 records now have coordinates** (geocoding complete).
+- ~~2024 records from Met PDF / orphan-duplicate pairs / date swaps~~ — done (see `_review/DATA-CHANGES.md`).
+- ~~lfr-536 Walworth Rd~~ — merged.
+- ~~Wayback Machine enrichment script~~ — deferred but not an open bug; folded into item 8 above.
 
 ---
 ## Archive

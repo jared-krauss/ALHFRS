@@ -63,8 +63,12 @@ These are settled. Build to them.
    with **clearly-marked empty slots** for Jared's photos, community submissions, and a Gaussian-splat
    embed to fill later.
 4. **Time animation:** dots **ACCUMULATE** over time (cumulative, not a moving window); **play/stop**;
-   **off by default**; **loops**. Data currently starts **2020** (earliest records Feb 2020), so the
-   animation **begins where the data begins** — note this; it is not 2016.
+   **off by default**; **loops**. The animation **begins where the data begins** — currently **2020**
+   live (earliest merged records Feb 2020), but Jared wants the dataset extended back to **2016-2019**
+   (the Met's original LFR trial period — Notting Hill Carnival 2016/2017 among others). Sourcing of
+   those records is in progress (2026-06-28, see `DECISIONS.md` → `extend-timeline-to-2016`) and not
+   yet merged. **Build against whatever `met-police-lfr.json` actually contains at build time** — this
+   is a data dependency, not a code one; the animation logic doesn't change either way.
 5. **Scope:** **CORE MAP first.** Data-viz ideas are a separate later track.
 6. **Splat embed:** prototype via the **free Luma iframe**; own it long-term via **free self-hosted
    SuperSplat export** (fits Jared's existing COLMAP / Gaussian-splat pipeline on his GTX 1080).
@@ -105,9 +109,16 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   variants** for sub-types: a slightly adjusted shape for permanent/semi-permanent cameras, and a
   variant for retrospective FR (RFR). Rule: **shape = operator, variant = sub-type**, and keep the
   variant to **one** visual dimension (e.g. solid fill vs hollow outline) so it stays legible.
-  *This resolves the current legend-vs-map mismatch:* the legend currently shows shapes but every map
-  marker is a circle. Jared **likes** the shapes — so the fix is to make the **actual markers** use
-  them (feedback #8 / #17), not to drop them.
+  *Exception (2026-06-28):* RFR specifically uses **two** dimensions — keep the operator's own fill
+  colour (so "which force" stays readable) and add a standout outline ring (candidates: neon red
+  `#FF1744` or electric magenta `#FF2DF5`, Jared to confirm) to flag "retrospective." See
+  `DECISIONS.md` → `rfr-colour-operator-fill-plus-outline`.
+  *Note on current state:* an earlier accessibility pass (built in the same review worktree as the
+  rest of this plan) added shape glyphs (●▲■) to the legend/chips only — but that pass never reached
+  the live map and is now superseded (§5b), so today's live legend and markers are both plain
+  circles with no shape cue at all. Jared **likes** the shape idea from that pass — so Phase 0/1
+  should build it properly: **real shape markers on the map itself** (feedback #8 / #17), with the
+  legend mirroring those same shapes rather than a separate text-glyph treatment.
 - **Colour palette + typography.** Lock these (the current build uses a "poppy pastel halation"
   aesthetic — carry the intent forward, refine as Jared's eye dictates).
 - **Legend redesign.** Collapsible; **data-quality removed** from it (moves into click-details, per
@@ -117,6 +128,8 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   grid-breaking) to guide the eye (feedback #12, #13). Assistant proposes; Jared's eye refines.
 - **Prominent intro / onboarding copy.** Decide the wording and placement of the in-map explanation
   of what the dots mean (feedback #5, #19), and whether there's also a one-time welcome card.
+- **Accessibility checklist (§5b below).** Lock focus-visible styling, ARIA patterns, and minimum
+  text size into the Phase-0 visual system itself, not as a pass applied after Phase 1 is built.
 
 ### Phase 1 — Core map rebuilt on MapLibre (parity + the basics fixed)
 
@@ -129,6 +142,9 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   `operator` property (`icon-image` expression). This is idiomatic, GPU-fast MapLibre. *(Leaflet
   equivalent would have been the free `Leaflet.SvgShapeMarkers` plugin or hand-rolled `L.divIcon`
   SVG — cheaper, but we're on MapLibre by choice.)*
+- **Accessible fallback for the data layer (§5a below).** Symbol/circle layers are GPU-fast but
+  invisible to screen readers and not keyboard-focusable. Plan the keyboard-navigable list/table
+  view and the click-details panel's keyboard behaviour alongside the marker work, not after it.
 - **Responsive + cross-browser** (feedback #1, #15): size the map container with modern CSS viewport
   units (**`svh`/`dvh`**, with a `100vh` fallback line first for old browsers) so it fills exactly the
   visible screen and doesn't hide under the mobile address bar; add a **landscape** media query.
@@ -140,13 +156,13 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   Leaflet: its symbol layer **automatically hides colliding labels** for you (control with
   `text-allow-overlap` / `icon-allow-overlap` left at their default `false`, plus `symbol-sort-key`
   to choose which labels win). *(On Leaflet this needed the free `Leaflet.LabelTextCollision` plugin.)*
-- **Spotlight on London** (feedback #20) — see §5 below for the exact MapLibre method (this is where
+- **Spotlight on London** (feedback #20) — see §6 below for the exact MapLibre method (this is where
   MapLibre is *weaker* than Leaflet, so it's spelled out separately).
 - **Prominent intro** drawing the eye to what the dots mean (feedback #5, #19); **better default
   zoom/centre** so London fills the frame instead of sitting tiny (feedback #5).
 - **Bottom strip re-spaced** (feedback #7); **legend collapsible** (feedback #3); **filter buttons
   with a stark ON state that clears instantly** (feedback #2 — rebuilt fresh so the old "stuck
-  highlight" can't recur; see the CSS note in §6); **menu/news layering correct** (feedback #4).
+  highlight" can't recur; see the CSS note in §7); **menu/news layering correct** (feedback #4).
 
 ### Phase 2 — Click-details panel (build the frame, fill over time) (feedback #18)
 
@@ -182,9 +198,10 @@ the expensive thinking survives regardless of engine, and the MapLibre phases be
   *(On Leaflet this was the free `Leaflet.timeline` plugin, which reads per-point dates and has a
   built-in play button — cheaper out of the box; on MapLibre you wire the playhead yourself, but you
   get GPU-smooth transitions.)*
-- **Data-start note:** the animation **starts at 2020** (earliest records are Feb 2020), **not 2016.**
-  If Jared later adds pre-2020 records, extend the timeline start backwards — no code change beyond the
-  date bounds.
+- **Data-start note:** the animation **starts at 2016** — the 10 original Met LFR trial deployments
+  (Notting Hill Carnival 2016/2017 through Romford 2019) are merged as `lfr-669`–`lfr-678`. Build
+  the playhead bounds from whatever `met-police-lfr.json` actually contains at build time; don't
+  hardcode any year. See §10 item 2 (RESOLVED).
 
 ### Future track (noted, NOT this round)
 
@@ -199,7 +216,52 @@ Out of scope here; listed so nobody scope-creeps into them:
 
 ---
 
-## 5. The "spotlight on London" effect on MapLibre — spell-out (IMPORTANT)
+## 5. Accessibility — bake into Phase 0/1, don't retrofit (IMPORTANT)
+
+Added after a doc review (2026-06-27) found the worktree's earlier Leaflet accessibility pass had
+never reached `main`. Two things follow, one new and one carried over:
+
+1. **A new problem the MapLibre choice itself introduces** (§5a) — nothing about Leaflet prepared
+   for this; it has to be designed in from Phase 1, not bolted on after.
+2. **A checklist carried over from that earlier Leaflet pass** (§5b) — those specific Leaflet-side
+   fixes were deliberately **not** ported (decision `a11y-fixes-superseded-by-maplibre` in
+   `DECISIONS.md`: superseded by this rebuild rather than retrofitted into the old map). The fixes
+   themselves don't carry over, but the checklist they were built against still applies here.
+
+### 5a. MapLibre canvas markers are invisible to screen readers (new — design around it)
+
+MapLibre draws the deployment points on a WebGL canvas. Unlike Leaflet's DOM markers, canvas-drawn
+points are **not in the page's accessibility tree and are not keyboard-focusable** — screen-reader
+and keyboard-only users cannot perceive or reach the dots directly, however the symbol layer is
+styled. Build an accessible path for the **data**, not just the chrome:
+
+- Make the **click-details panel the primary accessible surface**: fully keyboard-operable, move
+  focus into it on open, `Esc` closes and returns focus to the trigger.
+- Provide a **keyboard-navigable list/table view of deployments** (filterable the same way as the
+  map) as the non-visual equivalent of the dots, and/or `aria-live` announcements of filter results.
+- For the full ~644-point layer, GL circle/symbol layers are still the right performant choice —
+  but they're inaccessible by nature, so the list/panel fallback is *how the bar gets met*, not an
+  optional extra. Reserve `maplibregl.Marker` (real DOM markers, focusable) for a handful of key
+  points only, if a specific point ever needs direct DOM accessibility.
+- Treat "the data is reachable without a mouse or sight" as a **requirement**, not a nice-to-have.
+
+### 5b. UI-chrome accessibility checklist (engine-independent — every panel/legend/filter/button)
+
+- Visible `:focus-visible` outline on **every** interactive control (none existed in the old build).
+- ARIA: `aria-expanded` on panel/menu toggles; `role="group"` + `aria-label` on the year/month/
+  operator filter-chip groups; a descriptive per-chip `aria-label`; `aria-pressed` on toggle chips.
+- No control or legend text below ~12–14px.
+- Never rely on colour alone for operator type — pair colour with shape (already the Phase 0/1
+  plan; make sure the legend mirrors the same shapes the markers actually use, not text glyphs
+  bolted on separately).
+- Disabled controls get a tooltip/label saying why (e.g. "Community — coming soon").
+- Affordance hints for non-obvious interactions (e.g. "click a year to filter").
+- Watch focus order + stacking (`z-index`): opening a panel must not render it behind another layer
+  or trap focus (feedback #4 — the existing fix for this specific bug is noted in §7 below).
+
+---
+
+## 6. The "spotlight on London" effect on MapLibre — spell-out (IMPORTANT)
 
 This is the one place where choosing MapLibre **costs us** built-in support, so it needs care.
 
@@ -226,9 +288,38 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
   Use a semi-opaque **dim**; if you want a touch of blur, a CSS `backdrop-filter: blur()` on an overlay
   is the only easy route, and only in browsers that support it. **Recommend dim.**
 
+### 6a. Scope widened beyond London — regions ungrey themselves over time (CONFIRMED, 2026-06-28)
+
+Jared decided the project should show "important or outside-of-London deployments... especially if
+[they] played a role in London's development" — e.g. the Wales LFR trials that produced the *Bridges*
+legal precedent, or 2024 RFR use after the Southport riots. **Confirmed mechanic** (Jared's own words:
+"a place lights up the moment it becomes relevant to the story, then stays lit forever after"). This
+changes the spotlight from "one static London mask" to **multiple region masks, gated by the same
+animated date variable that drives Phase 3's dot-accumulation filter**:
+
+- **London stays always-lit** — the core subject, lit from the very start of the timeline.
+- **Other regions ungrey themselves the moment they become historically relevant**, then **stay lit**
+  permanently (matching the existing "dots accumulate, never disappear" rule — locked decision 4).
+  Confirmed regions so far: **Cardiff/South Wales ungreys 2017** (South Wales Police's AFR trials, now
+  merged as `swp-001..015` in `data/deployments/south-wales-police-lfr.json` — this is the factual
+  basis for the `legal-001` *Bridges* case); **Hull/Humberside ungreys 2018** (the Met's own joint
+  trial there, merged as `lfr-672`); **Sunderland/Northumbria ungreys August 2024** (RFR use after the
+  riots, merged as `rfr-005` in `retrospective-fr.json`). More regions may be added as more history is
+  sourced — the mechanic doesn't change, just the region list.
+- **"If it's not in view, it doesn't matter"** (Jared's framing) — this is a property of the mask/fill
+  layer's per-region opacity, not anything that needs special off-screen handling. The default view
+  just needs to be wide enough on load to show whichever regions are already lit at the animation's
+  current position (which, with the animation off by default, means *all* regions that have ever
+  become relevant — same logic as dots showing the full accumulated picture until you press play).
+- **Practical implication:** the single London-boroughs mask polygon isn't enough any more. Each
+  context region needs its own boundary polygon (county/force-area boundaries, not just a point) and
+  its own `date_first_relevant` value to gate it from the same currentDate variable Phase 3 already
+  drives. This couples Phase 1 (spotlight) and Phase 3 (time filter) into one mechanic — build them
+  together, not as independent phases, for this specific feature.
+
 ---
 
-## 6. Notes on specific bug fixes (no library needed)
+## 7. Notes on specific bug fixes (no library needed)
 
 - **"Stuck highlight" filter buttons** (feedback #2): the current bug is the classic mobile
   **"sticky hover/focus"** — a `:hover`/`:focus` style sticks after tapping until you tap elsewhere.
@@ -244,7 +335,7 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 
 ---
 
-## 7. Feature → tool / approach map (MapLibre-native vs plugin vs "Leaflet would've sufficed")
+## 8. Feature → tool / approach map (MapLibre-native vs plugin vs "Leaflet would've sufficed")
 
 | Feature (feedback #) | On MapLibre (the chosen path) | Native or extra? | Cheaper Leaflet alt we passed up |
 |---|---|---|---|
@@ -253,6 +344,7 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 | Clustering | GeoJSON source `cluster: true` | **Native** | `leaflet.markercluster` (already in use) |
 | Responsive sizing (#1, #15) | CSS `svh`/`dvh` + `map.resize()` on resize/rotate | CSS + a few JS lines | identical approach on Leaflet (`invalidateSize()`) |
 | Operator **shapes** on markers (#8, #17) | Symbol layer, `addImage()` + data-driven `icon-image` | **Native (data-driven)** | free `Leaflet.SvgShapeMarkers` or `L.divIcon` SVG |
+| **Accessible fallback for ~644 canvas points** (new — not from Jared's feedback) | Keyboard-navigable list/table view + click-details panel as the primary accessible surface; `aria-live` filter announcements (§5a) | **Required hand-built workaround — MapLibre's canvas has no accessibility tree** | Leaflet's DOM markers are natively focusable and screen-reader-visible — this row wouldn't exist on Leaflet |
 | **Spotlight on London** (#20) | Turf.js inverted polygon → MapLibre `fill` layer | **Plugin (Turf.js) + hand-wiring; MapLibre has NO built-in mask** | free `Leaflet.Mask` plugin — **would have been easier** |
 | **Click-details panel** (#18) | Own HTML panel toggled on the layer `click` event | Hand-built | free `leaflet-sidebar-v2` plugin |
 | **Time animation** (#6) | Animated date variable → symbol-layer filter expression | Hand-wired (GPU-smooth) | free `Leaflet.timeline` plugin (play button built in) |
@@ -264,11 +356,13 @@ This is the one place where choosing MapLibre **costs us** built-in support, so 
 **Reading this table:** most rows say a free Leaflet plugin would have sufficed. That is the honest
 cost of the MapLibre decision, and it's fine — Jared chose MapLibre for the long game, not because
 these features demanded it. The **two real MapLibre wins** are (a) automatic label-collision hiding
-and (b) the GPU foundation for future 3D. The **one real MapLibre cost** is the spotlight mask (§5).
+and (b) the GPU foundation for future 3D. The **two real MapLibre costs** are the spotlight mask
+(§6) and the canvas-accessibility workaround (§5a) — both hand-built because MapLibre has no native
+answer where Leaflet would have had one (`Leaflet.Mask`; natively-focusable DOM markers).
 
 ---
 
-## 8. Verification (before any swap to live)
+## 9. Verification (before any swap to live)
 
 - **Test on Jared's real phone over Tailscale** (the PC serves the map; the phone reaches it via
   Tailscale). Check **portrait AND landscape** — the landscape (short, wide viewport) case is where
@@ -285,7 +379,7 @@ and (b) the GPU foundation for future 3D. The **one real MapLibre cost** is the 
 
 ---
 
-## 9. Open items / things needing Jared's judgement
+## 10. Open items / things needing Jared's judgement
 
 1. **Is "Pretext" still relevant given MapLibre?** Jared named the **Pretext** library
    (github.com/chenglou/pretext, free/MIT) as the "browser front-engine" text technique he half-
@@ -295,29 +389,58 @@ and (b) the GPU foundation for future 3D. The **one real MapLibre cost** is the 
    here is making a very text-heavy panel re-flow smoothly. **Recommendation:** keep Pretext in the
    back pocket for the detail/news panels if they ever feel janky; do **not** treat it as a map
    dependency. Likely moot for the map itself. Flagged for Jared only because he asked about it.
-2. **Data start: 2020, not 2016.** The animation and any "history" framing begin at **2020** (earliest
-   records Feb 2020). If Jared has or plans **pre-2020** records, say so and the timeline extends back.
-   Otherwise all "since 2020" copy is correct as-is.
-3. **Shape-variant future scope.** The shape scheme **reserves** room for sub-type variants (permanent
-   vs mobile cameras; RFR), but those variants are **not built this round.** Confirm Jared's happy that
-   the first build ships with **one shape per operator** and variants come later.
-4. **Final shapes/colours/copy** are Phase-0 design decisions that want Jared's eye before Phase-1
-   coding locks them in.
+2. **RESOLVED (2026-06-28): data start moved to 2016 and is merged.** The Met's 10 original 2016-2019
+   trial deployments (Notting Hill Carnival, Remembrance Sunday, Port of Hull, Westfield Stratford,
+   Soho, Romford) are live as `lfr-669` through `lfr-678` (644→654 records, 0 validator errors). Build
+   the animation logic to read whatever date range
+   `met-police-lfr.json` actually contains at build time; don't hardcode 2020 as the start.
+3. **RESOLVED (2026-06-28): ship simple.** Jared confirmed the first build ships with **one shape per
+   operator**; variants (permanent/mobile cameras, RFR) stay reserved-but-not-built, except RFR's
+   *colour* treatment has now been decided ahead of time — see the Phase 0 exception note above and
+   `rfr-colour-operator-fill-plus-outline` in `DECISIONS.md`.
+4. **COLOURS RESOLVED, SHAPES OPEN AGAIN (updated 2026-06-29):** colours locked to real brand values —
+   Met = Brandfetch International Klein Blue `#0032A0`; BTP = Brandfetch Smalt `#003399`; Private =
+   Sainsbury's official `#F06C00` + **square** shape (confirmed). **Important consequence:** Met and
+   BTP's fills are nearly indistinguishable at marker size — shape carries the differentiation between
+   them, not colour. **Met/BTP shapes are NOT settled** — `_review/phase0-met-btp-shapes.html`'s hand-drawn
+   options (plain/checker-band shield, elongated shield, wheel) are **superseded**: Jared judged them
+   oversimplified and not actually tracing the two forces' real, visually distinct badge silhouettes.
+   He is now sourcing both shapes from a separate Claude design session, fed the actual Met/BTP badge
+   reference images (via Brandfetch) plus a written brief (constraints: derive the real silhouette,
+   not a generic shield; stay legible filled at ~16-24px repeated hundreds of times; flat single-colour
+   fill, no gradients; simple low-point-count SVG, `viewBox` around `0 0 64 64`). **Do not use the
+   mockup's shapes if you're picking this up cold — wait for the externally-designed SVGs**, expected
+   back as two labelled SVG files (Met Police, British Transport Police). That file's colour reference
+   is still accurate, just not its shapes. **RFR outline: neon red `#FF1744`, confirmed** (not electric
+   magenta). Intro copy is being elicited separately via `_review/phase0-intro-copy-questions.html` —
+   Jared is writing it himself, not the builder.
+5. **RESOLVED (2026-06-28): scope widened beyond London, mechanic confirmed — see §6a.** Regions
+   ungrey themselves once historically relevant and stay lit permanently. Confirmed regions and data:
+   Cardiff/South Wales (merged, `swp-001..015`), Hull/Humberside (merged, `lfr-672`), Sunderland/
+   Northumbria (merged, `rfr-005`). Build this together with Phase 3, not as an independent Phase-1
+   task — see §6a for why they're coupled.
 
 If anything else blocks progress mid-build, stop that part and write the problem + simplest options
 into `_review/HANDOFF-BLOCKERS.md` for Jared, rather than guessing.
 
 ---
 
-## 10. Quick reference — where things live
+## 11. Quick reference — where things live
 
 - **Current live map:** `map-embed.html` (single-file Leaflet build) — **keep serving this until swap.**
 - **Older modular Leaflet build:** `map/index.html` + `map/js/` — not the active build.
 - **Deployment data (carries over unchanged):** `data/deployments/*.json` (schema v1.2).
-- **London outline for the spotlight mask:** `map/data/london-boroughs.geojson`.
+- **London outline for the spotlight mask:** `map/data/london-boroughs.geojson`. **Still needed for
+  §6a's multi-region mask:** boundary polygons for South Wales/Cardiff, Hull/Humberside, and Sunderland/
+  Northumbria — none sourced yet, get these before building §6a, not just London's.
 - **News for the detail panel:** `data/news/gmail-research-threads.json`.
-- **Validator (only if you touch data):** `python scripts/validate-dataset.py <file>`.
+- **Validator (only if you touch data):** `python scripts/validate-dataset.py <file>` — now correctly
+  handles `retrospective-fr.json`'s `incidents[]` schema too (fixed 2026-06-28; previously silently
+  skipped that file entirely).
 - **Serve locally:** `python -m http.server 8741` (or `serve.ps1` / `serve.bat`) — must be **HTTP**,
   not `file://`, or `fetch()` calls fail. Map auto-starts on login via the "ALHFRS Map Server" task.
+- **Operator marker shapes (Met/BTP):** not finalized — check whether Jared has dropped two SVGs
+  (from his Claude design session) into `_review/` before assuming the mockup's shapes are final. See
+  §10 item 4.
 - **Source material behind this plan:** `_review/MAP-FEEDBACK.md`, `_review/MAP-RESEARCH.md`,
   `_review/MAP-UPGRADE-PLAN.md`.

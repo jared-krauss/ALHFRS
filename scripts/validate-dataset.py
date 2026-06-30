@@ -189,10 +189,11 @@ def main():
         print(ERR(f'Invalid JSON: {e}'))
         sys.exit(1)
 
-    # Accept either "deployments" or "actions" as the record array key
-    records = data.get('deployments') or data.get('actions') or []
+    # Accept "deployments", "actions", or "incidents" (RFR schema) as the record array key
+    is_incident = bool(data.get('incidents'))
+    records = data.get('deployments') or data.get('actions') or data.get('incidents') or []
     if not records:
-        print(WARN('No deployments/actions array found in file — nothing to validate'))
+        print(WARN('No deployments/actions/incidents array found in file — nothing to validate'))
         sys.exit(0)
 
     print(HDR(f'\nALHFRS Dataset Validator — {path}'))
@@ -203,10 +204,11 @@ def main():
     errors, warnings = [], []
 
     for rec in records:
-        check_record(rec, errors, warnings)
+        check_record(rec, errors, warnings, is_incident=is_incident)
 
-    check_near_duplicates(records, warnings)
-    check_cluster_consistency(records, warnings)
+    if not is_incident:
+        check_near_duplicates(records, warnings)
+        check_cluster_consistency(records, warnings)
 
     # Print results per record (group by id for readability)
     seen_ids = []

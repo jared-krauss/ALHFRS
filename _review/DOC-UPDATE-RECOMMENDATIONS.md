@@ -1,9 +1,16 @@
-# Doc-update recommendations (for Jared to approve — NOT yet applied)
+# Doc-update recommendations — ACTIONED (historical reference only)
 
-> **What this is:** proposed, ready-to-paste edits to the three root project docs —
+> **Status as of 2026-06-30:** all recommendations in this file have been applied. The file is kept
+> as a record of what was changed and why, but is no longer a pending action list.
+>
+> Summary of what was done:
+> - `DECISIONS.md`: `## 2026-06` section added with `map-engine-maplibre`, `data-quality-into-detail-panel`, and all subsequent decisions.
+> - `CLAUDE.md` directory-map stale count fixed; Current-state, Known Issues, and Recent changes all updated to reflect June 2026 state.
+> - `README.md`: record counts, port, active URL, schema version, validator examples, and map layers table all corrected.
+> - The "after sandbox merge" items below remain pending until the MapLibre build is actually built and merged to main.
+
+> **Original intent (preserved for context):** proposed, ready-to-paste edits to the three root project docs —
 > `DECISIONS.md`, `CLAUDE.md`, `README.md` — to reflect the map-upgrade direction and the data work.
-> **Nothing here has been applied.** All three files exist and were left untouched on purpose. Approve,
-> tweak, or reject each item.
 >
 > **The big timing rule:** the MapLibre rebuild and most of the recent data work **live in the
 > sandbox / worktree and are NOT merged into `main` yet.** Docs on `main` must not describe unmerged

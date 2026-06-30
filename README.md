@@ -12,7 +12,9 @@ A multi-year documentary art and data visualisation project documenting the depl
 ALHFRS/
 ├── data/
 │   ├── deployments/        FRS deployment records
-│   │   ├── met-police-lfr.json         580 Met Police LFR records (2020–2026, schema v1.2)
+│   │   ├── met-police-lfr.json         654 Met Police LFR records (2016–2026, schema v1.2)
+│   │   ├── south-wales-police-lfr.json 14 South Wales Police AFR trial records (2017–2018)
+│   │   ├── retrospective-fr.json       5 retrospective FR incidents
 │   │   └── private-operators.json      Facewatch, retail FRS
 │   ├── staging/            Extracted records pending review/merge
 │   │   ├── extract-2020-2022.json      (merged ✓)
@@ -59,9 +61,11 @@ ALHFRS/
 | # | Layer | Data file | Status |
 |---|-------|-----------|--------|
 | 1 | Borough boundaries | `map/data/london-boroughs.geojson` | Live |
-| 2 | Met Police LFR deployments | `data/deployments/met-police-lfr.json` | Live (580 records, 2020–2026) |
+| 2 | Met Police LFR deployments | `data/deployments/met-police-lfr.json` | Live (654 records, 2016–2026) |
+| 2a | BTP LFR deployments | `data/deployments/btp-lfr.json` | 2 records — not yet wired into live map |
 | 3 | Private operator deployments | `data/deployments/private-operators.json` | Wired, not toggled separately yet |
-| 4 | News & events overlay | `data/news/` | Placeholder |
+| 3a | South Wales Police AFR deployments | `data/deployments/south-wales-police-lfr.json` | 14 records (2017–2018) — not yet wired into live map |
+| 4 | News & events overlay | `data/news/gmail-research-threads.json` | 21 archived articles (not yet on map) |
 | 5 | Community submissions | `data/community/` | Placeholder |
 | 6 | Gaussian splat embeds | `splats/` | Architecture planned |
 | 7 | Stop-and-search by borough/ward | `data/interactions/` | Not started |
@@ -74,7 +78,7 @@ All deployment files share a unified schema (v1.2):
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "deployments": [
     {
       "id": "lfr-001",
@@ -110,10 +114,15 @@ All deployment files share a unified schema (v1.2):
 
 ## Running the validator
 
-```bash
+```powershell
 python scripts/validate-dataset.py data/deployments/met-police-lfr.json
+python scripts/validate-dataset.py data/deployments/south-wales-police-lfr.json
+python scripts/validate-dataset.py data/deployments/retrospective-fr.json
 python scripts/validate-dataset.py data/deployments/private-operators.json
+python scripts/validate-dataset.py data/deployments/btp-lfr.json
 ```
+
+The validator handles all three schema variants: `deployments[]` (LFR/private), `actions[]` (legal), and `incidents[]` (RFR). Exit 0 = no errors; exit 1 = errors found.
 
 ---
 
@@ -160,13 +169,14 @@ When a splat is approved, a pipeline script (`scripts/splat-publish.py`, TBD) wi
 
 Serve locally from the project root (required — `fetch()` calls block on `file://`):
 
-```bash
-python -m http.server 8000
+```powershell
+python -m http.server 8741
+# or: .\serve.ps1
 ```
 
-Then open: `http://localhost:8000/map/index.html`
+Then open: `http://localhost:8741/map-embed.html`
 
-Or open `map-embed.html` directly — deployment markers work without a server; borough outlines require HTTP.
+The map auto-starts on login via Windows Task Scheduler ("ALHFRS Map Server") — just open the URL. Must use HTTP not `file://`; `fetch()` calls for GeoJSON and data files fail under `file://`.
 
 ---
 
