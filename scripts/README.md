@@ -30,13 +30,13 @@ python scripts/validate-dataset.py data/legal/enforcement-actions.json
 
 ### What it checks
 
-**Required fields — deployment schema v1.1**
+**Required fields — deployment schema v1.2**
 
 `id`, `operator`, `lat`, `lon`, `date_start`, `data_quality`, `source_url`, `source_type`
 
 **Required fields — retrospective FR incident schema v1.0**
 
-Different schema branch: uses `police_force`, `footage_lat`/`footage_lon`, `incident_date`, `outcome`. Detected automatically via the `is_incident` flag on each record.
+Different schema branch: uses `police_force`, `footage_lat`/`footage_lon` (or `arrest_lat`/`arrest_lon`), `outcome`, `data_quality`, `source_url`, `source_type`. Detected automatically via the presence of an `incidents[]` key — no `is_incident` flag per record needed.
 
 **Coordinate bounds — Greater London**
 

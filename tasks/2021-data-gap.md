@@ -2,11 +2,12 @@
 
 **Status:** TODO  
 **Priority:** Medium  
-**Created:** 2026-05-26
+**Created:** 2026-05-26  
+**Updated:** 2026-06-30
 
 ## Context
 
-The met-police-lfr.json dataset (535 records) has no 2021 entries. Years present: 2020, 2022–2026. The 2020–2024 PDF extraction session hit a rate limit and likely missed 2021 records entirely.
+The met-police-lfr.json dataset (654 records as of June 2026) has no 2021 entries. Years present: 2016–2020, 2022–2026. The 2020–2024 PDF extraction session hit a rate limit and likely missed 2021 records entirely.
 
 ## Sources to check
 
@@ -27,10 +28,9 @@ Since this is document extraction from PDFs/public sources, route to Gemini 1.5 
 4. Paste output into `data/staging/garbett-2021-staging.json` following existing schema
 5. Run `python scripts/merge-staging.py` to merge into met-police-lfr.json
 
-**Option B — Automated via LiteLLM (once GOOGLE_API_KEY is set):**
-- Add `GOOGLE_API_KEY` to `D:\Dev\LiteLLM\.env`
-- `frontier-fast` alias already points to `gemini/gemini-2.5-flash` in config.yaml
-- Run `pdf-extract-deployments.py` against 2021 PDFs with `--model frontier-smart`
+**Option B — Automated via Gemini API directly (LiteLLM is decommissioned 2026-06-15):**
+- Set `GOOGLE_API_KEY` in Windows environment variables
+- Run `pdf-extract-deployments.py` against 2021 PDFs pointing directly at the Google AI Studio endpoint
 
 ## Schema reminder
 
@@ -51,7 +51,7 @@ Since this is document extraction from PDFs/public sources, route to Gemini 1.5 
 }
 ```
 
-Next available ID after merge: check `max(id)` in met-police-lfr.json — currently at lfr-535.
+Next available ID after merge: `lfr-679` (max ID in met-police-lfr.json is `lfr-678` as of 2026-06-30).
 
 ## After extraction
 

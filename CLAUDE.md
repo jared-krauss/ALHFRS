@@ -261,7 +261,7 @@ Wiki results: background/ideation context, may be stale — see root CLAUDE.md M
 
 Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **not here.** Do not add decision entries to this file.
 
-## Known issues / open work (May 2026)
+## Known issues / open work (June 2026)
 1. **2023-24 PDF extraction poor quality** — `data/staging/extract-2023-2024.json` has 30 hallucinated records with regular 2-week intervals. Do not merge. Needs Gemini API or revised prompt that skips watchlist-criteria sections.
 
 2. **Corroboration discrepancies logged** — `corroboration_notes` in `met-police-lfr.json`: same-date records with different location names from different sources (2020-02-11, 2020-02-27). Analytically interesting — don't resolve blindly.
@@ -276,21 +276,17 @@ Decisions live in this repo's decision log [`DECISIONS.md`](DECISIONS.md) — **
 
 7. **Gemini 2021 extraction unreliable.** `data/staging/gemini-2021-extraction.json` (5 records, 2026-05-26): The "zero deployments in 2021" claim likely contradicts our existing data. Croydon 173 arrest figure is probably an annual total misattributed to a single deployment. Victoria + Tottenham 2026-05-18 records (from itnews.com.au) are genuinely new and probably addable after de-duplication check. **Do not merge this file wholesale — validate record by record.**
 
-8. **169 null lat/lon records** need geocoding. Prompt ready at `tasks/gemini-prompt-geocoding.md`; data at `data/staging/geocoding-needed.json`.
+8. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
 
-9. **News panel Wayback Machine enrichment** deferred. Logged in `tasks/map-future-goals.md`. Proposed: `scripts/enrich-news-wayback.py` checks `archive.org/wayback/available` for each article URL, stores `url_wayback` in news JSON.
+9. **`swp-010` (South Wales Police, Liam Gallagher concert) held back from merge.** Date is an estimate, not source-confirmed — sits in `data/staging/south-wales-police-lfr.json` pending a better source before it can be added as `swp-010`.
 
-10. **2024 records from Met PDF (2023, 2025, 2020)** — need verification and integration into existing data.
+10. **2021 data gap.** No deployments in `met-police-lfr.json` for 2021 — the year was missed by the original PDF extraction. See `tasks/2021-data-gap.md` for sourcing approach. Max ID currently `lfr-678`; next merge should start from `lfr-679`.
 
-11. **Orphan/duplicate pairs from 2024 reverification** — need manual resolution to ensure accuracy.
-
-12. **Date swaps fixed in 2024 records** — additional records added as part of reverification process.
-
-13. **New deployment record for Walworth Rd (lfr-536)** — needs validation and integration.
-
-14. **Wayback Machine enrichment script deferred** — plan to implement after current priorities are completed.
-
-15. **`swp-010` (South Wales Police, Liam Gallagher concert) held back from merge.** Date is an estimate, not source-confirmed — sits in `data/staging/south-wales-police-lfr.json` pending a better source before it can be added as `swp-010`.
+**Resolved (no longer open):**
+- ~~169 null lat/lon records~~ — **all 654 records now have coordinates** (geocoding complete).
+- ~~2024 records from Met PDF / orphan-duplicate pairs / date swaps~~ — done (see `_review/DATA-CHANGES.md`).
+- ~~lfr-536 Walworth Rd~~ — merged.
+- ~~Wayback Machine enrichment script~~ — deferred but not an open bug; folded into item 8 above.
 
 ---
 ## Archive

@@ -9,21 +9,23 @@ Structured JSON records for all ALHFRS deployment, legal, and news data. The map
 ```
 data/
 ├── deployments/
-│   ├── met-police-lfr.json         Met Police Live Facial Recognition (schema v1.1)
-│   ├── btp-lfr.json                British Transport Police LFR trials (schema v1.1)
-│   ├── private-operators.json      Facewatch/Sainsbury's retail FRS (schema v1.1)
-│   └── retrospective-fr.json       Retrospective FR false-positive incidents (schema v1.0)
+│   ├── met-police-lfr.json         Met Police Live Facial Recognition — 654 records, 2016–2026 (schema v1.2)
+│   ├── btp-lfr.json                British Transport Police LFR trials — 2 records (schema v1.2)
+│   ├── south-wales-police-lfr.json South Wales Police AFR trials — 14 records, 2017–2018 (schema v1.2)
+│   ├── private-operators.json      Facewatch/Sainsbury's retail FRS — 5 records (schema v1.2)
+│   └── retrospective-fr.json       Retrospective FR incidents — 5 records (schema v1.0)
 ├── legal/
 │   └── enforcement-actions.json    Court cases and ICO regulatory actions (schema v1.0)
 ├── news/
-│   └── gmail-research-threads.json Research article archive from Gmail (schema v1.0)
+│   └── gmail-research-threads.json Research article archive from Gmail — 21 articles (schema v1.0)
+├── staging/                        Extracted records pending review/merge (gitignored)
 ├── interactions/                   MOPAC stop-and-search data (placeholder — TBD)
 └── community/                      Community submissions (placeholder — TBD)
 ```
 
 ---
 
-## Deployment schema v1.1
+## Deployment schema v1.2
 
 All files in `deployments/` (except `retrospective-fr.json`) use this schema. The top-level JSON object has metadata fields (`schema_version`, `source`, `last_updated`, `notes`) and a `deployments` array.
 
@@ -97,12 +99,15 @@ When choosing between competing sources, highest to lowest confidence:
 
 ## location_cluster_id
 
-Groups records that relate to the same physical location (e.g. repeated deployments at the same site over time). Current clusters:
+Groups records that relate to the same physical location (e.g. repeated deployments at the same site over time). As of June 2026, 10 named clusters cover 110+ records (see `_review/DATA-CHANGES.md` for the full list). A sampling:
 
-| Cluster ID | Records | Location |
-|---|---|---|
-| `stratford-complex` | `lfr-003` (2020), `lfr-005` (2023) | Westfield Stratford City / Stratford Shopping Centre |
-| `croydon-centre` | `lfr-004` (2022 mobile), `lfr-008` (2025 static) | Croydon High Street zone |
+| Cluster ID | Location |
+|---|---|
+| `stratford-complex` | Westfield Stratford City / Stratford Shopping Centre |
+| `croydon-centre` | Croydon High Street zone |
+| `romford-centre` | Romford town centre (repeated 2018-2019) |
+| `soho-cambridge-circus` | Soho / Cambridge Circus–Cranbourn Street |
+| *(+ 6 more — see DATA-CHANGES.md)* | |
 
 Records at the same physical location but different `location_cluster_id` values — or different boroughs within the same cluster — will trigger a validator warning.
 
@@ -153,7 +158,10 @@ See `scripts/README.md` for full validator documentation.
 
 ## Known data gaps and issues
 
+- **All 654 records now have coordinates.** Null lat/lon geocoding is complete as of June 2026.
 - **Private operator dates approximate.** `priv-001` through `priv-005` all use `2022-01-01` — the actual Facewatch go-live dates in each Sainsbury's store were never publicly disclosed. Do not change to `confirmed` without a primary source.
 - **`lfr-006` has null `ward`.** Liverpool Street falls in the City of London; ward data needs to be populated.
-- **Outcome fields mostly null — mostly correct, one research gap.** Only `lfr-008` has `outcome_arrests` populated (173). BTP trial outcomes don't exist yet (trial < 6 months old); private operator figures are commercially withheld; lfr-002/006/007 sources don't contain per-deployment counts. **Exception:** `lfr-004` (Croydon, 2022) and `lfr-005` (Westfield Stratford, 2023) both fall within the 2021–2023 window of the Met FOI disclosure they cite — the disclosure URL slug explicitly names "arrests". Their `outcome_arrests` may be retrievable from that FOI page. Research task: fetch `https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/april-2024/locations-facial-recognition-cameras-arrests-london-boroughs-2021-2023/` to check.
+- **No 2021 records.** The 2021 year was missed during PDF extraction. See `tasks/2021-data-gap.md`. Next available ID: `lfr-679`.
+- **Outcome fields mostly null — mostly correct, one research gap.** Only a handful of records have `outcome_arrests` populated. BTP trial outcomes don't exist yet; private operator figures are commercially withheld. Research task: check the Met FOI disclosure at `met.police.uk/foi-ai` for 2021-2023 per-deployment arrest counts.
 - **Some news archive URLs are share.google redirects.** `gmail-research-threads.json` has entries where `url` is a Gmail share redirect. `url_canonical` is partially filled — remaining redirects need resolving to permanent article URLs.
+- **`swp-010` (South Wales Police, Liam Gallagher concert) held in staging.** Date is an estimate — sits in `data/staging/south-wales-police-lfr.json` pending a primary source.
