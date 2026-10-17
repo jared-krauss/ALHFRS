@@ -1,0 +1,17 @@
+{
+  "_schema": "alhfrs-splats-v1",
+  "_description": "Index of Gaussian splat captures associated with ALHFRS deployment sites. Binary files (.ply, .splat) are never stored in this repo — this file is the manifest only. Splats are hosted externally (SuperSplat, R2, or local path) and embedded via iframe.",
+  "splats": [
+    {
+      "id": "splat-001",
+      "deployment_id": "lfr-506",
+      "covers_location_name": "Walworth Rd",
+      "location_name": "Walworth Rd, Southwark",
+      "captured": "2024-11-01",
+      "host": "supersplat",
+      "viewer_url": "https://superspl.at/s?id=2094ae04",
+      "thumbnail": "",
+      "notes": "Jared's own capture, made on site on 2024-11-01 — the same day as lfr-506, which carries the first-hand corroboration note. The URL was previously hardcoded in the Leaflet build's splat pane (map-embed.html) and existed nowhere else in the repo; recorded here 2026-08-17 on Jared's instruction. The site carries nine documented Walworth Rd deployments, so this capture is matched to all of them by covers_location_name, not just to lfr-506."
+    }
+  ]
+}

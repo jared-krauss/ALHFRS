@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "source": "ICO; UK judiciary; Big Brother Watch; Liberty; Ada Lovelace Institute",
+  "last_updated": "2026-05-14",
+  "notes": "Regulatory enforcement actions, court cases, and parliamentary accountability records related to facial recognition systems in the UK. These are not geographic deployment records — see data/deployments/ for location data.",
+  "actions": [
+    {
+      "id": "legal-001",
+      "type": "court_case",
+      "case_name": "R (Bridges) v Chief Constable of South Wales Police",
+      "citation": "[2020] EWCA Civ 1058",
+      "claimant": "Edward Bridges",
+      "respondent": "Chief Constable of South Wales Police",
+      "court": "Court of Appeal",
+      "date": "2020-08-11",
+      "outcome": "Appeal allowed — AFR use found unlawful",
+      "key_findings": [
+        "AFR Locate violated Article 8 ECHR (right to privacy)",
+        "Use violated UK Data Protection Act 2018",
+        "Police had excessive discretion in compiling watchlists",
+        "Public Sector Equality Duty not properly considered",
+        "Potential for discriminatory effect not adequately assessed"
+      ],
+      "significance": "First successful legal challenge to automated facial recognition in the UK. Landmark ruling on surveillance legality. Bridges was captured in two deployments: Queen Street Cardiff (21 Dec 2017) and Motorpoint Arena Cardiff (27 Mar 2018).",
+      "source_url": "https://www.judiciary.uk/wp-content/uploads/2020/08/R-Bridges-v-CC-South-Wales-ors-Press-Summary.pdf",
+      "notes": "South Wales Police, not Metropolitan Police. Included as precedent directly relevant to Met LFR legal basis."
+    },
+    {
+      "id": "legal-002",
+      "type": "court_case",
+      "case_name": "Liberty v Metropolitan Police Commissioner",
+      "citation": "High Court [2026]",
+      "claimant": "Shaun Thompson; Silkie Carlo (Big Brother Watch)",
+      "respondent": "Commissioner of Police of the Metropolis",
+      "court": "High Court",
+      "date": "2026-04-21",
+      "outcome": "Challenge dismissed — Met LFR policy held lawful",
+      "key_findings": [
+        "Met's LFR policy does not breach human rights law",
+        "No systemic unlawful discrimination established",
+        "Thompson indicated intention to appeal"
+      ],
+      "significance": "Challenge brought partly on basis of Shaun Thompson misidentification (Feb 2024, Liverpool Street area — see lfr-006). First major High Court test of Met LFR policy.",
+      "source_url": "https://www.biometricupdate.com/202604/london-police-win-legal-challenge-against-live-facial-recognition-deployment",
+      "notes": "Appeal outcome pending as of 2026-05-14."
+    },
+    {
+      "id": "legal-003",
+      "type": "ico_enforcement",
+      "case_name": "ICO Enforcement Notice — Clearview AI Inc",
+      "actor": "Clearview AI Inc",
+      "enforcement_body": "Information Commissioner's Office (ICO)",
+      "date": "2022-05-23",
+      "action_type": "Enforcement notice + fine",
+      "outcome": "£7,552,800 fine; ordered to stop processing UK residents' data; ordered to delete all UK resident data",
+      "appeal_status": "Upper Tribunal upheld ICO appeal Oct 2025 on 3 of 4 grounds; Clearview granted permission to appeal to Court of Appeal Dec 2025",
+      "source_url": "https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/2025/10/uk-upper-tribunal-hands-down-judgment-on-clearview-ai-inc/",
+      "notes": "Clearview scrapes public images from the web and social media to build a facial recognition database. ICO found this violated UK GDPR. First-tier Tribunal initially overturned (Oct 2023) on jurisdiction grounds; Upper Tribunal reversed Oct 2025, finding Clearview 'related to monitoring UK residents'. Not a London deployment — included as regulatory action affecting London residents."
+    },
+    {
+      "id": "legal-004",
+      "type": "ico_enforcement",
+      "case_name": "ICO Enforcement Notice — Serco Leisure",
+      "actor": "Serco Leisure; Serco Jersey; 7 associated leisure trusts",
+      "enforcement_body": "Information Commissioner's Office (ICO)",
+      "date": "2024-02-01",
+      "action_type": "Enforcement notice",
+      "outcome": "Ordered to stop all biometric processing for employee attendance; destroy all biometric data within 3 months",
+      "appeal_status": null,
+      "source_url": "https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/2024/02/ico-orders-serco-leisure-to-stop-using-facial-recognition-technology-to-monitor-attendance-of-leisure-centre-employees/",
+      "notes": "2,000+ employees at 38 leisure facilities subjected to facial recognition and fingerprint scanning for attendance monitoring. ICO found unlawful biometric data processing. Includes London facilities. Relevant precedent for employment-context FRS use."
+    }
+  ]
+}

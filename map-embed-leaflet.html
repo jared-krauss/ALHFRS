@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A London History of Facial Recognition Systems — Deployment Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #0c0f1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Halation / atmospheric light bleed ──────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(255,110,180,0.06) 0%, transparent 65%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -150px; right: -100px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(126,212,253,0.05) 0%, transparent 65%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #map-halation {
+      position: fixed;
+      top: 30%; left: 35%;
+      transform: translate(-50%, -50%);
+      width: 900px; height: 500px;
+      background: radial-gradient(ellipse, rgba(167,139,250,0.07) 0%, transparent 70%);
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @media (max-width: 768px) {
+      body::before { width: 420px; height: 420px; opacity: 0.7; }
+      body::after  { width: 360px; height: 360px; opacity: 0.7; }
+      #map-halation { width: 540px; height: 300px; opacity: 0.7; }
+    }
+
+    /* ── Marker glow (operator-type classes) ─────────────── */
+    .leaflet-interactive.marker-met     { filter: drop-shadow(0 0 3px rgba(255,110,180,0.40)); }
+    .leaflet-interactive.marker-btp     { filter: drop-shadow(0 0 3px rgba(126,212,253,0.40)); }
+    .leaflet-interactive.marker-private { filter: drop-shadow(0 0 3px rgba(167,139,250,0.40)); }
+    .leaflet-interactive.marker-rfr     { filter: drop-shadow(0 0 3px rgba(251,146,60, 0.40)); }
+
+    /* ── Op-chip semantic colors (active state) ──────────── */
+    .op-chip[data-optype="met"].active     { border-color: #ff6eb4; background: rgba(255,110,180,0.18); color: #ff6eb4; }
+    .op-chip[data-optype="btp"].active     { border-color: #7ed4fd; background: rgba(126,212,253,0.18); color: #7ed4fd; }
+    .op-chip[data-optype="private"].active { border-color: #a78bfa; background: rgba(167,139,250,0.18); color: #a78bfa; }
+
+    /* Inactive chip: subtle left-border color hint */
+    .op-chip[data-optype="met"]     { border-left: 3px solid rgba(255,110,180,0.35); }
+    .op-chip[data-optype="btp"]     { border-left: 3px solid rgba(126,212,253,0.35); }
+    .op-chip[data-optype="private"] { border-left: 3px solid rgba(167,139,250,0.35); }
+
+    /* Active: full left border */
+    .op-chip[data-optype="met"].active     { border-left-color: #ff6eb4; border-left-width: 3px; }
+    .op-chip[data-optype="btp"].active     { border-left-color: #7ed4fd; border-left-width: 3px; }
+    .op-chip[data-optype="private"].active { border-left-color: #a78bfa; border-left-width: 3px; }
+
+    /* ── Popup operator accent border ────────────────────── */
+    .popup-met     .leaflet-popup-content-wrapper { border-color: rgba(255,110,180,0.5); }
+    .popup-btp     .leaflet-popup-content-wrapper { border-color: rgba(126,212,253,0.5); }
+    .popup-private .leaflet-popup-content-wrapper { border-color: rgba(167,139,250,0.5); }
+    .popup-rfr     .leaflet-popup-content-wrapper { border-color: rgba(251,146,60,0.5);  }
+
+    /* ── Shell ───────────────────────────────────────────── */
+    #shell {
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* ── Map pane ────────────────────────────────────────── */
+    #map-pane {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+      transition: flex-basis 0.35s ease;
+    }
+
+    /* 52px title-bar + 64px filter-strip = 116px */
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 116px;
+      z-index: 1;
+    }
+
+    /* ── Title bar ───────────────────────────────────────── */
+    #title-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: rgba(10, 13, 22, 0.96);
+      border-top: 1px solid #1e2d4a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 1000;
+      backdrop-filter: blur(6px);
+    }
+
+    .title-bar-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #c8d3e8;
+      text-transform: uppercase;
+    }
+
+    .title-bar-subtitle {
+      font-size: 9px;
+      font-weight: 400;
+      color: #7a8aa8;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      margin-top: 3px;
+    }
+
+    .title-bar-meta {
+      font-size: 10px;
+      color: #3a4a68;
+      letter-spacing: 0.03em;
+    }
+
+    .title-bar-meta a {
+      color: #4a6a98;
+      text-decoration: none;
+    }
+
+    .title-bar-meta a:hover {
+      color: #6fa8d0;
+      text-decoration: underline;
+    }
+
+    /* ── Filter strip ────────────────────────────────────── */
+    #filter-strip {
+      position: absolute;
+      bottom: 52px;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(9, 12, 20, 0.96);
+      border-top: 1px solid #1e2d4a;
+      display: flex;
+      flex-direction: column;
+      padding: 4px 0;
+      gap: 4px;
+      z-index: 900;
+      backdrop-filter: blur(4px);
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1;
+    }
+
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .filter-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3a4a68;
+      flex-shrink: 0;
+      width: 32px;
+    }
+
+    .chip-group {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      background: rgba(13, 17, 35, 0.6);
+      color: #6b7fa8;
+      border: 1px solid #1e2d4a;
+      padding: 1px 8px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      height: 22px;
+      line-height: 18px;
+    }
+
+    .chip:hover {
+      background: rgba(42, 58, 94, 0.7);
+      color: #9ba8c0;
+      border-color: #2a3a5e;
+    }
+
+    .chip.active {
+      background: rgba(200, 211, 232, 0.14);
+      color: #c8d3e8;
+      border-color: #4a5e82;
+    }
+
+    .chip.month-chip.active {
+      background: rgba(111, 168, 208, 0.15);
+      color: #6fa8d0;
+      border-color: #4a7fa8;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: #3a4a68;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: color 0.12s;
+    }
+
+    .reset-btn:hover { color: #6b7fa8; }
+
+    /* ── Splat pane ──────────────────────────────────────── */
+    #splat-pane {
+      flex: 0 0 0;
+      overflow: hidden;
+      transition: flex-basis 0.35s ease;
+      background: #080c14;
+      border-left: 1px solid #1e2d4a;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #splat-pane.open { flex: 0 0 400px; }
+
+    #splat-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: #0c0f1a;
+      border-bottom: 1px solid #1e2d4a;
+      flex-shrink: 0;
+    }
+
+    .splat-header-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #9ba8c0;
+      text-transform: uppercase;
+    }
+
+    .splat-header-sub { font-size: 10px; color: #3a4a68; margin-left: 8px; }
+
+    #btn-close-splat {
+      background: none;
+      border: none;
+      color: #3a4a68;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color 0.15s;
+    }
+
+    #btn-close-splat:hover { color: #9ba8c0; }
+
+    #splat-iframe { flex: 1; width: 100%; border: none; display: block; }
+
+    /* ── Layer panel ─────────────────────────────────────── */
+    #layer-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .layer-btn {
+      background: rgba(13, 17, 35, 0.88);
+      color: #9ba8c0;
+      border: 1px solid #2a3a5e;
+      padding: 7px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: left;
+      min-width: 170px;
+      letter-spacing: 0.02em;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      backdrop-filter: blur(4px);
+    }
+
+    .layer-btn:hover:not(:disabled) {
+      background: rgba(42, 58, 94, 0.95);
+      color: #d0d8ec;
+    }
+
+    .layer-btn.active {
+      background: rgba(255, 110, 180, 0.15);
+      color: #ff6eb4;
+      border-color: #ff6eb4;
+    }
+
+    /* Borough boundaries button — neutral cartographic blue, not operator-type pink */
+    #btn-boroughs.active {
+      background: rgba(106, 154, 186, 0.15);
+      color: #6a9aba;
+      border-color: #6a9aba;
+    }
+
+    .layer-btn.splat-active {
+      background: rgba(100, 160, 220, 0.12);
+      color: #6fa8d0;
+      border-color: #4a7fa8;
+    }
+
+    .layer-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .panel-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3a4a68;
+      padding: 4px 2px 1px;
+    }
+
+    /* Operator chips inside panel */
+    .op-chip-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .op-chip {
+      background: rgba(13, 17, 35, 0.88);
+      color: #9ba8c0;
+      border: 1px solid #2a3a5e;
+      padding: 6px 14px 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 170px;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      backdrop-filter: blur(4px);
+      text-align: left;
+      width: 100%;
+    }
+
+    .op-chip:hover {
+      background: rgba(42, 58, 94, 0.95);
+      color: #d0d8ec;
+    }
+
+    .op-chip.active {
+      background: rgba(200, 211, 232, 0.12);
+      color: #c8d3e8;
+      border-color: #4a5e82;
+    }
+
+    .op-chip-check {
+      font-size: 11px;
+      line-height: 1;
+      width: 12px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* Mobile hamburger toggle */
+    #btn-panel-toggle {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1001;
+      background: rgba(13, 17, 35, 0.88);
+      color: #9ba8c0;
+      border: 1px solid #2a3a5e;
+      padding: 7px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── Popups ──────────────────────────────────────────── */
+    .leaflet-popup-content-wrapper {
+      background: #131b2e;
+      border: 1px solid #2a3a5e;
+      border-radius: 6px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      color: #c8d3e8;
+    }
+
+    .leaflet-popup-tip { background: #131b2e; }
+
+    .lfr-popup {
+      font-size: 12px;
+      line-height: 1.5;
+      min-width: 220px;
+      max-width: 300px;
+    }
+
+    .popup-title { font-size: 13px; font-weight: 600; color: #e2e8f8; margin-bottom: 3px; }
+    .popup-meta { font-size: 11px; color: #6b7fa8; margin-bottom: 6px; text-transform: capitalize; }
+    .popup-purpose { color: #9ba8c0; margin-bottom: 5px; }
+    .popup-stat { color: #9ba8c0; margin-bottom: 3px; }
+
+    .popup-notes {
+      font-size: 11px;
+      color: #6b7fa8;
+      margin-top: 6px;
+      border-top: 1px solid #1e2d4a;
+      padding-top: 6px;
+      line-height: 1.45;
+    }
+
+    .popup-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #1e2d4a;
+    }
+
+    .popup-quality { font-size: 11px; }
+
+    .popup-source {
+      font-size: 11px;
+      color: #4a7fa8;
+      text-decoration: none;
+    }
+
+    .popup-source:hover { color: #6fa8d0; text-decoration: underline; }
+
+    /* ── Legend ──────────────────────────────────────────── */
+    .map-legend {
+      background: rgba(13, 17, 35, 0.88);
+      border: 1px solid #2a3a5e;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #9ba8c0;
+      backdrop-filter: blur(4px);
+      min-width: 130px;
+      margin-bottom: 6px;
+    }
+
+    .legend-title {
+      color: #c8d3e8;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+
+    .legend-section {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #1e2d4a;
+      font-size: 10px;
+      color: #6b7fa8;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .legend-shape-item { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+
+    .legend-circle {
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      background: #4a5a78;
+      flex-shrink: 0;
+    }
+
+    .legend-note {
+      margin-top: 3px;
+      font-size: 10px;
+      color: #3a4a68;
+      line-height: 1.5;
+    }
+
+    .legend-intro {
+      font-size: 9px;
+      color: #5a6a8a;
+      font-style: italic;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      max-width: 160px;
+    }
+
+    .legend-size-row {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      font-size: 10px;
+      color: #6b7fa8;
+      margin: 4px 0 2px;
+    }
+
+    /* ── News panel ──────────────────────────────────────────── */
+    #news-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 116px; /* above filter strip + title bar */
+      width: 340px;
+      background: rgba(9, 12, 20, 0.97);
+      border-left: 1px solid #1e2d4a;
+      display: flex;
+      flex-direction: column;
+      z-index: 800;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    #news-panel.open {
+      transform: translateX(0);
+    }
+
+    #news-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: #0c0f1a;
+      border-bottom: 1px solid #1e2d4a;
+      flex-shrink: 0;
+    }
+
+    .news-header-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #9ba8c0;
+      text-transform: uppercase;
+    }
+
+    .news-header-count {
+      font-size: 10px;
+      color: #3a4a68;
+      margin-left: 8px;
+    }
+
+    #btn-close-news {
+      background: none;
+      border: none;
+      color: #3a4a68;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color 0.15s;
+    }
+
+    #btn-close-news:hover { color: #9ba8c0; }
+
+    #news-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #2a3a5e transparent;
+    }
+
+    #news-list::-webkit-scrollbar { width: 4px; }
+    #news-list::-webkit-scrollbar-thumb { background: #2a3a5e; border-radius: 2px; }
+
+    .news-card {
+      padding: 10px 14px;
+      border-bottom: 1px solid #1a2438;
+      transition: background 0.12s;
+    }
+
+    .news-card:hover { background: rgba(42, 58, 94, 0.2); }
+    .news-card:last-child { border-bottom: none; }
+
+    .news-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #c8d3e8;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .news-card-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .news-card-title a:hover {
+      color: #6fa8d0;
+      text-decoration: underline;
+    }
+
+    .news-card-meta {
+      font-size: 10px;
+      color: #4a6a98;
+      margin-bottom: 5px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .news-card-pub { font-weight: 600; color: #6b7fa8; }
+
+    .news-card-location {
+      font-size: 10px;
+      color: #4a5a78;
+      margin-bottom: 4px;
+    }
+
+    .news-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: 4px;
+    }
+
+    .news-tag {
+      background: rgba(26, 36, 56, 0.8);
+      color: #4a6a98;
+      border: 1px solid #1e2d4a;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .news-card-link {
+      font-size: 10px;
+      color: #4a7fa8;
+      text-decoration: none;
+      margin-top: 3px;
+      display: inline-block;
+    }
+
+    .news-card-link:hover { color: #6fa8d0; text-decoration: underline; }
+
+    .panel-section-sublabel {
+      font-size: 8px;
+      font-weight: 500;
+      color: #2a3a5e;
+      padding: 0px 2px 3px;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 600px) {
+      #news-panel { width: 100%; }
+    }
+
+    /* ── Borough tooltip ─────────────────────────────────── */
+    .borough-tooltip {
+      background: rgba(13, 17, 35, 0.85);
+      border: 1px solid #2a3a5e;
+      color: #9ba8c0;
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 3px;
+      box-shadow: none;
+    }
+
+    /* ── Error banner ────────────────────────────────────── */
+    #load-error {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      background: rgba(255, 110, 180, 0.07);
+      border: 1px solid #ff6eb4;
+      color: #ff6eb4;
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    /* ── Mobile ──────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      #shell { flex-direction: column; }
+      #splat-pane.open { flex: 0 0 280px; }
+
+      /* Show hamburger, hide layer panel by default */
+      #btn-panel-toggle { display: block; }
+
+      #layer-panel {
+        display: none;
+        position: absolute;
+        top: 54px;
+        right: 0;
+        left: 0;
+        max-height: 55vh;
+        overflow-y: auto;
+        border-radius: 0;
+        background: rgba(9, 12, 20, 0.97);
+        border: none;
+        border-bottom: 1px solid #2a3a5e;
+        z-index: 1001;
+        padding: 8px 12px;
+        gap: 4px;
+      }
+
+      #layer-panel.panel-open { display: flex; }
+
+      .layer-btn { min-width: 0; width: 100%; }
+      .op-chip   { min-width: 0; width: 100%; }
+
+      /* Chips shrink on narrow screens */
+      .chip { font-size: 10px; padding: 1px 6px; }
+      .filter-label { font-size: 8px; width: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="map-halation" aria-hidden="true"></div>
+  <div id="shell">
+
+    <div id="map-pane">
+      <div id="map"></div>
+
+      <div id="layer-panel">
+        <div class="panel-section-label">Layers</div>
+        <button class="layer-btn active" id="btn-boroughs">Borough boundaries</button>
+        <div class="panel-section-label">Operators</div>
+        <div class="panel-section-sublabel">multi-select — click to toggle</div>
+        <div id="operator-chips" class="op-chip-group"></div>
+        <div class="panel-section-label">3D documentation</div>
+        <button class="layer-btn" id="btn-splat">Walworth 2024 — 3D view</button>
+        <div class="panel-section-label">Media</div>
+        <button class="layer-btn" id="btn-news">News &amp; events</button>
+        <div class="panel-section-label">Coming soon</div>
+        <button class="layer-btn" id="btn-community" disabled>Community</button>
+      </div>
+
+      <button id="btn-panel-toggle" aria-label="Toggle layer panel">☰</button>
+
+      <!-- News panel -->
+      <div id="news-panel">
+        <div id="news-header">
+          <div>
+            <span class="news-header-label">News &amp; events</span>
+            <span id="news-count" class="news-header-count"></span>
+          </div>
+          <button id="btn-close-news" title="Close news panel">×</button>
+        </div>
+        <div id="news-list">
+          <div style="padding:20px 14px;color:#3a4a68;font-size:11px;">Loading articles…</div>
+        </div>
+      </div>
+
+      <div id="filter-strip">
+        <div class="filter-row">
+          <span class="filter-label">Year</span>
+          <div id="year-chips" class="chip-group"></div>
+          <button id="btn-reset" class="reset-btn" title="Clear year and month filters">Reset</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Month</span>
+          <div id="month-chips" class="chip-group"></div>
+        </div>
+      </div>
+
+      <div id="load-error"></div>
+
+      <div id="title-bar">
+        <div>
+          <div class="title-bar-name">A London History of Facial Recognition Systems</div>
+          <div class="title-bar-subtitle">Each dot marks a day police deployed live facial recognition cameras on a London street.</div>
+        </div>
+        <span class="title-bar-meta">
+          <span id="deploy-count">…</span> ·
+          <a href="https://jaredkrauss.com" target="_blank" rel="noopener">jaredkrauss.com</a>
+        </span>
+      </div>
+    </div>
+
+    <div id="splat-pane">
+      <div id="splat-header">
+        <div>
+          <span class="splat-header-label">Walworth</span>
+          <span class="splat-header-sub">Southwark · 2024 · Gaussian splat</span>
+        </div>
+        <button id="btn-close-splat" title="Close 3D view">×</button>
+      </div>
+      <iframe
+        id="splat-iframe"
+        data-src="https://superspl.at/s?id=2094ae04"
+        allow="fullscreen; xr-spatial-tracking"
+        title="Walworth 2024 — 3D documentation"
+      ></iframe>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // ── Constants ─────────────────────────────────────────────────────────────
+    // Semantic operator-type colors (poppy neon-pastel palette)
+    const OPERATOR_COLORS = {
+      met:     '#ff6eb4',  // Met Police LFR — hot coral-pink
+      btp:     '#7ed4fd',  // BTP LFR — electric sky blue
+      private: '#a78bfa',  // Private/Facewatch — soft violet
+      rfr:     '#fb923c',  // Retrospective FR — warm amber (future)
+      default: '#94a3b8',  // fallback neutral
+    };
+
+    // Quality expressed as opacity (secondary signal)
+    const QUALITY_OPACITY = {
+      confirmed:   1.0,
+      approximate: 0.72,
+      unverified:  0.48,
+    };
+
+    // QUALITY_COLORS retained for popup quality dot encoding
+    const QUALITY_COLORS = {
+      confirmed:   '#a3e635',  // lime green — high confidence
+      approximate: '#f6a623',  // amber — inferred
+      unverified:  '#8899aa',  // slate — single source
+    };
+
+    const BOROUGH_STYLE = {
+      color: '#2a3a5e',
+      weight: 0.75,
+      fillColor: 'transparent',
+      fillOpacity: 0,
+    };
+
+    // Per-layer config: Met uses arrests-scaled radius; BTP/private use fixed (no arrests data)
+    const LAYER_CONFIG = {
+      met:     { arrestsEncoding: true },
+      btp:     { radius: 5 },
+      private: { radius: 5 },
+    };
+
+    const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // ── Operator type resolver ────────────────────────────────────────────────
+    function operatorType(rec) {
+      const op = (rec.operator || '').toLowerCase();
+      if (op.includes('metropolitan') || op.includes('met police')) return 'met';
+      if (op.includes('british transport') || op.includes('btp'))    return 'btp';
+      if (op.includes('retrospective'))                               return 'rfr';
+      return 'private';
+    }
+
+    // ── Global state ──────────────────────────────────────────────────────────
+    // operators: Set of operator names currently VISIBLE. Starts fully populated.
+    // years/months: empty Set = all pass; non-empty = only matching pass.
+    const filterState = {
+      operators: new Set(),
+      years:     new Set(),
+      months:    new Set(),
+    };
+
+    const rawData   = { met: [], btp: [], private: [] };
+    const curLayers = { met: null, btp: null, private: null };
+
+    let _map          = null;
+    let _allOperators = new Set();
+    let _totalBase    = 0;
+
+    // ── Popup builder ─────────────────────────────────────────────────────────
+    function buildPopupHTML(d) {
+      const dateStr = d.date_end && d.date_end !== d.date_start
+        ? `${d.date_start} – ${d.date_end}`
+        : (d.date_start ?? 'Unknown date');
+
+      const purposeLine = d.stated_purpose
+        ? `<div class="popup-purpose">${d.stated_purpose}</div>`
+        : '';
+
+      const arrestsLine = d.outcome_arrests != null
+        ? `<div class="popup-stat">Arrests recorded: <strong>${d.outcome_arrests}</strong></div>`
+        : '';
+
+      const claimedLine = d.claimed_reduction
+        ? `<div class="popup-stat">Claimed reduction: ${d.claimed_reduction}</div>`
+        : '';
+
+      const sourceLine = d.source_url
+        ? `<a class="popup-source" href="${d.source_url}" target="_blank" rel="noopener">Source ↗</a>`
+        : '';
+
+      const qualityColor = QUALITY_COLORS[d.data_quality] ?? QUALITY_COLORS.unverified;
+      const deployType   = d.deployment_type ? ` · ${d.deployment_type}` : '';
+      const borough      = d.borough ?? '';
+      const boroughPart  = borough ? `${borough} · ` : '';
+
+      return `
+        <div class="lfr-popup">
+          <div class="popup-title">${d.location_name ?? 'Unknown location'}</div>
+          <div class="popup-meta">${boroughPart}${dateStr}${deployType}</div>
+          ${purposeLine}${arrestsLine}${claimedLine}
+          ${d.notes ? `<div class="popup-notes">${d.notes}</div>` : ''}
+          <div class="popup-footer">
+            <span class="popup-quality" style="color:${qualityColor}">● ${d.data_quality ?? 'unverified'}</span>
+            ${sourceLine}
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Visual encoding helpers ───────────────────────────────────────────────
+    // Radius from arrests count (sqrt scale, capped 3–12px).
+    // 0→4, 1→5, 4→6, 9→8, 16→9, 25→11, 36+→12. null→3 (data gap, dashed ring).
+    function arrestsRadius(d) {
+      const a = d.outcome_arrests;
+      if (a == null) return 3;
+      return Math.min(12, Math.max(4, Math.round(3 + Math.sqrt(a) * 1.5)));
+    }
+
+    // Stroke opacity from deployment year — newer = brighter ring.
+    function yearStrokeOpacity(dateStr) {
+      const y = parseInt(dateStr?.slice(0, 4) ?? '2024');
+      if (y >= 2025) return 0.9;
+      if (y >= 2024) return 0.7;
+      if (y >= 2023) return 0.5;
+      return 0.25;
+    }
+
+    // ── Deployment layer ──────────────────────────────────────────────────────
+    function createDeploymentLayer(deployments, config) {
+      const group = L.layerGroup();
+      for (const d of deployments) {
+        if (d.lat == null || d.lon == null) continue;
+        const type        = operatorType(d);
+        const markerColor = OPERATOR_COLORS[type] ?? OPERATOR_COLORS.default;
+
+        let r, dashArray;
+        if (config.arrestsEncoding) {
+          r         = arrestsRadius(d);
+          dashArray = (d.outcome_arrests == null) ? '5, 3' : null;
+        } else {
+          r         = config.radius ?? 5;
+          dashArray = null;
+        }
+
+        const circleOpts = {
+          radius:      r,
+          fillColor:   markerColor,
+          color:       markerColor,
+          weight:      1.5,
+          fillOpacity: QUALITY_OPACITY[d.data_quality] ?? 0.75,
+          opacity:     yearStrokeOpacity(d.date_start),
+          className:   `marker-${type}`,
+        };
+        if (dashArray) circleOpts.dashArray = dashArray;
+
+        try {
+          L.circleMarker([d.lat, d.lon], circleOpts)
+            .bindPopup(buildPopupHTML(d), { maxWidth: 340, className: `popup-${type}` })
+            .addTo(group);
+        } catch (e) {
+          console.warn('Skipping record', d.id, e.message);
+        }
+      }
+      return group;
+    }
+
+    // ── Borough layer ─────────────────────────────────────────────────────────
+    function createBoroughLayer(geojsonData) {
+      return L.geoJSON(geojsonData, {
+        style: BOROUGH_STYLE,
+        onEachFeature(feature, featureLayer) {
+          featureLayer.bindTooltip(feature.properties.name, {
+            sticky: true,
+            className: 'borough-tooltip',
+          });
+        },
+      });
+    }
+
+    // ── Legend ────────────────────────────────────────────────────────────────
+    function createLegend(map) {
+      const legend = L.control({ position: 'bottomleft' });
+      legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-legend');
+        div.innerHTML = `
+          <div class="legend-intro">Each dot = one day of live facial recognition scanning.</div>
+          <div class="legend-title">Deployment type</div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#ff6eb4;box-shadow:0 0 4px rgba(255,110,180,0.50)"></span>
+            <span>Met Police LFR</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#7ed4fd;box-shadow:0 0 4px rgba(126,212,253,0.50)"></span>
+            <span>BTP LFR</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#a78bfa;box-shadow:0 0 4px rgba(167,139,250,0.50)"></span>
+            <span>Private (Facewatch)</span>
+          </div>
+          <div class="legend-section">Data quality</div>
+          <div class="legend-note" style="line-height:1.6">
+            <span style="opacity:1.0">●</span> confirmed &nbsp;
+            <span style="opacity:0.72">●</span> approx &nbsp;
+            <span style="opacity:0.48">●</span> unverified
+          </div>
+          <div class="legend-section">Arrests recorded</div>
+          <div class="legend-size-row">
+            <span style="width:8px;height:8px;background:#ff6eb4;border-radius:50%;display:inline-block;flex-shrink:0"></span><span style="margin:0 6px 0 3px">0</span>
+            <span style="width:12px;height:12px;background:#ff6eb4;border-radius:50%;display:inline-block;flex-shrink:0"></span><span style="margin:0 6px 0 3px">1–9</span>
+            <span style="width:18px;height:18px;background:#ff6eb4;border-radius:50%;display:inline-block;flex-shrink:0"></span><span style="margin:0 6px 0 3px">10+</span>
+          </div>
+          <div class="legend-note" style="margin-top:3px">
+            <span style="display:inline-block;width:8px;height:8px;border:1px dashed #6b7fa8;border-radius:50%;vertical-align:middle"></span>&nbsp;data not disclosed
+          </div>
+          <div class="legend-note">Ring brightness = recency · brighter = 2025–26</div>
+          <div class="legend-note">ALHFRS · <span id="legend-count">…</span> · May 2026</div>
+        `;
+        return div;
+      };
+      legend.addTo(map);
+    }
+
+    // ── Filter logic ──────────────────────────────────────────────────────────
+    function matchesFilter(d) {
+      if (d.lat == null || d.lon == null) return false;
+      if (d.operator && !filterState.operators.has(d.operator)) return false;
+      if (filterState.years.size > 0) {
+        const y = d.date_start?.slice(0, 4);
+        if (!y || !filterState.years.has(y)) return false;
+      }
+      if (filterState.months.size > 0) {
+        const m = d.date_start?.slice(5, 7);
+        if (!m || !filterState.months.has(m)) return false;
+      }
+      return true;
+    }
+
+    function applyFilters() {
+      if (!_map) return;
+      let visible = 0;
+      for (const key of ['met', 'btp', 'private']) {
+        if (curLayers[key]) _map.removeLayer(curLayers[key]);
+        const filtered = rawData[key].filter(matchesFilter);
+        curLayers[key] = createDeploymentLayer(filtered, LAYER_CONFIG[key]);
+        curLayers[key].addTo(_map);
+        visible += filtered.length;
+      }
+      const isFiltered =
+        filterState.years.size > 0 ||
+        filterState.months.size > 0 ||
+        filterState.operators.size < _allOperators.size;
+
+      const countEl  = document.getElementById('deploy-count');
+      const legendEl = document.getElementById('legend-count');
+      if (isFiltered) {
+        if (countEl)  countEl.textContent  = `${visible} of ${_totalBase} deployments visible`;
+        if (legendEl) legendEl.textContent = `${visible} shown`;
+      } else {
+        if (countEl)  countEl.textContent  = `${_totalBase} deployments documented · data to May 2026`;
+        if (legendEl) legendEl.textContent = `${_totalBase} deployments`;
+      }
+    }
+
+    // ── Filter UI builders ────────────────────────────────────────────────────
+    function buildOperatorChips() {
+      const container = document.getElementById('operator-chips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (const op of _allOperators) {
+        const btn = document.createElement('button');
+        btn.className = 'op-chip active';
+        btn.setAttribute('aria-pressed', 'true');
+        btn.setAttribute('data-optype', operatorType({ operator: op }));
+
+        const check = document.createElement('span');
+        check.className = 'op-chip-check';
+        check.textContent = '✓';
+
+        const label = document.createElement('span');
+        label.textContent = op;
+
+        btn.appendChild(check);
+        btn.appendChild(label);
+
+        btn.addEventListener('click', () => {
+          if (filterState.operators.has(op)) {
+            filterState.operators.delete(op);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+            check.textContent = '';
+          } else {
+            filterState.operators.add(op);
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+            check.textContent = '✓';
+          }
+          applyFilters();
+        });
+
+        container.appendChild(btn);
+      }
+    }
+
+    function buildYearChips(years) {
+      const container = document.getElementById('year-chips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (const year of years) {
+        const btn = document.createElement('button');
+        btn.className = 'chip';
+        btn.textContent = year;
+        btn.setAttribute('aria-pressed', 'false');
+
+        btn.addEventListener('click', () => {
+          if (filterState.years.has(year)) {
+            filterState.years.delete(year);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          } else {
+            filterState.years.add(year);
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+          }
+          applyFilters();
+        });
+
+        container.appendChild(btn);
+      }
+    }
+
+    function buildMonthChips() {
+      const container = document.getElementById('month-chips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      MONTH_LABELS.forEach((label, i) => {
+        const monthNum = String(i + 1).padStart(2, '0');
+        const btn = document.createElement('button');
+        btn.className = 'chip month-chip';
+        btn.textContent = label;
+        btn.setAttribute('aria-pressed', 'false');
+
+        btn.addEventListener('click', () => {
+          if (filterState.months.has(monthNum)) {
+            filterState.months.delete(monthNum);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          } else {
+            filterState.months.add(monthNum);
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+          }
+          applyFilters();
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    function initResetBtn() {
+      const btn = document.getElementById('btn-reset');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        filterState.years.clear();
+        filterState.months.clear();
+        _allOperators.forEach(op => filterState.operators.add(op));
+
+        document.querySelectorAll('.chip.active').forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-pressed', 'false');
+        });
+        document.querySelectorAll('.op-chip').forEach(c => {
+          c.classList.add('active');
+          c.setAttribute('aria-pressed', 'true');
+          const check = c.querySelector('.op-chip-check');
+          if (check) check.textContent = '✓';
+        });
+
+        applyFilters();
+      });
+    }
+
+    // ── Borough control ───────────────────────────────────────────────────────
+    function initBoroughControl(map, boroughLayer) {
+      const btn = document.getElementById('btn-boroughs');
+      if (!btn) return;
+      if (!boroughLayer) {
+        btn.disabled = true;
+        btn.title = 'Data not loaded';
+        return;
+      }
+      let visible = true;
+      btn.addEventListener('click', () => {
+        visible = !visible;
+        btn.classList.toggle('active', visible);
+        visible ? boroughLayer.addTo(map) : map.removeLayer(boroughLayer);
+      });
+    }
+
+    // ── Mobile panel toggle ───────────────────────────────────────────────────
+    function initMobileToggle() {
+      const toggle = document.getElementById('btn-panel-toggle');
+      const panel  = document.getElementById('layer-panel');
+      if (!toggle || !panel) return;
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = panel.classList.toggle('panel-open');
+        toggle.textContent = open ? '✕' : '☰';
+      });
+
+      document.addEventListener('click', (e) => {
+        if (panel.classList.contains('panel-open') &&
+            !panel.contains(e.target) &&
+            e.target !== toggle) {
+          panel.classList.remove('panel-open');
+          toggle.textContent = '☰';
+        }
+      });
+    }
+
+    // ── Splat panel ───────────────────────────────────────────────────────────
+    function initSplatPanel(map) {
+      const splatPane = document.getElementById('splat-pane');
+      const btnSplat  = document.getElementById('btn-splat');
+      const btnClose  = document.getElementById('btn-close-splat');
+      const iframe    = document.getElementById('splat-iframe');
+      let loaded = false;
+
+      function open() {
+        splatPane.classList.add('open');
+        btnSplat.classList.add('splat-active');
+        if (!loaded) { iframe.src = iframe.dataset.src; loaded = true; }
+        setTimeout(() => map.invalidateSize(), 360);
+      }
+
+      function close() {
+        splatPane.classList.remove('open');
+        btnSplat.classList.remove('splat-active');
+        setTimeout(() => map.invalidateSize(), 360);
+      }
+
+      btnSplat.addEventListener('click', () =>
+        splatPane.classList.contains('open') ? close() : open()
+      );
+      btnClose.addEventListener('click', close);
+    }
+
+    // ── News panel ─────────────────────────────────────────────────────────────
+    const MONTH_NAMES_FULL = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function formatNewsDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d)) return dateStr;
+      return `${MONTH_NAMES_FULL[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+    }
+
+    function renderNewsCard(article) {
+      const url = article.url_canonical || article.url || '';
+      const title = article.title || 'Untitled';
+      const titleHtml = url
+        ? `<a href="${url}" target="_blank" rel="noopener">${title}</a>`
+        : title;
+
+      const location = [article.location_name, article.borough]
+        .filter(Boolean).join(' · ');
+
+      const tagsHtml = (article.tags || []).length > 0
+        ? `<div class="news-card-tags">${article.tags.map(t =>
+            `<span class="news-tag">${t}</span>`).join('')}</div>`
+        : '';
+
+      const locationHtml = location
+        ? `<div class="news-card-location">📍 ${location}</div>`
+        : '';
+
+      return `
+        <div class="news-card">
+          <div class="news-card-title">${titleHtml}</div>
+          <div class="news-card-meta">
+            <span class="news-card-pub">${article.publication || ''}</span>
+            <span>${formatNewsDate(article.date)}</span>
+          </div>
+          ${locationHtml}${tagsHtml}
+        </div>
+      `;
+    }
+
+    function initNewsPanel() {
+      const btnNews  = document.getElementById('btn-news');
+      const panel    = document.getElementById('news-panel');
+      const btnClose = document.getElementById('btn-close-news');
+      const listEl   = document.getElementById('news-list');
+      const countEl  = document.getElementById('news-count');
+      if (!btnNews || !panel) return;
+
+      let loaded = false;
+
+      async function loadNews() {
+        try {
+          const res = await fetch('./data/news/gmail-research-threads.json');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const articles = (data.articles || []).sort((a, b) =>
+            (b.date || '').localeCompare(a.date || ''));
+          if (countEl) countEl.textContent = `${articles.length} articles`;
+          listEl.innerHTML = articles.map(renderNewsCard).join('');
+          loaded = true;
+        } catch (err) {
+          listEl.innerHTML = `<div style="padding:14px;color:#ff6eb4;font-size:11px;">
+            Could not load news data.<br>Serve via HTTP — see serve.ps1.</div>`;
+        }
+      }
+
+      function openPanel() {
+        panel.classList.add('open');
+        btnNews.classList.add('active');
+        if (!loaded) loadNews();
+      }
+
+      function closePanel() {
+        panel.classList.remove('open');
+        btnNews.classList.remove('active');
+      }
+
+      btnNews.addEventListener('click', () =>
+        panel.classList.contains('open') ? closePanel() : openPanel()
+      );
+      btnClose.addEventListener('click', closePanel);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+      _map = L.map('map', {
+        center: [51.509, -0.118],
+        zoom: 11,
+        zoomControl: true,
+      });
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
+          '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }).addTo(_map);
+
+      // ── Load deployment data — each source fetched independently ─────────
+      async function fetchDeployments(url, key) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            console.warn(`[ALHFRS] HTTP ${res.status} for ${url}`);
+            return [];
+          }
+          return (await res.json())[key] ?? [];
+        } catch (err) {
+          console.error(`[ALHFRS] Failed to load ${url}:`, err);
+          return [];
+        }
+      }
+
+      [rawData.met, rawData.btp, rawData.private] = await Promise.all([
+        fetchDeployments('./data/deployments/met-police-lfr.json', 'deployments'),
+        fetchDeployments('./data/deployments/btp-lfr.json',         'deployments'),
+        fetchDeployments('./data/deployments/private-operators.json','deployments'),
+      ]);
+
+      if (rawData.met.length === 0 && rawData.btp.length === 0 && rawData.private.length === 0) {
+        const el = document.getElementById('load-error');
+        el.textContent = 'Failed to load deployment data. Open a terminal in the ALHFRS folder and run: python -m http.server 8741 — then visit http://localhost:8741/map-embed.html';
+        el.style.display = 'block';
+        // Don't return — keep the map alive so the user sees the error on a working base map
+      }
+
+      // ── Compute totals and extract unique operators/years ─────────────────
+      _totalBase = rawData.met.length + rawData.btp.length + rawData.private.length;
+
+      const allYears = new Set();
+      for (const records of Object.values(rawData)) {
+        for (const d of records) {
+          if (d.operator)    _allOperators.add(d.operator);
+          if (d.date_start)  allYears.add(d.date_start.slice(0, 4));
+        }
+      }
+      _allOperators.forEach(op => filterState.operators.add(op));
+
+      // ── Build filter UI ───────────────────────────────────────────────────
+      buildOperatorChips();
+      buildYearChips([...allYears].sort());
+      buildMonthChips();
+      initResetBtn();
+
+      // ── Initial render ────────────────────────────────────────────────────
+      try {
+        applyFilters();
+      } catch (err) {
+        console.error('Layer creation failed:', err);
+        const el = document.getElementById('load-error');
+        el.textContent = `Map rendering error: ${err.message}`;
+        el.style.display = 'block';
+      }
+
+      // ── Borough layer ─────────────────────────────────────────────────────
+      let boroughLayer = null;
+      try {
+        const res = await fetch('./map/data/london-boroughs.geojson');
+        if (res.ok) {
+          boroughLayer = createBoroughLayer(await res.json());
+          boroughLayer.addTo(_map);
+        }
+      } catch (_) { /* silent — button auto-disabled */ }
+
+      createLegend(_map);
+      initBoroughControl(_map, boroughLayer);
+      initSplatPanel(_map);
+      initNewsPanel();
+      initMobileToggle();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

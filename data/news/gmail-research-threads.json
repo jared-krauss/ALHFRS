@@ -1,0 +1,536 @@
+{
+  "schema_version": "1.0",
+  "source": "Gmail research archive — jaredkrauss@gmail.com",
+  "extracted": "2026-05-14",
+  "notes": "Articles self-sent to Gmail as research clips, 2024-08 to 2026-05. Starred threads with label Label_2207168012066181003 appear to be the primary research label. URLs are as captured — some are share.google redirects that should be resolved to canonical URLs. Locations are inferred from article subjects where not explicit.",
+  "articles": [
+    {
+      "id": "news-001",
+      "date": "2026-05-03",
+      "title": "AI facial recognition oversight lagging far behind technology, watchdogs warn",
+      "publication": "Security Today",
+      "url": "https://share.google/cZ1Ba14ZAZ45eOIOk",
+      "url_canonical": "https://www.securitytoday.in/ai-facial-recognition-oversight-lagging-far-behind-technology-watchdogs-warn-in-uk/",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "oversight",
+        "regulation",
+        "watchdogs"
+      ],
+      "notes": "UK biometrics regulators warn oversight is lagging 87% behind deployment growth; nearly 1.7 million faces scanned in London this year."
+    },
+    {
+      "id": "news-002",
+      "date": "2026-04-29",
+      "title": "Man falsely arrested after being misidentified by facial recognition and held in custody for 24 hours in Harlesden",
+      "publication": "London Now",
+      "url": "https://www.london-now.co.uk/news/26055906.facial-recognition-tech-wrongly-identified-man-suspect/",
+      "url_canonical": "https://www.london-now.co.uk/news/26055906.facial-recognition-tech-wrongly-identified-man-suspect/",
+      "location_name": "Harlesden High Street",
+      "borough": "Brent",
+      "lat": 51.5366,
+      "lon": -0.2526,
+      "tags": [
+        "false-positive",
+        "wrongful-arrest",
+        "Brent",
+        "Harlesden",
+        "retrospective-FR"
+      ],
+      "notes": "Subject line misspelt 'Harlsede' — confirmed Harlesden from article. IMPORTANT: This is Retrospective Facial Recognition (RFR) applied to existing CCTV footage, NOT a Live LFR deployment. Man arrested at Harlesden High Street on RFR match from Feb 2024 theft incident; held 24hrs; acquitted. Met updated RFR protocols Mar 2026. No new LFR deployment record created — distinct technology and legal framework from LFR."
+    },
+    {
+      "id": "news-003",
+      "date": "2026-04-22",
+      "title": "Challenge over Met Police's use of live facial recognition lost",
+      "publication": "LBC",
+      "url": "https://share.google/YCVbhRAujyQSHujme",
+      "url_canonical": "https://www.lbc.co.uk/article/high-court-challenge-facial-recognition-dismissed-5HjdY6Q_2/",
+      "location_name": "High Court, London",
+      "borough": "Westminster",
+      "lat": 51.5138,
+      "lon": -0.1109,
+      "tags": [
+        "Liberty",
+        "High-Court",
+        "legal",
+        "Thompson"
+      ],
+      "notes": "Liberty v Metropolitan Police (21 Apr 2026) — already in enforcement-actions.json as legal-002. URL needs resolving to canonical article."
+    },
+    {
+      "id": "news-004",
+      "date": "2026-04-21",
+      "title": "Facial recognition to be 'rolled out' across UK after human rights challenge fails",
+      "publication": "Yahoo News UK",
+      "url": "https://share.google/1vWkGaOHrr0Ow20C0",
+      "url_canonical": "https://uk.news.yahoo.com/facial-recognition-rolled-across-uk-155700569.html",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "rollout",
+        "national-expansion",
+        "High-Court"
+      ],
+      "notes": "National expansion announcement following Liberty v Met dismissal. URL needs resolving."
+    },
+    {
+      "id": "news-005",
+      "date": "2026-03-21",
+      "title": "Essex Police tweaks 'biased' facial recognition software",
+      "publication": "BBC News",
+      "url": "https://www.bbc.co.uk/news/articles/c0q9e4573nvo",
+      "url_canonical": "https://www.bbc.co.uk/news/articles/c0q9e4573nvo",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "bias",
+        "accuracy",
+        "Essex",
+        "algorithm"
+      ],
+      "notes": "Essex Police, not Met — broader UK context for bias/accuracy discourse. Home Office admitted issues with Black and Asian subjects (see news-014)."
+    },
+    {
+      "id": "news-006",
+      "date": "2026-02-28",
+      "title": "Met police to pilot facial recognition identity checks, mayor confirms",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2026/feb/26/met-police-to-pilot-facial-recognition-identity-checks-mayor-confirms",
+      "url_canonical": "https://www.theguardian.com/technology/2026/feb/26/met-police-to-pilot-facial-recognition-identity-checks-mayor-confirms",
+      "location_name": "Greater London",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "identity-checks",
+        "mayor",
+        "MOPAC",
+        "pilot"
+      ],
+      "notes": "New use case — LFR for identity checks, not just watchlist matching. Different legal and operational framework. Mayor's confirmation gives political accountability hook."
+    },
+    {
+      "id": "news-007",
+      "date": "2026-02-13",
+      "title": "Police start live facial recognition trial at London stations",
+      "publication": "BBC News",
+      "url": "https://share.google/e4kRECe3kXKG2A8Tg",
+      "url_canonical": "https://www.bbc.co.uk/news/articles/cz6ejlq7j08o",
+      "location_name": "London Bridge station / London Waterloo station",
+      "borough": "Southwark / Lambeth",
+      "lat": 51.5054,
+      "lon": -0.0865,
+      "tags": [
+        "transport",
+        "BTP",
+        "London-Bridge",
+        "Waterloo",
+        "stations",
+        "trial"
+      ],
+      "notes": "BTP (British Transport Police) six-month LFR trial. Started London Bridge 11 Feb 2026; expanded to London Waterloo 14 Feb 2026. New deployment records created: btp-001 (London Bridge) and btp-002 (Waterloo) in data/deployments/btp-lfr.json."
+    },
+    {
+      "id": "news-008",
+      "date": "2026-02-06",
+      "title": "'Orwellian': Sainsbury's staff using facial recognition tech eject innocent shopper",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2026/feb/05/london-man-sainsburys-facial-recognition-facewatch",
+      "url_canonical": "https://www.theguardian.com/technology/2026/feb/05/london-man-sainsburys-facial-recognition-facewatch",
+      "location_name": "Sainsbury's (London — store unspecified in subject)",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "Facewatch",
+        "Sainsburys",
+        "false-positive",
+        "retail",
+        "Orwellian"
+      ],
+      "notes": "London man ejected from Sainsbury's after Facewatch false positive. Specific store not confirmed from subject line — article may specify. Directly relevant to private-operators.json Facewatch records."
+    },
+    {
+      "id": "news-009",
+      "date": "2026-02-08",
+      "title": "How 2 independent grocers are using facial recognition to combat theft",
+      "publication": "Grocery Dive",
+      "url": "https://www.grocerydive.com/news/facial-recognition-shrink-grocery-outlet-fiesta-foods/811559/",
+      "url_canonical": "https://www.grocerydive.com/news/facial-recognition-shrink-grocery-outlet-fiesta-foods/811559/",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "retail",
+        "grocery",
+        "private-operator",
+        "US-context"
+      ],
+      "notes": "US article (Grocery Outlet, Fiesta Foods) — comparative context for retail FRS deployment patterns."
+    },
+    {
+      "id": "news-010",
+      "date": "2025-12-09",
+      "title": "Home Office admits facial recognition tech issue with Black and Asian subjects",
+      "publication": "Unknown (share.google redirect)",
+      "url": "https://share.google/OK593o1OGU6OFPH99",
+      "url_canonical": "https://www.theguardian.com/technology/2025/dec/05/home-office-facial-recognition-tech-issue-black-asian-subjects",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "bias",
+        "race",
+        "Home-Office",
+        "accuracy",
+        "Black-Asian"
+      ],
+      "notes": "Home Office admission of ethnic bias in FR systems. Directly contradicts Met's NPL-testing 'no ethnic bias' claim. High evidential value."
+    },
+    {
+      "id": "news-011",
+      "date": "2025-12-03",
+      "title": "No arrests from false facial recognition alerts, Met Police says",
+      "publication": "BBC News",
+      "url": "https://share.google/grarNcPpBOZ4P8gtn",
+      "url_canonical": "https://www.yahoo.com/news/articles/no-arrests-false-facial-recognition-083231483.html",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "false-positive",
+        "Met-Police",
+        "arrests",
+        "accountability"
+      ],
+      "notes": "Met statement on false alert handling. Claims no one arrested from false positive. Context: multiple documented false positive incidents (Thompson, Harlesden, Cardiff B&M). URL needs resolving."
+    },
+    {
+      "id": "news-012",
+      "date": "2025-12-03",
+      "title": "Cardiff man wrongly accused of shoplifting in B&M in facial recognition error",
+      "publication": "Biometric Update / BBC News",
+      "url": "https://share.google/lvtdowxIYLRD7S0oX",
+      "url_canonical": "https://www.biometricupdate.com/202511/human-error-blamed-for-false-accusation-at-retailer-using-facial-recognition",
+      "location_name": "B&M, Cardiff",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "false-positive",
+        "retail",
+        "Cardiff",
+        "B&M"
+      ],
+      "notes": "Cardiff, not London — comparative context. Retail FRS false positive. URL needs resolving."
+    },
+    {
+      "id": "news-013",
+      "date": "2025-10-13",
+      "title": "Met Police's use of facial recognition tech must comply with human rights law, says Equality and Human Rights Commission",
+      "publication": "Equality and Human Rights Commission",
+      "url": "https://www.equalityhumanrights.com/met-polices-use-facial-recognition-tech-must-comply-human-rights-law-says-regulator",
+      "url_canonical": "https://www.equalityhumanrights.com/met-polices-use-facial-recognition-tech-must-comply-human-rights-law-says-regulator",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "EHRC",
+        "human-rights",
+        "regulation",
+        "accountability"
+      ],
+      "notes": "EHRC calling on Met to ensure LFR compliance with human rights law. Regulator-level intervention — high accountability significance."
+    },
+    {
+      "id": "news-014",
+      "date": "2025-08-13",
+      "title": "Government expands police use of live facial recognition vans",
+      "publication": "Emergency Services Times",
+      "url": "https://share.google/talThnC8GViuzKpSJ",
+      "url_canonical": "https://emergencyservicestimes.com/2025/08/15/live-facial-recognition-rollout-expands-with-10-new-police-vans/",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "national-expansion",
+        "Home-Office",
+        "vans",
+        "rollout"
+      ],
+      "notes": "August 2025 expansion — 10 mobile LFR vans rolled out across England & Wales. National context. URL needs resolving."
+    },
+    {
+      "id": "news-015",
+      "date": "2025-06-17",
+      "title": "Letters: The rapid expansion of biometric surveillance raises serious concerns about accuracy and ethics, but oversight is patchy and voluntary",
+      "publication": "The Guardian",
+      "url": "https://share.google/",
+      "url_canonical": null,
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "biometric-surveillance",
+        "oversight",
+        "letters",
+        "Guardian"
+      ],
+      "notes": "Guardian letters page - civil society response to expansion. URL fragment incomplete (share.google stub with no token), so the redirect cannot be followed automatically; web search did not surface the exact letters page. Needs the original Gmail thread link to recover the canonical URL. url_canonical left null deliberately - not guessed, to avoid inventing a source."
+    },
+    {
+      "id": "news-016",
+      "date": "2025-03-31",
+      "title": "Facewatch and Manchester Met Police face lawsuits after facial recognition misidentification",
+      "publication": "Biometric Update",
+      "url": "https://www.biometricupdate.com/202405/facewatch-met-police-face-lawsuits-after-facial-recognition-misidentification",
+      "url_canonical": "https://www.biometricupdate.com/202405/facewatch-met-police-face-lawsuits-after-facial-recognition-misidentification",
+      "location_name": "Manchester",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "Facewatch",
+        "lawsuit",
+        "misidentification",
+        "Manchester"
+      ],
+      "notes": "Manchester, not London — but involves Facewatch, directly relevant to private-operators.json."
+    },
+    {
+      "id": "news-017",
+      "date": "2025-03-24",
+      "title": "Met Police gets first permanent facial recognition cameras in London",
+      "publication": "LBC",
+      "url": "https://www.lbc.co.uk/crime/facial-recognition-camera-london-permanent-met-police/",
+      "url_canonical": "https://www.lbc.co.uk/crime/facial-recognition-camera-london-permanent-met-police/",
+      "location_name": "Croydon High Street",
+      "borough": "Croydon",
+      "lat": 51.3741,
+      "lon": -0.1003,
+      "tags": [
+        "permanent",
+        "static",
+        "Croydon",
+        "first"
+      ],
+      "notes": "Confirms Croydon as first permanent static LFR installation — consistent with lfr-008. LBC article with 'sparking fears of...' framing."
+    },
+    {
+      "id": "news-018",
+      "date": "2024-12-09",
+      "title": "Police unlawfully storing images of innocent people for facial recognition",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/uk-news/2024/dec/08/police-unlawfully-storing-images-of-innocent-people-for-facial-recognition",
+      "url_canonical": "https://www.theguardian.com/uk-news/2024/dec/08/police-unlawfully-storing-images-of-innocent-people-for-facial-recognition",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "data-retention",
+        "innocent",
+        "unlawful",
+        "Guardian"
+      ],
+      "notes": "Unlawful image retention for FR watchlists. Legal dimension — relates to Bridges ruling requirement to delete non-matched faces immediately."
+    },
+    {
+      "id": "news-019",
+      "date": "2024-10-17",
+      "title": "London district calls on police to stop live facial recognition use — Islington (Arsenal FC stadium area)",
+      "publication": "Biometric Update",
+      "url": "https://search.app/7rWwbvjcfsUsbRyE9",
+      "url_canonical": "https://www.biometricupdate.com/202407/london-district-calls-on-police-to-stop-live-facial-recognition-use",
+      "location_name": "Emirates Stadium / Islington",
+      "borough": "Islington",
+      "lat": 51.5549,
+      "lon": -0.1084,
+      "tags": [
+        "Islington",
+        "Arsenal",
+        "community",
+        "resistance",
+        "council"
+      ],
+      "notes": "Islington council/district calling for police to stop LFR around Emirates Stadium. Community resistance angle — maps directly onto community submissions layer. URL needs resolving to canonical Biometric Update article."
+    },
+    {
+      "id": "news-020",
+      "date": "2024-08-23",
+      "title": "FOIA request — Information about Facial Recognition (Met Police)",
+      "publication": "Metropolitan Police (official FOIA disclosure)",
+      "url": "https://search.app/3i3Rrw4gSHDDSPNs5",
+      "url_canonical": "https://www.met.police.uk/foi-ai/metropolitan-police/disclosure-2024/may-2024/information-facial-recognition-technology-frt/",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "FOIA",
+        "Met-Police",
+        "research"
+      ],
+      "notes": "A FOIA request filed by someone else (NOT Jared's own - corrected 2026-10-13 at his word, note ^mlmcbb), published in the Met's May 2024 disclosure log. Many questions have no data; Jared sees inference value for data viz. Local copies of it and the documents it cites: queued."
+    },
+    {
+      "id": "news-021",
+      "date": "2024-08-11",
+      "title": "Video doorbells, CCTV, facial recognition: how the police tracked UK rioters",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/politics/article/2024/aug/10/video-doorbells-cctv-facial-recognition-even-masked-rioters-could-be-tracked",
+      "url_canonical": "https://www.theguardian.com/politics/article/2024/aug/10/video-doorbells-cctv-facial-recognition-even-masked-rioters-could-be-tracked",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "riots",
+        "CCTV",
+        "tracking",
+        "retrospective-FR"
+      ],
+      "notes": "August 2024 UK riots — retrospective FR use for identification. Different legal framework to live LFR, but relevant context for surveillance infrastructure overlap."
+    },
+    {
+      "id": "news-022",
+      "date": "2026-06-10",
+      "title": "Mum wrongly accused of stealing over Sports Direct facial recognition cameras",
+      "publication": "Metro",
+      "url": "https://metro.co.uk/2026/06/10/mum-wrongly-accused-stealing-sports-direct-facial-recognition-cameras-28707740/",
+      "url_canonical": "https://metro.co.uk/2026/06/10/mum-wrongly-accused-stealing-sports-direct-facial-recognition-cameras-28707740/",
+      "location_name": "Sports Direct",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "FaceWatch",
+        "misidentification",
+        "retail"
+      ],
+      "notes": "Captured 2026-07-20 (CLAUDE-QUEUE ^qcx5f4): a woman kicked out of a Sports Direct store after being wrongly flagged by a FaceWatch deployment. TITLE UNVERIFIED — could not fetch the live article (WebFetch refused the domain; browser access was declined). Title above is reconstructed from the URL slug, not read from the page. Verify against the URL before citing this article's wording directly. Store location/borough not yet identified — needs a look at the article to place it geographically."
+    },
+    {
+      "id": "news-023",
+      "date": "2026-07-08",
+      "title": "Facial recognition technology use results in 28 arrests in Bradford",
+      "publication": "BBC News",
+      "url": "https://share.google/Q8lSStjRGl96FHRZ7",
+      "url_canonical": "https://www.bbc.co.uk/news/articles/cy5vd11l7w6o",
+      "location_name": "Bradford city centre",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "LFR",
+        "West Yorkshire Police",
+        "out-of-London",
+        "context"
+      ],
+      "notes": "Resolved 2026-10-05 (queue ^qddm2f). West Yorkshire Police say live facial recognition (LFR) has led to 28 arrests in Bradford since February 2026, at locations across the city centre, using two liveried LFR vans; Ch Insp Dan Tillett says it is a targeted tool, not mass surveillance. Notes the High Court dismissed a challenge to the Met's LFR use in April 2026. OUTSIDE LONDON: context/news only, no deployment record. Open question for Jared: should non-London records expand beyond SWP/Port of Hull? Not decided here (llm-research-queue TASK-004)."
+    },
+    {
+      "id": "news-024",
+      "date": "2026-07-09",
+      "title": "Will a rollout of live facial recognition in Soho reduce crime or destroy trust?",
+      "publication": "Evening Standard",
+      "url": "https://share.google/GOnRQfGwnF1gIxC48",
+      "url_canonical": "https://www.standard.co.uk/news/crime/facial-recognition-cameras-soho-crime-police-trust-b1289061.html",
+      "location_name": "Soho / West End",
+      "borough": "Westminster",
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "LFR",
+        "Met",
+        "Soho",
+        "West End",
+        "static cameras",
+        "proposal"
+      ],
+      "notes": "Resolved 2026-10-05 (queue ^qddm2f). Byline Chris Stokel-Walker. Met Commissioner Sir Mark Rowley is quoted as wanting LFR in the West End and Soho by December 2026, using static cameras, building on the Croydon pilot (Met figures quoted: 173 arrests, 1 misidentification among 470,000 faces scanned in six months; full arrest breakdown not published). Critics quoted: Big Brother Watch, Pete Fussey, Marion Oswald. Cost of rollout unpublished. PROPOSAL, NOT A DEPLOYMENT: no deployment record (no speculative records invariant); revisit if a primary source confirms go-live."
+    },
+    {
+      "id": "news-025",
+      "date": "2026-07-10",
+      "title": "Alarm over launch of facial recognition in UK shops that instantly alerts police",
+      "publication": "The Guardian",
+      "url": "https://share.google/6xYsmEgN34KEyXJR9",
+      "url_canonical": "https://www.theguardian.com/technology/2026/jul/10/facewatch-facial-recognition-uk-shops-instantly-alerts-police-civil-liberties",
+      "location_name": null,
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "FaceWatch",
+        "retail",
+        "police-alerts",
+        "Sainsburys"
+      ],
+      "notes": "Resolved 2026-10-05 (queue ^qddm2f). Facewatch (used by 100+ businesses incl. Sainsbury's, B&M, Spar) says it will launch in autumn 2026 a feature to alert police in about four seconds when 'the most serious offenders' trigger a live match; civil liberties groups (Liberty, Open Rights Group, Ada Lovelace Institute) object. Sainsbury's reportedly plans to grow Facewatch use from 55 to 200+ stores by end of 2026; Facewatch claims almost 300,000 alerts to retailers in H1 2026. Context for the priv-* records (all approximate-dated); no London store-level deployment is identified, so no new record."
+    },
+    {
+      "id": "news-026",
+      "date": "2015-12-16",
+      "title": "Facewatch 'thief recognition' CCTV on trial in UK stores",
+      "publication": "BBC News",
+      "url": "https://www.bbc.co.uk/news/technology-35111363",
+      "url_canonical": "https://www.bbc.co.uk/news/technology-35111363",
+      "location_name": "Gordon's Wine Bar",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "FaceWatch",
+        "origins",
+        "retail",
+        "2015",
+        "provenance"
+      ],
+      "notes": "Filed 2026-10-05 (queue ^fei0ux). Earliest public account in the archive of Facewatch testing facial recognition: BBC PM report (Chris Vallance) says the shared-watchlist scheme (10,000+ premises, 13 police forces) was testing face-recognition alerts in a small number of shops, mostly on sample images, 'live in test sites but not in widespread operation'. Founder Simon Gordon demonstrates it at the wine bar he runs (the FaceWatch commercial-origins story). Also covers Leicestershire Police's NEC NeoFace scans at Download festival 2015. Provenance only: no deployment record. The Zotero reference-capture tool in the same queue entry is a separate build, not done here."
+    },
+    {
+      "id": "news-027",
+      "date": "2026-08-28",
+      "title": "Met sets out policing plan ahead of 60th annual Notting Hill Carnival (live page now headed: UPDATE: Notting Hill Carnival policing operation)",
+      "publication": "Metropolitan Police",
+      "url": "https://news.met.police.uk/news/met-sets-out-policing-plan-ahead-of-60th-annual-notting-hill-carnival-512269",
+      "url_canonical": "https://news.met.police.uk/news/met-sets-out-policing-plan-ahead-of-60th-annual-notting-hill-carnival-512269",
+      "location_name": "Notting Hill Carnival",
+      "borough": null,
+      "lat": null,
+      "lon": null,
+      "tags": [
+        "LFR",
+        "Met",
+        "Notting Hill Carnival",
+        "2026",
+        "police_statement",
+        "primary-source",
+        "deployment-candidate"
+      ],
+      "archive": {
+        "path": "data/news/archive/news-027/page.html",
+        "text_extract": "data/news/archive/news-027/extract.txt",
+        "fetched_at": "2026-10-05T02:07:27Z",
+        "sha256": "7d761752d2e1f3344a8311ff7e794affb3f3c0cf618efa316bf4ae3fa42c505d",
+        "note": "Fetched 2026-10-05 by curl. The live page was updated 2026-09-01 and now carries the 28 Aug press release at the bottom beneath running updates; this copy is the whole page as served on the fetch date."
+      },
+      "notes": "Filed 2026-10-05 (queue ^f6x7we). Met press release of 28 Aug 2026 (page last updated 1 Sep 2026): 7,000+ officers, Section 60 order, 'increased deployment of live facial recognition cameras' and 'additional cameras ... at Carnival and on the approaches'; 2025 LFR at Carnival cited as 98 alerts, 61 arrests, 30 registered sex offenders spoken to. Final update 1 Sep 2026 states LFR was expanded this year: 214 alerts, 121 arrests, 86 registered sex offenders stopped and spoken to, 7 arrested for breaching conditions (daily LFR arrest figures also given for 30 and 31 Aug). The page names NO camera locations or deployment times, so it is a source for an LFR deployment at the 2026 carnival but not enough to place a point. Candidate only, flagged for adjudication (llm-research-queue TASK-005); no deployment record added."
+    }
+  ]
+}
