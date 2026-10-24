@@ -238,6 +238,7 @@
     #legend { max-width: 200px; }
   }
   .maplibregl-popup-content { font-size: .85rem; border-radius: 8px; }
+.stack-list { max-height: 50vh; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>
 </head>
@@ -621,15 +622,15 @@ map.on('load', async () => {
     // no record is hidden behind another (each links to its own detail panel).
     const seen = new Set();
     const feats = e.features.filter(f => !seen.has(f.properties.id) && seen.add(f.properties.id));
-    const rows = feats.slice(0, 8).map(f => {
+    const rows = feats.map(f => {
       const p = f.properties;
       return `<b>${esc(p.name)}</b><br>${esc(OPERATORS[p.op].label)} · ${esc(fmtDate(p.date))}<br>
               <a href="#" onclick="openPanel('${esc(p.id)}');return false">View details →</a>`;
     });
-    const extra = feats.length > 8 ? `<hr style="margin:6px 0"><i>+${feats.length - 8} more here — zoom in</i>` : '';
+    const head = feats.length > 1 ? `<i>${feats.length} deployments here</i><hr style="margin:6px 0">` : '';
     new maplibregl.Popup({ offset: 12 })
       .setLngLat(e.features[0].geometry.coordinates)
-      .setHTML(rows.join('<hr style="margin:6px 0">') + extra)
+      .setHTML(`<div class="stack-list">${head}${rows.join('<hr style="margin:6px 0">')}</div>`)
       .addTo(map);
   });
   for (const l of ['clusters', 'points']) {
